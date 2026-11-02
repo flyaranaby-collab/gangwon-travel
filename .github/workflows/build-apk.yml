@@ -23,7 +23,7 @@ jobs:
           KS: ${{ secrets.GANGWON_KEYSTORE }}
         run: |
           if [ -n "$KS" ]; then
-            echo "$KS" | base64 -d > "$RUNNER_TEMP/gangwon.keystore"
+            printf %s "$KS" | tr -d '[:space:]' | base64 -d > "$RUNNER_TEMP/gangwon.keystore"
             echo "GANGWON_KEYSTORE_PATH=$RUNNER_TEMP/gangwon.keystore" >> "$GITHUB_ENV"
           else
             echo "::warning::GANGWON_KEYSTORE 비밀값이 없어 임시 키로 서명합니다. 이 APK는 다음 버전으로 덮어쓰기 업데이트가 되지 않습니다."
