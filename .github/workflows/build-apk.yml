@@ -18,6 +18,7 @@ jobs:
           mkdir -p app/src/main/assets
           cp web/index.html app/src/main/assets/index.html
           cp web/version.txt app/src/main/assets/version.txt
+          cp -r web/photos app/src/main/assets/photos
       - name: 고정 서명 키 준비 (GitHub Secrets)
         env:
           KS: ${{ secrets.GANGWON_KEYSTORE }}
