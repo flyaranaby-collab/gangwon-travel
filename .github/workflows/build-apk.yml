@@ -1,0 +1,41 @@
+name: APK 만들기
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+      - name: 최신 수첩을 앱 안에 넣기
+        run: |
+          cp web/index.html app/src/main/assets/index.html
+          cp web/version.txt app/src/main/assets/version.txt
+      - name: 고정 서명 키 준비 (GitHub Secrets)
+        env:
+          KS: ${{ secrets.GANGWON_KEYSTORE }}
+        run: |
+          if [ -n "$KS" ]; then
+            echo "$KS" | base64 -d > "$RUNNER_TEMP/gangwon.keystore"
+            echo "GANGWON_KEYSTORE_PATH=$RUNNER_TEMP/gangwon.keystore" >> "$GITHUB_ENV"
+          else
+            echo "::warning::GANGWON_KEYSTORE 비밀값이 없어 임시 키로 서명합니다. 이 APK는 다음 버전으로 덮어쓰기 업데이트가 되지 않습니다."
+          fi
+      - run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+        env:
+          GANGWON_KEY_PASS: ${{ secrets.GANGWON_KEY_PASS }}
+      - run: cp app/build/outputs/apk/debug/app-debug.apk gangwon-travel.apk
+      - name: 다운로드 페이지에 APK 올리기
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: 강원 여행 수첩 v1.0.${{ github.run_number }}
+          body: 아래 gangwon-travel.apk 를 눌러 내려받은 뒤 휴대폰에서 설치하세요.
+          files: gangwon-travel.apk
+          make_latest: true

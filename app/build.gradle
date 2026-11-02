@@ -1,0 +1,38 @@
+plugins { id 'com.android.application' }
+
+// GitHub에서 빌드할 때마다 번호가 1씩 올라가서, 새 APK가 이전 앱 위에 '업데이트'로 설치된다
+def runNo = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+// 서명 키는 저장소에 올리지 않고 GitHub Secrets(GANGWON_KEYSTORE, GANGWON_KEY_PASS)에서 받는다
+def ksPath = System.getenv('GANGWON_KEYSTORE_PATH')
+def ksPass = System.getenv('GANGWON_KEY_PASS')
+def hasKey = ksPath && ksPass && new File(ksPath).exists()
+
+android {
+    namespace 'kr.gangwon.travelnote'
+    compileSdk 34
+    defaultConfig {
+        applicationId 'kr.gangwon.travelnote'
+        minSdk 26
+        targetSdk 34
+        versionCode 100 + runNo
+        versionName "1.0.${runNo}"
+    }
+    // 항상 같은 서명 키로 서명해야 안드로이드가 덮어쓰기(업데이트)를 허락한다
+    signingConfigs {
+        gangwon {
+            if (hasKey) {
+                storeFile file(ksPath)
+                storePassword ksPass
+                keyAlias 'gangwon'
+                keyPassword ksPass
+            }
+        }
+    }
+    buildTypes {
+        debug { if (hasKey) signingConfig signingConfigs.gangwon }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
