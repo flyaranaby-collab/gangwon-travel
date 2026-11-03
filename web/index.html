@@ -200,7 +200,11 @@ dl.kv dd { margin: 0; min-width: 0; }
 .revmark { display: inline-grid; place-items: center; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--brass); color: var(--surface); font: 700 11px/1 var(--font-body); margin-right: 6px; vertical-align: -3px; }
 body.hide-rev .revmark, body.hide-rev .revonly { display: none !important; }
 /* 앱(APK) 판: 서버가 필요한 문의·광고·AI·응모 기능은 숨긴다 */
-body.apk .revbox, body.apk .ownerline, body.apk #saveBtn { display: none !important; }
+body.apk .revbox:not(.pm), body.apk .ownerline:not(.apkop), body.apk #saveBtn { display: none !important; }
+.apkentry { margin: 28px 0 12px; text-align: center; }
+.apkentry form { display: grid; gap: 8px; max-width: 520px; margin: 10px auto 0; text-align: left; }
+.apkentry input { width: 100%; }
+.pmph { font-size: 12px; color: var(--muted, #888); }
 .revbox { border: 1.5px dashed var(--brass); border-radius: var(--r); padding: 20px; background: color-mix(in srgb, var(--brass-soft) 45%, var(--surface)); display: grid; gap: 10px; margin-bottom: 22px; }
 .revbox h2, .revbox h3 { font-size: 19px; display: flex; align-items: center; }
 .revbox p { margin: 0; font-size: 14px; }
@@ -454,6 +458,7 @@ section.panel, .hero .inner, .revbox, .revform, .card, .review, .deal { grid-tem
   <section class="panel" id="tab-pack" hidden></section>
   <section class="panel" id="tab-journal" hidden></section>
   <section class="panel ops" id="tab-ops" hidden></section>
+  <div class="apkentry" id="apkEntry" hidden></div>
 </main>
 
 <script id="ownerData" type="application/json">{"v":1,"places":[],"hidden":[],"order":[]}</script>
@@ -1360,7 +1365,13 @@ const META = {
 // ───────── 운영자 장소 관리: 직접 추가·수정·숨기기·순서 ─────────
 // 운영자가 바꾼 내용은 페이지 안의 <script id="ownerData">에 들어가고, '저장하고 공개'로 이 페이지 자체를 새 버전으로 저장한다.
 // 그래서 로그인하지 않은 방문자와 휴대폰 앱(APK)에서도 똑같이 보인다.
-const OWNER = (()=>{ try { return JSON.parse(document.getElementById("ownerData").textContent) || {}; } catch(_) { return {}; } })();
+// 앱(APK)에서는 GitHub 저장소의 web/owner.json 이 운영 데이터다(앱 운영자 모드에서 저장). 받아 둔 것이 있으면 그걸 쓴다.
+const GH = { repo:"flyaranaby-collab/gangwon-travel", branch:"main", raw:"https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/" };
+const OWNER = (()=>{ let o = {};
+  try { o = JSON.parse(document.getElementById("ownerData").textContent) || {}; } catch(_) {}
+  if (window.APK_BUILD) { try { const c = JSON.parse(localStorage.getItem("gw_owner") || "null"); if (c && c.v) o = c; } catch(_) {} }
+  return o; })();
+OWNER.photos = OWNER.photos && typeof OWNER.photos==="object" && !Array.isArray(OWNER.photos) ? OWNER.photos : {};
 OWNER.places = Array.isArray(OWNER.places) ? OWNER.places : [];
 OWNER.hidden = Array.isArray(OWNER.hidden) ? OWNER.hidden : [];
 OWNER.order = Array.isArray(OWNER.order) ? OWNER.order : [];
@@ -1384,7 +1395,8 @@ function applyOwner(){
 applyOwner();
 const orderIdx = id => { const i = OWNER.order.indexOf(id); return i<0 ? 1e9 : i; };
 const PM = { region:"gangneung", cat:"전체", edit:null, dirty:false, msg:"", err:"", busy:false };
-const pmList = () => ALL_PLACES.filter(p=>p.region===PM.region && (PM.cat==="전체"||p.cat===PM.cat))
+const pmList = () => (PM.nophoto ? [...ALL_PLACES, ...PLACES.filter(p=>p.source==="kto")] : ALL_PLACES)
+  .filter(p=>p.region===PM.region && (PM.cat==="전체"||p.cat===PM.cat) && (!PM.nophoto || !photoFor(p)))
   .sort((a,b)=>orderIdx(a.id)-orderIdx(b.id) || (b.who.가족+b.who.친구)-(a.who.가족+a.who.친구) || a.name.localeCompare(b.name));
 function pmMove(id, dir){
   const list = pmList().map(p=>p.id), i = list.indexOf(id), j = i+dir;
@@ -1395,7 +1407,6 @@ function pmMove(id, dir){
   PM.dirty = true;
 }
 function placeManager(){
-  if (window.APK_BUILD) return "";
   const list = pmList(), e = PM.edit;
   const opt = (arr, cur) => arr.map(([v,t])=>`<option value="${esc(v)}" ${v===cur?"selected":""}>${esc(t)}</option>`).join("");
   const regs = REGIONS.map(r=>[r.id, r.name]), cats = CATS.filter(c=>c!=="전체").map(c=>[c,c]);
@@ -1424,16 +1435,18 @@ function placeManager(){
     </form>` : "";
   return `<section class="revbox pm" aria-label="장소 관리">
     <h2>장소 관리</h2>
-    <p>장소를 직접 추가하거나, 숨기거나, 위·아래 버튼으로 보이는 순서를 정할 수 있어요. 바꾼 뒤 <b>저장하고 공개</b>를 누르면 링크로 들어오는 모든 사람과 휴대폰 앱에 반영돼요.</p>
+    <p>장소를 직접 추가하거나, 숨기거나, 위·아래 버튼으로 보이는 순서를 정할 수 있어요. 바꾼 뒤 <b>저장하고 공개</b>를 누르면 ${window.APK_BUILD ? "앱을 쓰는 모든 휴대폰에 반영돼요(다른 휴대폰은 앱을 다시 열면, 길게는 5분 뒤)." : "링크로 들어오는 모든 사람에게 반영돼요."}</p>
     <div class="filters">
       <select id="pmRegionSel" aria-label="관리할 지역">${opt(regs, PM.region)}</select>
       <select id="pmCatSel" aria-label="관리할 분류">${opt([["전체","전체 분류"], ...cats], PM.cat)}</select>
       <button class="btn" data-pm="new">+ 새 장소</button>
+      <label class="pmday"><input type="checkbox" id="pmNoPhoto" ${PM.nophoto?"checked":""}> 사진 없는 곳만</label>
     </div>
+    ${PM.nophoto ? `<p class="meta">사진이 없는 장소 ${list.length}곳이에요. ‘사진 등록’을 누르면 휴대폰 사진첩이나 카메라에서 고를 수 있어요. 직접 찍었거나 사용 허락을 받은 사진만 올려 주세요.</p>` : ""}
     ${form}
     <ol class="pmlist">${list.map((p,i)=>`<li class="${HIDDEN.has(p.id)?"off":""}">
       <span class="pmno">${i+1}</span>
-      <span class="pmnm"><b>${esc(p.name)}</b><small>${esc(p.cat)} · ${esc(p.area)}${p.custom?" · 직접 추가":""}${HIDDEN.has(p.id)?" · 숨김":""}</small></span>
+      <span class="pmnm"><b>${esc(p.name)}</b><small>${esc(p.cat)} · ${esc(p.area)}${p.custom?" · 직접 추가":""}${p.source==="kto"?" · 관광공사":""}${HIDDEN.has(p.id)?" · 숨김":""} · ${photoFor(p)?"사진 있음":"사진 없음"}</small><span class="pmph">${photoCtl(p)}</span></span>
       <span class="pmctl">
         <button data-pm="up" data-id="${p.id}" ${i===0?"disabled":""} aria-label="위로">▲</button>
         <button data-pm="down" data-id="${p.id}" ${i===list.length-1?"disabled":""} aria-label="아래로">▼</button>
@@ -1452,7 +1465,7 @@ function placeManager(){
     </details>
   </section>`;
 }
-const ownerJson = () => JSON.stringify({ v:1, places:ALL_PLACES.filter(p=>p.custom).map(({custom, ...rest})=>rest), hidden:[...HIDDEN], order:OWNER.order });
+const ownerJson = () => JSON.stringify({ v:1, places:ALL_PLACES.filter(p=>p.custom).map(({custom, ...rest})=>rest), hidden:[...HIDDEN], order:OWNER.order, photos:OWNER.photos });
 function pmRerender(){ renderOps(); renderGrid(); renderTop(); }
 function pmReadForm(){
   const v = id => (document.getElementById(id)?.value || "").trim();
@@ -1479,6 +1492,11 @@ async function pmSourceHtml(){
 }
 async function pmSave(){
   PM.busy = true; PM.err = PM.msg = ""; renderOps();
+  if (window.APK_BUILD){
+    try { await ghSaveOwner(); PM.dirty = false; PM.msg = "저장했어요. 다른 휴대폰은 앱을 다시 열면 반영돼요(길게는 5분)."; }
+    catch(e){ PM.err = ghErrText(e); }
+    PM.busy = false; renderOps(); return;
+  }
   try {
     const art = await useCap("artifact");
     if (!art) throw { code:"not_granted" };
@@ -1501,6 +1519,7 @@ async function pmSave(){
 document.addEventListener("change", e=>{
   if (e.target.id==="pmRegionSel"){ PM.region = e.target.value; PM.edit = null; renderOps(); }
   if (e.target.id==="pmCatSel"){ PM.cat = e.target.value; renderOps(); }
+  if (e.target.id==="pmNoPhoto"){ PM.nophoto = e.target.checked; renderOps(); }
 });
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-pm]"); if (!b) return;
@@ -1528,6 +1547,103 @@ document.addEventListener("submit", e=>{
   PM.region = p.region; PM.edit = null; PM.dirty = true; PM.msg = `‘${p.name}’을(를) 목록 맨 위에 넣었어요. 저장해야 공개돼요.`;
   applyOwner(); pmRerender();
 });
+
+// ───────── 앱(APK) 운영자 모드 ─────────
+// 운영자가 앱에서 바꾼 장소·순서·사진은 GitHub 저장소(web/owner.json, web/photos/u-*.jpg)에 저장되고,
+// 모든 휴대폰 앱이 켤 때 owner.json 을 받아 반영한다. 토큰은 운영자 휴대폰에만 저장된다.
+const ghToken = () => { try { return localStorage.getItem("gw_ghtoken") || ""; } catch(_) { return ""; } };
+async function ghApi(path, opt = {}, token){
+  const r = await fetch("https://api.github.com/repos/" + GH.repo + path, { ...opt, cache:"no-store",
+    headers:{ "Accept":"application/vnd.github+json", "Authorization":"Bearer " + (token || ghToken()), ...(opt.body ? { "Content-Type":"application/json" } : {}) } });
+  if (!r.ok){ const e = new Error("HTTP " + r.status); e.status = r.status; throw e; }
+  return r.status===204 ? null : r.json();
+}
+async function ghPut(path, b64, msg){
+  let sha; try { sha = (await ghApi("/contents/" + path + "?ref=" + GH.branch)).sha; } catch(e){ if (e.status!==404) throw e; }
+  return ghApi("/contents/" + path, { method:"PUT", body:JSON.stringify({ message:msg, content:b64, branch:GH.branch, ...(sha ? { sha } : {}) }) });
+}
+const b64utf8 = t => btoa(unescape(encodeURIComponent(t)));
+const ghErrText = e => (e && (e.status===401 || e.status===403)) ? "토큰이 맞지 않거나 쓰기 권한이 없어요. 운영자 로그아웃 후 토큰을 다시 넣어 주세요."
+  : (e && e.status===409) ? "그사이 다른 곳에서 저장했어요. 앱을 다시 열고 한 번 더 해 주세요."
+  : "저장하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.";
+async function ghSaveOwner(){
+  const data = ownerJson();
+  await ghPut("web/owner.json", b64utf8(data), "운영자: 장소·순서·사진 변경 (앱에서)");
+  try { localStorage.setItem("gw_owner", data); } catch(_) {}
+}
+// 사진은 긴 변 1280px JPEG 로 줄여 올린다(데이터 절약)
+async function shrinkJpeg(file, max = 1280, q = .82){
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((ok, no)=>{ const i = new Image(); i.onload = ()=>ok(i); i.onerror = no; i.src = url; });
+    const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth*k); c.height = Math.round(img.naturalHeight*k);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL("image/jpeg", q).split(",")[1];
+  } finally { URL.revokeObjectURL(url); }
+}
+async function ghUploadPhoto(id, file){
+  const credit = ((window.prompt && window.prompt("사진 출처를 적어 주세요 (예: 직접 촬영, 가게 제공)", "직접 촬영")) || "직접 촬영").trim();
+  const b64 = await shrinkJpeg(file);
+  const name = "u-" + id.replace(/[^a-z0-9_-]/gi, "_") + ".jpg";
+  await ghPut("web/photos/" + name, b64, "운영자: 사진 등록 " + id);
+  OWNER.photos[id] = { url: GH.raw + "photos/" + name + "?v=" + Date.now().toString(36), credit: "사진: " + credit };
+  await ghSaveOwner();
+}
+// 사진 등록 버튼: 웹은 아티팩트 저장소, 앱은 GitHub
+function photoCtl(p){
+  const apk = !!window.APK_BUILD, can = apk ? state.isOps : state.canUpload;
+  if (!can) return "";
+  const mine = apk ? OWNER.photos[p.id] : state.uploads[p.id];
+  return `<label class="linkbtn photoadd">${mine ? "올린 사진 바꾸기" : (photoFor(p) ? "사진 바꾸기" : "사진 등록")}<input type="file" accept="image/*" data-photo="${p.id}" hidden></label>${mine ? ` <button class="linkbtn" data-photodel="${p.id}">올린 사진 지우기</button>` : ""}`;
+}
+const APK = { open:false, busy:false, msg:"" };
+function renderApkEntry(){
+  const el = document.getElementById("apkEntry"); if (!el) return;
+  el.hidden = !window.APK_BUILD; if (!window.APK_BUILD) return;
+  if (state.isOps){ el.innerHTML = `<button class="linkbtn" data-apkops="logout">운영자 로그아웃</button>`; return; }
+  el.innerHTML = APK.open ? `<form id="apkLogin">
+      <b>운영자 로그인</b>
+      <p class="meta">GitHub에서 만든 운영자 토큰(gangwon-travel 저장소, Contents 읽기·쓰기 권한)을 붙여 넣으세요. 토큰은 이 휴대폰에만 저장돼요.</p>
+      <input id="apkTok" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="github_pat_로 시작하는 토큰" aria-label="운영자 토큰">
+      <div class="row"><button class="btn" ${APK.busy?"disabled":""}>${APK.busy?"확인하는 중…":"로그인"}</button><button class="btn ghost" type="button" data-apkops="close">닫기</button></div>
+      ${APK.msg?`<p class="errline">${esc(APK.msg)}</p>`:""}
+    </form>` : `<button class="linkbtn" data-apkops="open">운영자</button>`;
+}
+function apkOpsOn(){ state.isOps = true; document.body.classList.add("opsmode"); renderTop(); renderOps(); renderGrid(); renderApkEntry(); }
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-apkops]"); if (!b) return;
+  const a = b.dataset.apkops;
+  if (a==="open"){ APK.open = true; APK.msg = ""; renderApkEntry(); document.getElementById("apkTok")?.focus(); }
+  if (a==="close"){ APK.open = false; renderApkEntry(); }
+  if (a==="logout"){ if (!confirm("이 휴대폰에서 운영자 로그아웃할까요?")) return;
+    try { localStorage.removeItem("gw_ghtoken"); } catch(_) {}
+    state.isOps = false; APK.open = false; document.body.classList.remove("opsmode");
+    if (state.tab==="ops") document.querySelector('[data-tab="places"]')?.click();
+    renderTop(); renderOps(); renderGrid(); renderApkEntry(); }
+});
+document.addEventListener("submit", async e=>{
+  if (e.target.id!=="apkLogin") return; e.preventDefault();
+  const tok = (document.getElementById("apkTok")?.value || "").trim();
+  if (!tok){ APK.msg = "토큰을 붙여 넣어 주세요."; renderApkEntry(); return; }
+  APK.busy = true; APK.msg = ""; renderApkEntry();
+  try {
+    const r = await ghApi("", {}, tok);
+    if (!r || !r.permissions || !r.permissions.push) throw { status:403 };
+    try { localStorage.setItem("gw_ghtoken", tok); } catch(_) {}
+    APK.busy = false; APK.open = false; apkOpsOn();
+    document.getElementById("opsTab")?.click();
+  } catch(err){ APK.busy = false; APK.msg = (err && (err.status===401||err.status===403||err.status===404)) ? "토큰이 맞지 않거나 이 저장소에 쓰기 권한이 없어요." : "확인하지 못했어요. 인터넷 연결을 확인해 주세요."; renderApkEntry(); }
+});
+// 앱: 켤 때마다 최신 운영 데이터(owner.json)를 받아, 바뀌었으면 다시 연다
+if (window.APK_BUILD) fetch(GH.raw + "owner.json?t=" + Date.now(), { cache:"no-store" })
+  .then(r=>r.ok ? r.text() : null).then(t=>{
+    if (!t) return; t = t.trim(); JSON.parse(t);
+    let cur = ""; try { cur = localStorage.getItem("gw_owner") || ""; } catch(_) {}
+    if (t===cur.trim()) return;
+    try { localStorage.setItem("gw_owner", t); } catch(_) { return; }
+    if (!PM.dirty && !PM.busy) location.reload();
+  }).catch(()=>{});
 
 const TEMPLATES = [
   { name:"연인 하루", start:"gp", ids:["chodang","gyeongpodae","arte","gangmun","anmok"] },
@@ -1627,6 +1743,10 @@ const PHOTO_KIND = { menu:"메뉴 예시 사진", area:"주변 풍경 사진", i
 const httpsUrl = u => String(u||"").replace(/^http:\/\//, "https://");
 // 우선순위: 위키미디어 공용 > 관광공사 > 운영자가 올린 사진
 function photoFor(p){
+  const op = OWNER.photos[p.id];
+  if (op && op.url) return { url:op.url, credit:op.credit || "운영자 등록 사진", artist:"운영자 등록" };
+  const up0 = state.uploads[p.id];
+  if (up0 && up0.url) return { url:up0.url, credit:up0.credit || "운영자 등록 사진", artist:"운영자 등록" };
   const c = PHOTOS[p.id];
   if (c) { const tag = PHOTO_KIND[c.kind] || "";
     return { url:c.url, tag, example:!!tag, credit:`${tag ? tag+" · " : ""}사진: ${c.artist || "작가 미상"} · ${c.license} · `, link:c.page, linkText:"위키미디어 공용", artist:c.artist }; }
@@ -1639,7 +1759,7 @@ function photoFor(p){
 // 메인 화면 사진 줄: 고른 지역에서 사진 있는 곳을 동행 추천순으로 5장
 function renderHeroPhotos(){
   const el = document.getElementById("heroPhotos"); if (!el) return;
-  const key = state.region+"|"+state.who+"|"+Object.keys(state.uploads).length;
+  const key = state.region+"|"+state.who+"|"+Object.keys(state.uploads).length+"|"+Object.keys(OWNER.photos).length;
   if (el.dataset.key===key) return; el.dataset.key = key;
   const list = regionPlaces().filter(p=>{ const ph = photoFor(p); return ph && !ph.example; }).sort((a,b)=>b.who[state.who]-a.who[state.who] || a.name.localeCompare(b.name)).slice(0,5);
   el.hidden = !list.length;
@@ -1987,7 +2107,7 @@ function card(p){
       <button class="btn ghost" data-stamp="${p.id}" aria-pressed="${!!state.stamps[p.id]}">${state.stamps[p.id]?"스탬프 지우기":"스탬프 찍기"}</button>
       <button class="btn ghost" data-review="${p.id}">${state.reviews[p.id]?"후기 보기":"후기 쓰기"}</button>
     </div>
-    <div class="ownerline"><span>${REV}<button class="linkbtn" data-inquire="${p.id}" data-inqtype="업주 정보 수정">사장님이신가요? 정보 수정·광고 문의</button></span><button class="linkbtn" data-inquire="${p.id}" data-inqtype="정보 오류 제보">정보 오류 제보</button>${state.canUpload?`<label class="linkbtn photoadd">${state.uploads[p.id]?"올린 사진 바꾸기":(PHOTOS[p.id]||KTO_PHOTOS[p.id]||p.img?"사진 등록(예비)":"사진 등록")}<input type="file" accept="image/*" data-photo="${p.id}" hidden></label>`:""}${state.canUpload&&state.uploads[p.id]?`<button class="linkbtn" data-photodel="${p.id}">올린 사진 지우기</button>`:""}</div>
+    ${window.APK_BUILD ? (state.isOps ? `<div class="ownerline apkop">${photoCtl(p)}</div>` : "") : `<div class="ownerline"><span>${REV}<button class="linkbtn" data-inquire="${p.id}" data-inqtype="업주 정보 수정">사장님이신가요? 정보 수정·광고 문의</button></span><button class="linkbtn" data-inquire="${p.id}" data-inqtype="정보 오류 제보">정보 오류 제보</button>${photoCtl(p)}</div>`}
     ${state.stamps[p.id]?`<div class="seal-mark" aria-label="방문함">${shortName(p)}<small>${fmtD(state.stamps[p.id])}</small></div>`:""}</article>`;
 }
 
@@ -2346,7 +2466,9 @@ async function initRuntime(){
   RT.user = await useCap("user");
   RT.db = await useCap("db");
   if (RT.user){ try { RT.uid = await RT.user.id(); } catch(_){} try { state.isOps = !!(await RT.user.isOwner()); } catch(_){} }
-  if (isLocal && !window.APK_BUILD) state.isOps = true;   // 앱(APK)에서는 운영 탭을 숨긴다
+  if (isLocal && !window.APK_BUILD) state.isOps = true;   // 앱(APK)은 운영자 토큰이 있을 때만 운영 탭을 연다
+  if (window.APK_BUILD && ghToken()){ state.isOps = true; document.body.classList.add("opsmode"); renderGrid(); }
+  renderApkEntry();
   if (state.isOps && RT.db) subscribeOps();
   if (RT.db) subscribePhotos();
   if (RT.user){ try { if (await RT.user.canEdit()) { RT.assets = await useCap("assets"); state.canUpload = !!RT.assets; } } catch(_){} }
@@ -2494,6 +2616,12 @@ function renderPipeline(){
 function renderOps(){
   const el = document.getElementById("tab-ops");
   if (!state.isOps){ el.innerHTML = ""; return; }
+  if (window.APK_BUILD){
+    el.innerHTML = `<div class="sec-title"><h2>앱 운영자</h2><span class="en">Operator</span></div>
+      <p class="meta" style="margin-bottom:12px">이 휴대폰에서 바꾼 장소·순서·사진은 GitHub에 저장돼 앱을 쓰는 모든 휴대폰에 반영돼요. 사진이 없는 장소는 ‘사진 없는 곳만’을 켜서 바로 등록할 수 있어요. 가볼 곳 카드에서도 ‘사진 등록’을 누를 수 있어요.</p>
+      ${placeManager()}`;
+    return;
+  }
   const local = !RT.db;
   const inq = (local ? [{ items:store.get("local_inquiries", []) }] : state.ops.inquiries)
     .flatMap(d=>d.items||[]).sort((a,b)=>String(b.at).localeCompare(String(a.at)));
@@ -2565,6 +2693,12 @@ document.addEventListener("click", e=>{
     appendMine("stampclaims", { region:state.region, regionName:regionLabel(), count:ids.length, ids, at:new Date().toISOString() })
       .then(()=>{ state.claimMsg = "응모했어요. 당첨 시 안내해 드릴게요."; renderJournal(); })
       .catch(()=>{ t.disabled = false; state.claimMsg = ""; alert("이 화면에서는 응모를 보낼 수 없어요. 참여 권한이 있는 계정으로 열어 주세요."); });
+    return;
+  }
+  if (t.dataset.photodel && window.APK_BUILD){
+    const id = t.dataset.photodel; if (!OWNER.photos[id] || !confirm("올린 사진을 지울까요?")) return;
+    const keep = OWNER.photos[id]; delete OWNER.photos[id];
+    ghSaveOwner().then(()=>{ renderGrid(); renderOps(); renderHeroPhotos(); }).catch(err=>{ OWNER.photos[id] = keep; alert(ghErrText(err)); });
     return;
   }
   if (t.dataset.photodel){
@@ -2647,7 +2781,9 @@ document.addEventListener("change", e=>{
   const t = e.target;
   if (t.dataset && t.dataset.photo && t.files && t.files[0]){
     const lab = t.closest("label"); if (lab) lab.firstChild.textContent = "올리는 중…";
-    uploadPhoto(t.dataset.photo, t.files[0]).catch(()=>{ alert("사진을 올리지 못했어요. 파일 크기(20MB 이하)와 형식을 확인하세요."); renderGrid(); });
+    if (window.APK_BUILD) ghUploadPhoto(t.dataset.photo, t.files[0]).then(()=>{ renderGrid(); renderOps(); renderHeroPhotos(); })
+      .catch(err=>{ alert(err && err.status ? ghErrText(err) : "사진을 올리지 못했어요. 다른 사진으로 해 보세요."); renderGrid(); renderOps(); });
+    else uploadPhoto(t.dataset.photo, t.files[0]).catch(()=>{ alert("사진을 올리지 못했어요. 파일 크기(20MB 이하)와 형식을 확인하세요."); renderGrid(); });
   }
 });
 document.addEventListener("input", e=>{

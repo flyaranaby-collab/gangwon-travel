@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -42,6 +44,8 @@ public class MainActivity extends Activity {
             "http", "https", "tel", "mailto", "geo", "sms", "kakaot", "kakaomap", "nmap", "market"));
     private WebView web;
     private WebViewAssetLoader loader;
+    private ValueCallback<Uri[]> fileCallback;
+    private static final int PICK_FILE = 41;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +91,22 @@ public class MainActivity extends Activity {
                     } else {
                         Toast.makeText(MainActivity.this, "이 링크를 열 앱이 없어요.", Toast.LENGTH_SHORT).show();
                     }
+                }
+                return true;
+            }
+        });
+        // 운영자 사진 등록(사진첩·카메라 선택 창)과 확인·입력 창을 쓸 수 있게 한다
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> cb, FileChooserParams params) {
+                if (fileCallback != null) fileCallback.onReceiveValue(null);
+                fileCallback = cb;
+                try {
+                    startActivityForResult(params.createIntent(), PICK_FILE);
+                } catch (ActivityNotFoundException e) {
+                    fileCallback = null;
+                    Toast.makeText(MainActivity.this, "사진을 고를 앱이 없어요.", Toast.LENGTH_SHORT).show();
+                    return false;
                 }
                 return true;
             }
@@ -171,6 +191,14 @@ public class MainActivity extends Activity {
                 });
             } catch (Exception ignored) { }
         }).start();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != PICK_FILE || fileCallback == null) return;
+        fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data));
+        fileCallback = null;
     }
 
     @Override
