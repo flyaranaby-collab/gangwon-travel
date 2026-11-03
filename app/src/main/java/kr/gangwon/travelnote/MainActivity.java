@@ -6,6 +6,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.content.ContentValues;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -21,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -111,6 +118,8 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
+        // 경비 엑셀·CSV 같은 파일을 휴대폰 '다운로드' 폴더에 저장한다(수첩 화면에서만 호출)
+        web.addJavascriptInterface(new FileBridge(), "AndroidBridge");
         setContentView(web);
         if (savedInstanceState != null) web.restoreState(savedInstanceState);
         else web.loadUrl(pageUrl());
@@ -191,6 +200,36 @@ public class MainActivity extends Activity {
                 });
             } catch (Exception ignored) { }
         }).start();
+    }
+
+    /** 수첩 화면이 만든 파일을 다운로드 폴더에 저장. 파일 이름은 안전한 글자만 남긴다. */
+    private class FileBridge {
+        @JavascriptInterface
+        public boolean saveFile(String name, String mime, String base64) {
+            try {
+                String safe = name == null ? "gangwon.txt" : name.replaceAll("[\\\\/:*?\"<>|]", "_");
+                if (safe.length() > 120) safe = safe.substring(safe.length() - 120);
+                byte[] data = Base64.decode(base64, Base64.DEFAULT);
+                if (data.length > 30_000_000) return false;
+                if (Build.VERSION.SDK_INT >= 29) {
+                    ContentValues v = new ContentValues();
+                    v.put(MediaStore.Downloads.DISPLAY_NAME, safe);
+                    v.put(MediaStore.Downloads.MIME_TYPE, mime == null ? "application/octet-stream" : mime);
+                    v.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+                    Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
+                    if (uri == null) return false;
+                    try (OutputStream o = getContentResolver().openOutputStream(uri)) { if (o == null) return false; o.write(data); }
+                } else {
+                    File dir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+                    if (dir == null) return false;
+                    if (!dir.exists()) dir.mkdirs();
+                    try (FileOutputStream o = new FileOutputStream(new File(dir, safe))) { o.write(data); }
+                }
+                final String shown = safe;
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "다운로드 폴더에 저장했어요: " + shown, Toast.LENGTH_LONG).show());
+                return true;
+            } catch (Exception e) { return false; }
+        }
     }
 
     @Override

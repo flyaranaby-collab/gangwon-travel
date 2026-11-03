@@ -51,7 +51,8 @@ def detail(key, it):
     return {v: d.get(k, "") for k, v in m.items() if d.get(k)}
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--key", required=True); ap.add_argument("--html", default="index.html")
+    ap = argparse.ArgumentParser(); ap.add_argument("--key", required=True); ap.add_argument("--html", default=None)
+    ap.add_argument("--json", default=None, help="앱이 받아 쓰는 kto.json 경로"); ap.add_argument("--ver", default=None, help="kto_ver.txt 경로")
     a = ap.parse_args(); key = a.key
     jobs = [(sg, ct) for sg in SG for ct in CT]
     raw = []
@@ -69,7 +70,7 @@ def main():
         row = {"contentid":it["contentid"], "contenttypeid":it["contenttypeid"], "title":it["title"], "addr1":it.get("addr1",""),
                "sigungucode":it["sigungucode"], "mapx":it["mapx"], "mapy":it["mapy"], "firstimage":img, "tel":it.get("tel","")}
         row.update(d); snap.append(row)
-    p = pathlib.Path(a.html); s = p.read_text(encoding="utf-8")
+    p = pathlib.Path(a.html or a.json and "web/index.html" or "index.html"); s = p.read_text(encoding="utf-8")
     # 직접 정리한 장소에 사진이 없으면 같은 이름의 관광공사 사진을 붙인다
     norm = lambda v: re.sub(r"[\s·()（）]", "", v or "")
     byname = {norm(x["title"]): x for x in snap if x["firstimage"]}
@@ -84,6 +85,11 @@ def main():
         if hit: kp[pid] = {"url": hit["firstimage"]}
     s = re.sub(r"/\*KTO_DATA\*/.*?/\*END_KTO_DATA\*/", lambda m: "/*KTO_DATA*/" + json.dumps(snap, ensure_ascii=False, separators=(",",":")) + "/*END_KTO_DATA*/", s, count=1, flags=re.S)
     s = re.sub(r"/\*KTO_PHOTOS\*/.*?/\*END_KTO_PHOTOS\*/", lambda m: "/*KTO_PHOTOS*/" + json.dumps(kp, ensure_ascii=False, separators=(",",":")) + "/*END_KTO_PHOTOS*/", s, count=1, flags=re.S)
-    p.write_text(s, encoding="utf-8")
-    print(f"스냅샷 {len(snap)}건, 사진 {sum(1 for x in snap if x['firstimage'])}장, 기존 장소 사진 보강 {len(kp)}곳")
+    if a.html: p.write_text(s, encoding="utf-8")
+    if a.json:
+        import time
+        rev = int(time.time() * 1000)
+        pathlib.Path(a.json).write_text(json.dumps({"rev": rev, "items": snap, "photos": kp}, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
+        if a.ver: pathlib.Path(a.ver).write_text(str(rev), encoding="utf-8")
+    print(("JSON " if a.json else "") + f"스냅샷 {len(snap)}건, 사진 {sum(1 for x in snap if x['firstimage'])}장, 기존 장소 사진 보강 {len(kp)}곳")
 main()
