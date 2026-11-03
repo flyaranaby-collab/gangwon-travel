@@ -1372,6 +1372,7 @@ const OWNER = (()=>{ let o = {};
   if (window.APK_BUILD) { try { const c = JSON.parse(localStorage.getItem("gw_owner") || "null"); if (c && c.v) o = c; } catch(_) {} }
   return o; })();
 OWNER.photos = OWNER.photos && typeof OWNER.photos==="object" && !Array.isArray(OWNER.photos) ? OWNER.photos : {};
+OWNER.edits = OWNER.edits && typeof OWNER.edits==="object" && !Array.isArray(OWNER.edits) ? OWNER.edits : {};
 OWNER.places = Array.isArray(OWNER.places) ? OWNER.places : [];
 OWNER.hidden = Array.isArray(OWNER.hidden) ? OWNER.hidden : [];
 OWNER.order = Array.isArray(OWNER.order) ? OWNER.order : [];
@@ -1414,6 +1415,7 @@ function placeManager(){
   const form = e ? `
     <form class="revform pmform" id="pmForm" autocomplete="off">
       <h3>${e.id ? "장소 수정" : "새 장소 추가"}</h3>
+      ${e.id && !e.custom ? `<p class="meta">${e.source==="kto"?"관광공사 등록 장소예요. ":"기본 장소예요. "}바꾼 항목만 저장되고, 아래 ‘원래대로’로 되돌릴 수 있어요.</p>` : ""}
       <div class="formgrid">
         <label>이름<input id="pmName" value="${esc(e.name||"")}" required placeholder="예: 남애항 어촌횟집"></label>
         <label>분류<select id="pmCat">${opt(cats, e.cat||"맛집")}</select></label>
@@ -1430,7 +1432,7 @@ function placeManager(){
       </div>
       <div class="row"><span class="meta">정기 휴무</span>${WDS.map((w,i)=>`<label class="pmday"><input type="checkbox" id="pmDay${i}" ${(e.closed||[]).includes(i)?"checked":""}> ${w}</label>`).join("")}</div>
       <label>팁<textarea id="pmTip" placeholder="방문자에게 알려 줄 팁">${esc(e.tip||"")}</textarea></label>
-      <div class="row"><button class="btn" type="submit">${e.id ? "수정 반영" : "목록에 추가"}</button><button class="btn ghost" type="button" data-pm="cancel">취소</button></div>
+      <div class="row"><button class="btn" type="submit">${e.id ? "수정 반영" : "목록에 추가"}</button><button class="btn ghost" type="button" data-pm="cancel">취소</button>${e.id && !e.custom && OWNER.edits[e.id] ? `<button class="btn ghost" type="button" data-pm="revert" data-id="${esc(e.id)}">원래대로</button>` : ""}</div>
       <p class="meta">위도·경도는 네이버·카카오 지도에서 장소를 길게 눌러 확인할 수 있어요. 비워 두면 지역 중심에 표시돼요.</p>
     </form>` : "";
   return `<section class="revbox pm" aria-label="장소 관리">
@@ -1451,7 +1453,7 @@ function placeManager(){
         <button data-pm="up" data-id="${p.id}" ${i===0?"disabled":""} aria-label="위로">▲</button>
         <button data-pm="down" data-id="${p.id}" ${i===list.length-1?"disabled":""} aria-label="아래로">▼</button>
         <button data-pm="hide" data-id="${p.id}">${HIDDEN.has(p.id)?"보이기":"숨기기"}</button>
-        ${p.custom?`<button data-pm="edit" data-id="${p.id}">수정</button><button data-pm="del" data-id="${p.id}">삭제</button>`:""}
+        <button data-pm="edit" data-id="${p.id}">수정</button>${p.custom?`<button data-pm="del" data-id="${p.id}">삭제</button>`:""}
       </span></li>`).join("") || `<li class="empty">이 지역·분류에는 장소가 없어요.</li>`}</ol>
     <div class="pmsave">
       <button class="btn" data-pm="save" ${PM.dirty&&!PM.busy?"":"disabled"}>${PM.busy?"저장하는 중…":"저장하고 공개"}</button>
@@ -1465,7 +1467,7 @@ function placeManager(){
     </details>
   </section>`;
 }
-const ownerJson = () => JSON.stringify({ v:1, places:ALL_PLACES.filter(p=>p.custom).map(({custom, ...rest})=>rest), hidden:[...HIDDEN], order:OWNER.order, photos:OWNER.photos });
+const ownerJson = () => JSON.stringify({ v:1, places:ALL_PLACES.filter(p=>p.custom).map(({custom, ...rest})=>rest), hidden:[...HIDDEN], order:OWNER.order, photos:OWNER.photos, edits:OWNER.edits });
 function pmRerender(){ renderOps(); renderGrid(); renderTop(); }
 function pmReadForm(){
   const v = id => (document.getElementById(id)?.value || "").trim();
@@ -1528,7 +1530,9 @@ document.addEventListener("click", e=>{
   if (a==="cancel"){ PM.edit = null; renderOps(); return; }
   if (a==="up" || a==="down"){ pmMove(id, a==="up" ? -1 : 1); pmRerender(); return; }
   if (a==="hide"){ HIDDEN.has(id) ? HIDDEN.delete(id) : HIDDEN.add(id); applyOwner(); PM.dirty = true; pmRerender(); return; }
-  if (a==="edit"){ PM.edit = { ...ALL_PLACES.find(p=>p.id===id) }; renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" }); return; }
+  if (a==="edit"){ const t = byId(id); if (!t) return; PM.region = t.region; PM.edit = { ...t }; renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" }); return; }
+  if (a==="revert"){ const t = byId(id); if (!t || !OWNER.edits[id]) return;
+    delete OWNER.edits[id]; if (t.__orig) Object.assign(t, t.__orig); PM.edit = null; PM.dirty = true; PM.msg = `‘${t.name}’을(를) 원래 정보로 되돌렸어요. 저장해야 공개돼요.`; pmRerender(); return; }
   if (a==="del"){
     if (b.dataset.sure!=="1"){ b.dataset.sure = "1"; b.textContent = "한 번 더 누르면 삭제"; return; }
     const i = ALL_PLACES.findIndex(p=>p.id===id); if (i>=0) ALL_PLACES.splice(i,1);
@@ -1541,6 +1545,14 @@ document.addEventListener("submit", e=>{
   if (e.target.id!=="pmForm") return; e.preventDefault();
   const p = pmReadForm();
   if (!p.name){ PM.err = "이름을 적어 주세요."; renderOps(); return; }
+  const target = byId(p.id);
+  if (target && !target.custom) {      // 기본·관광공사 장소: 바꾼 항목만 저장
+    const ed = {}; EDIT_KEYS.forEach(k=>{ const o = (target.__orig && k in target.__orig) ? target.__orig[k] : target[k]; if (JSON.stringify(p[k]) !== JSON.stringify(o==null ? "" : o)) ed[k] = p[k]; });
+    if (Object.keys(ed).length) OWNER.edits[p.id] = ed; else delete OWNER.edits[p.id];
+    applyEdits(); if (!Object.keys(ed).length && target.__orig) Object.assign(target, target.__orig);
+    PM.edit = null; PM.dirty = true; PM.msg = `‘${p.name}’ 정보를 고쳤어요. 저장해야 공개돼요.`;
+    applyOwner(); pmRerender(); renderTop(); return;
+  }
   const i = ALL_PLACES.findIndex(x=>x.id===p.id);
   if (i>=0) Object.assign(ALL_PLACES[i], p); else { ALL_PLACES.push(p); META[p.id] = { o:null, c:null, stay:60, cost:0 }; }
   if (!OWNER.order.includes(p.id)){ const list = pmList().map(x=>x.id).filter(x=>x!==p.id); OWNER.order = [p.id, ...list, ...OWNER.order.filter(x=>!list.includes(x) && x!==p.id)]; }
@@ -1597,6 +1609,13 @@ function photoCtl(p){
   const mine = apk ? OWNER.photos[p.id] : state.uploads[p.id];
   return `<label class="linkbtn photoadd">${mine ? "올린 사진 바꾸기" : (photoFor(p) ? "사진 바꾸기" : "사진 등록")}<input type="file" accept="image/*" data-photo="${p.id}" hidden></label>${mine ? ` <button class="linkbtn" data-photodel="${p.id}">올린 사진 지우기</button>` : ""}`;
 }
+// 카드의 ‘수정하기’: 운영 탭의 장소 수정 양식을 열어 준다(운영자 로그인 상태에서만 버튼이 보인다)
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-cardedit]"); if (!b || !state.isOps) return;
+  const t = byId(b.dataset.cardedit); if (!t) return;
+  PM.region = t.region; PM.cat = "전체"; PM.nophoto = false; PM.msg = PM.err = ""; PM.edit = { ...t };
+  state.tab = "ops"; renderTop(); renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" });
+});
 const APK = { open:false, busy:false, msg:"" };
 function renderApkEntry(){
   const el = document.getElementById("apkEntry"); if (!el) return;
@@ -1925,6 +1944,17 @@ const state = {
 };
 const KTO_CACHE = store.get("ktoCache", []);
 const KTO_ADDED = mergeKto([...KTO_SNAPSHOT, ...KTO_CACHE]);
+// 운영자가 고친 장소 정보: 바꾼 항목만 덮어쓰고, 원래 값은 __orig 에 남겨 '원래대로'를 할 수 있다
+const EDIT_KEYS = ["name","cat","region","area","sig","hours","fee","closed","closedNote","tags","lat","lng","link","tip"];
+function applyEdits(){
+  const all = [...PLACES, ...ALL_PLACES];
+  Object.entries(OWNER.edits).forEach(([id, e])=>{
+    const t = all.find(x=>x.id===id); if (!t || t.custom) return;
+    if (!t.__orig) { t.__orig = {}; EDIT_KEYS.forEach(k=>{ t.__orig[k] = t[k]; }); }
+    EDIT_KEYS.forEach(k=>{ if (k in e) t[k] = e[k]; });
+  });
+}
+applyEdits();
 if (state.region!=="all" && !REG[state.region]) state.region = "all";
 // 여행 기간: 일차별 코스를 courses[일차]에 따로 보관하고, state.course는 지금 고른 일차의 코스
 if (!state.dateEnd) state.dateEnd = isoLocal(new Date(new Date(state.date+"T00:00:00").getTime()+864e5));
@@ -2107,7 +2137,7 @@ function card(p){
       <button class="btn ghost" data-stamp="${p.id}" aria-pressed="${!!state.stamps[p.id]}">${state.stamps[p.id]?"스탬프 지우기":"스탬프 찍기"}</button>
       <button class="btn ghost" data-review="${p.id}">${state.reviews[p.id]?"후기 보기":"후기 쓰기"}</button>
     </div>
-    ${window.APK_BUILD ? (state.isOps ? `<div class="ownerline apkop">${photoCtl(p)}</div>` : "") : `<div class="ownerline"><span>${REV}<button class="linkbtn" data-inquire="${p.id}" data-inqtype="업주 정보 수정">사장님이신가요? 정보 수정·광고 문의</button></span><button class="linkbtn" data-inquire="${p.id}" data-inqtype="정보 오류 제보">정보 오류 제보</button>${photoCtl(p)}</div>`}
+    ${window.APK_BUILD ? (state.isOps ? `<div class="ownerline apkop"><button class="linkbtn" data-cardedit="${p.id}">✎ 수정하기</button>${photoCtl(p)}</div>` : "") : `<div class="ownerline"><span>${REV}<button class="linkbtn" data-inquire="${p.id}" data-inqtype="업주 정보 수정">사장님이신가요? 정보 수정·광고 문의</button></span><button class="linkbtn" data-inquire="${p.id}" data-inqtype="정보 오류 제보">정보 오류 제보</button>${state.isOps?`<button class="linkbtn" data-cardedit="${p.id}">✎ 수정하기</button>`:""}${photoCtl(p)}</div>`}
     ${state.stamps[p.id]?`<div class="seal-mark" aria-label="방문함">${shortName(p)}<small>${fmtD(state.stamps[p.id])}</small></div>`:""}</article>`;
 }
 
@@ -2472,7 +2502,7 @@ async function initRuntime(){
   if (state.isOps && RT.db) subscribeOps();
   if (RT.db) subscribePhotos();
   if (RT.user){ try { if (await RT.user.canEdit()) { RT.assets = await useCap("assets"); state.canUpload = !!RT.assets; } } catch(_){} }
-  if (state.canUpload) renderGrid();
+  if (state.canUpload || state.isOps) renderGrid();
   renderTop(); renderOps();
 }
 // 내 문서(컬렉션/<내 id>)의 items 배열에 한 건 추가. 서버가 없으면 로컬 미리보기에서만 이 기기에 저장.
