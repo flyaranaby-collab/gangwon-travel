@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611031326";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611031333";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -400,6 +400,24 @@ section.panel, .hero .inner, .revbox, .revform, .card, .review, .deal { grid-tem
 .taxi-actions .btn { flex: 1 1 200px; justify-content: center; }
 .taxi .btn.ghost { background: var(--surface); }
 .langbar { justify-self: end; }
+.tabbar .inner { display: flex; align-items: center; gap: 8px; }
+.tabbar .tabs { flex: 1; min-width: 0; }
+.searchbtn { flex: none; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); color: inherit; border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.searchbtn svg { width: 16px; height: 16px; }
+@media (max-width: 640px){ .tabbar .inner { align-items: flex-start; } .searchbtn { padding: 10px; margin-top: 6px; } .searchbtn .stxt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .searchbtn svg { width: 20px; height: 20px; } }
+.searchov { position: fixed; inset: 0; z-index: 50; background: var(--bg); display: flex; flex-direction: column; }
+.searchov[hidden] { display: none; }
+.searchov .sbar { display: flex; gap: 8px; align-items: center; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top, 0px)); border-bottom: 1px solid var(--line); }
+.searchov input { flex: 1; min-width: 0; font-size: 17px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: inherit; }
+.searchov .sclose { border: 0; background: none; font: inherit; font-size: 15px; font-weight: 700; color: inherit; padding: 10px 6px; cursor: pointer; }
+.searchov .sres { overflow-y: auto; padding: 8px 16px 40px; flex: 1; }
+.searchov .sitem { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: none; color: inherit; font: inherit; padding: 14px 4px; cursor: pointer; }
+.searchov .sitem b { font-size: 16px; }
+.searchov .sitem small { grid-column: 1; color: var(--muted, #777); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.searchov .sitem .sgo { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-size: 13px; font-weight: 700; }
+.searchov .shint { padding: 18px 4px; color: var(--muted, #777); font-size: 14px; line-height: 1.6; }
+.searchov .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.searchov .chips button { border: 1px solid var(--line); background: var(--surface); color: inherit; border-radius: 999px; padding: 7px 12px; font: inherit; font-size: 14px; cursor: pointer; }
 .hero .langbar button { padding: 5px 12px; font-size: 13px; }
 .pm select, .pm textarea { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 14px; }
 .pm .formgrid label, .pmform > label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
@@ -456,6 +474,7 @@ section.panel, .hero .inner, .revbox, .revform, .card, .review, .deal { grid-tem
       <button role="tab" data-tab="journal">여행 기록 <span class="count" id="stampCount">0</span></button>
       <button role="tab" data-tab="ops" id="opsTab" hidden>운영</button>
     </nav>
+    <button class="searchbtn" id="searchBtn" type="button" aria-label="장소 검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="stxt">검색</span></button>
   </div>
 </div>
 
@@ -469,6 +488,10 @@ section.panel, .hero .inner, .revbox, .revform, .card, .review, .deal { grid-tem
   <section class="panel ops" id="tab-ops" hidden></section>
   <div class="apkentry" id="apkEntry" hidden></div>
 </main>
+<div class="searchov" id="searchOv" hidden role="dialog" aria-label="장소 검색">
+  <div class="sbar"><input id="searchQ" type="search" placeholder="장소·음식·동네 검색 (예: 칼국수, 주문진)" autocomplete="off" enterkeyhint="search" aria-label="검색어"><button class="sclose" id="searchClose" type="button">닫기</button></div>
+  <div class="sres" id="searchRes"></div>
+</div>
 
 <script id="ownerData" type="application/json">{"v":1,"places":[],"hidden":[],"order":[]}</script>
 <script id="i18n">
@@ -1627,7 +1650,7 @@ document.addEventListener("click", e=>{
   const b = e.target.closest("[data-cardedit]"); if (!b || !state.isOps) return;
   const t = byId(b.dataset.cardedit); if (!t) return;
   PM.region = t.region; PM.cat = "전체"; PM.nophoto = false; PM.msg = PM.err = ""; PM.edit = { ...t };
-  state.tab = "ops"; renderTop(); renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" });
+  const prevTab = state.tab; state.tab = "ops"; navPush(prevTab!=="ops"); renderTop(); renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" });
 });
 // 카드 오른쪽 위 ‘✎ 수정’ 버튼(운영자만): 내용 수정 / 사진 등록·바꾸기 / 올린 사진 지우기
 function opsEditHtml(p){
@@ -2743,6 +2766,7 @@ document.addEventListener("click", e=>{
     const f = document.getElementById("inqForm"); if (f) f.scrollIntoView({ block:"start" }); return;
   }
   if (t.dataset.goto){
+    const gp = byId(t.dataset.goto); if (gp && state.region!=="all" && gp.region!==state.region) state.region = gp.region;
     state.tab="places"; state.cat="전체"; state.q=""; state.trend=state.local=state.dealOnly=state.rain=false; render();
     const c = document.getElementById("card-"+t.dataset.goto); if (c) c.scrollIntoView({ block:"center" }); return;
   }
@@ -2793,7 +2817,7 @@ document.addEventListener("click", e=>{
   }
   if (t.id==="revToggle"){ state.showRev = !state.showRev; save(); renderTop(); renderOps(); return; }
   if (t.id==="saveBtn"){ t.disabled = true; saveCourseFile().then(m=>{ t.textContent = m; }); return; }
-  if (t.dataset.tab){ state.tab=t.dataset.tab; try{ history.replaceState(null,"","#"+state.tab); }catch(_){} if (state.tab==="ops") renderOps(); renderTop(); keepTabPos(); return; }
+  if (t.dataset.tab){ const prev = state.tab; state.tab=t.dataset.tab; navPush(prev!==state.tab); if (state.tab==="ops") renderOps(); renderTop(); keepTabPos(); return; }
   if (t.dataset.region){ state.region=t.dataset.region; const s0=STARTS.find(s=>s.region===state.region); if (s0 && startPt().region!==state.region && !state.course.length) state.start=s0.id; save(); render(); return; }
   if (t.dataset.stay){ state.start = t.dataset.stay; save(); render(); return; }
   if (t.dataset.who){ state.who=t.dataset.who; save(); render(); return; }
@@ -2917,11 +2941,74 @@ document.addEventListener("submit", e=>{
   if(!t) return; state.coupons.push({t,n}); save(); renderDeals();
 });
 
+// ───────── 검색 ─────────
+const SEARCH_CHIPS = ["칼국수","순두부","커피","물회","막국수","해변","일출","아이와","비 오는 날","주문진","속초","양양"];
+function searchPlaces(q){
+  const terms = q.toLowerCase().replace(/\s+/g," ").trim().split(" ").filter(Boolean); if (!terms.length) return [];
+  const pool = [...new Map([...PLACES, ...LODGING.map(l=>({ ...l, cat:"숙소", sig:l.why||"", tags:[] }))].map(x=>[x.id,x])).values()];
+  const out = [];
+  pool.forEach(p=>{
+    const name = String(p.name||"").toLowerCase();
+    const hay = [p.name, p.sig, p.area, p.cat, (REG[p.region]||{}).name, (p.tags||[]).join(" "), p.tip].join(" ").toLowerCase();
+    if (!terms.every(t=>hay.includes(t))) return;
+    let sc = 0; terms.forEach(t=>{ if (name.startsWith(t)) sc += 30; else if (name.includes(t)) sc += 20; else if (String(p.sig||"").toLowerCase().includes(t)) sc += 8; else sc += 3; });
+    if (p.source!=="kto") sc += 5; if (OWNER.order.includes(p.id)) sc += 4;
+    out.push([sc, p]);
+  });
+  return out.sort((a,b)=>b[0]-a[0] || String(a[1].name).localeCompare(String(b[1].name))).slice(0,60).map(x=>x[1]);
+}
+function renderSearch(){
+  const q = (document.getElementById("searchQ")?.value || "").trim(), el = document.getElementById("searchRes"); if (!el) return;
+  if (!q){ el.innerHTML = `<div class="shint">강원 전 지역의 가볼 곳·맛집·카페·숙소 ${PLACES.length + LODGING.length}곳에서 찾아요. 이름, 음식, 동네, 분위기로 검색해 보세요.<div class="chips">${SEARCH_CHIPS.map(c=>`<button type="button" data-sq="${esc(c)}">${esc(c)}</button>`).join("")}</div></div>`; return; }
+  const list = searchPlaces(q);
+  el.innerHTML = list.length ? `<div class="shint" style="padding:10px 4px">${list.length===60?"60곳 이상":list.length+"곳"} 찾았어요</div>` + list.map(p=>{
+      const isStay = p.cat==="숙소" && !PLACES.some(x=>x.id===p.id);
+      return `<button class="sitem" type="button" ${isStay?`data-sstay="${p.id}"`:`data-sgo="${p.id}"`}><b>${esc(p.name)}</b><span class="sgo">보기 ›</span><small>${esc(p.cat)} · ${esc((REG[p.region]||{}).name||"")} ${esc(p.area||"")}${p.sig?" · "+esc(String(p.sig).slice(0,40)):""}</small></button>`; }).join("")
+    : `<div class="shint">‘${esc(q)}’에 맞는 곳이 없어요. 다른 말로 찾아보세요.</div>`;
+}
+function openSearch(push = true){
+  const ov = document.getElementById("searchOv"); if (!ov) return;
+  ov.hidden = false; document.body.style.overflow = "hidden"; renderSearch();
+  if (push) { try { history.pushState({ gw:"search" }, "", "#search"); } catch(_) {} }
+  setTimeout(()=>document.getElementById("searchQ")?.focus(), 50);
+}
+function closeSearch(){ const ov = document.getElementById("searchOv"); if (!ov || ov.hidden) return; ov.hidden = true; document.body.style.overflow = ""; }
+let searchTimer = null;
+document.addEventListener("input", e=>{ if (e.target.id==="searchQ"){ clearTimeout(searchTimer); searchTimer = setTimeout(renderSearch, 120); } });
+document.addEventListener("keydown", e=>{ if (e.key==="Escape" && !document.getElementById("searchOv").hidden) history.back(); });
+document.addEventListener("click", e=>{
+  if (e.target.closest("#searchBtn")){ openSearch(); return; }
+  if (e.target.closest("#searchClose")){ history.state && history.state.gw==="search" ? history.back() : closeSearch(); return; }
+  const c = e.target.closest("[data-sq]"); if (c){ const i = document.getElementById("searchQ"); i.value = c.dataset.sq; renderSearch(); return; }
+  const g = e.target.closest("[data-sgo],[data-sstay]"); if (!g) return;
+  const id = g.dataset.sgo || g.dataset.sstay, p = byId(id) || LODGING.find(l=>l.id===id);
+  closeSearch();
+  try { history.replaceState({ gw:"tab", tab:"places" }, "", "#places"); } catch(_) {}   // 검색 화면 자리를 결과 화면으로 바꾼다(뒤로 가면 검색 전 화면)
+  if (g.dataset.sstay){ if (p && state.region!=="all" && p.region!==state.region) state.region = p.region; state.tab = "places"; state.cat = "숙소"; render();
+    const c2 = document.getElementById("card-"+id); if (c2) c2.scrollIntoView({ block:"center" }); return; }
+  if (p && state.region!=="all" && p.region!==state.region) state.region = p.region;
+  state.tab = "places"; state.cat = "전체"; state.q = ""; state.trend = state.local = state.dealOnly = state.rain = false; render();
+  document.getElementById("card-"+id)?.scrollIntoView({ block:"center" });
+  const card = document.getElementById("card-"+id); if (card){ card.style.transition = "box-shadow .3s"; card.style.boxShadow = "0 0 0 3px #e8a33d"; setTimeout(()=>card.style.boxShadow = "", 1800); }
+});
+// ───────── 뒤로 가기: 탭·검색을 방문 기록으로 남겨, 휴대폰 뒤로 버튼이 이전 화면으로 가게 한다 ─────────
+function navPush(changed){
+  try { if (changed) history.pushState({ gw:"tab", tab:state.tab }, "", "#"+state.tab); else history.replaceState({ gw:"tab", tab:state.tab }, "", "#"+state.tab); } catch(_) {}
+}
+window.addEventListener("popstate", e=>{
+  const st = e.state || {}, hh = location.hash.replace("#","");
+  if (st.gw==="search" || hh==="search"){ openSearch(false); return; }
+  closeSearch();
+  const tab = st.tab || (["places","season","course","deals","pack","journal","ops"].includes(hh) ? hh : "places");
+  if (tab==="ops" && !state.isOps) state.tab = "places"; else state.tab = tab;
+  if (state.tab==="ops") renderOps(); renderTop(); keepTabPos();
+});
 const h = location.hash.replace("#","");
 if (["places","season","course","deals","pack","journal","ops"].includes(h)) state.tab = h;
 if (h==="stay"){ state.tab = "places"; state.cat = "숙소"; }
 if (window.APK_BUILD) document.body.classList.add("apk");
 render();
+try { history.replaceState({ gw:"tab", tab:state.tab }, "", "#"+state.tab); } catch(_) {}
 initRuntime();
 setLang(LANG);
 </script>
