@@ -29,6 +29,12 @@ android {
         }
     }
     buildTypes {
+        // 디버그가 아닌 정식(release) 빌드: 'debuggable' 표시가 없어 구글 Play 프로텍트 경고가 줄어든다
+        release {
+            minifyEnabled false
+            debuggable false
+            if (hasKey) signingConfig signingConfigs.gangwon
+        }
         debug { if (hasKey) signingConfig signingConfigs.gangwon }
     }
     compileOptions {

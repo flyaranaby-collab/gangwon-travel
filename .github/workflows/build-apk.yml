@@ -29,10 +29,10 @@ jobs:
           else
             echo "::warning::GANGWON_KEYSTORE 비밀값이 없어 임시 키로 서명합니다. 이 APK는 다음 버전으로 덮어쓰기 업데이트가 되지 않습니다."
           fi
-      - run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - run: chmod +x gradlew && ./gradlew assembleRelease --no-daemon
         env:
           GANGWON_KEY_PASS: ${{ secrets.GANGWON_KEY_PASS }}
-      - run: cp app/build/outputs/apk/debug/app-debug.apk gangwon-travel.apk
+      - run: cp app/build/outputs/apk/release/app-release.apk gangwon-travel.apk
       - name: 다운로드 페이지에 APK 올리기
         uses: softprops/action-gh-release@v2
         with:
