@@ -201,6 +201,16 @@ public class MainActivity extends Activity {
         fileCallback = null;
     }
 
+    // 앱을 완전히 끄지 않고 다시 열어도(백그라운드에서 돌아와도) 최신 수첩을 확인한다. 10분에 한 번만.
+    private long lastCheck = 0;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        long now = System.currentTimeMillis();
+        if (lastCheck != 0 && now - lastCheck > 10 * 60 * 1000) checkUpdate();
+        if (lastCheck == 0 || now - lastCheck > 10 * 60 * 1000) lastCheck = now;
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);

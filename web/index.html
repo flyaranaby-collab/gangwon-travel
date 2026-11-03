@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611031139";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -202,6 +202,15 @@ body.hide-rev .revmark, body.hide-rev .revonly { display: none !important; }
 /* 앱(APK) 판: 서버가 필요한 문의·광고·AI·응모 기능은 숨긴다 */
 body.apk .revbox:not(.pm), body.apk .ownerline:not(.apkop), body.apk #saveBtn { display: none !important; }
 .apkentry { margin: 28px 0 12px; text-align: center; }
+.opsedit { position: absolute; top: 10px; right: 10px; z-index: 5; }
+.opsbtn { background: #0A1324; color: #fff; border: 2px solid #fff; border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 700; box-shadow: 0 2px 10px rgba(0,0,0,.3); cursor: pointer; }
+.opsmenu { position: absolute; right: 0; top: calc(100% + 6px); background: var(--surface); color: var(--ink, inherit); border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.25); padding: 6px; display: grid; min-width: 170px; }
+.opsmenu[hidden] { display: none; }
+.opsmenu button, .opsmenu label { display: block; padding: 12px 14px; text-align: left; font-size: 15px; background: none; border: 0; border-radius: 8px; cursor: pointer; color: inherit; font-family: inherit; }
+.opsmenu button:hover, .opsmenu label:hover { background: rgba(0,0,0,.06); }
+.opsmenu .meta { padding: 8px 14px; font-size: 12px; }
+.card.hasops .head { padding-right: 92px; }
+.card.hasops .photo + .head { padding-right: 0; }
 .apkentry form { display: grid; gap: 8px; max-width: 520px; margin: 10px auto 0; text-align: left; }
 .apkentry input { width: 100%; }
 .pmph { font-size: 12px; color: var(--muted, #888); }
@@ -1616,11 +1625,30 @@ document.addEventListener("click", e=>{
   PM.region = t.region; PM.cat = "전체"; PM.nophoto = false; PM.msg = PM.err = ""; PM.edit = { ...t };
   state.tab = "ops"; renderTop(); renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" });
 });
+// 카드 오른쪽 위 ‘✎ 수정’ 버튼(운영자만): 내용 수정 / 사진 등록·바꾸기 / 올린 사진 지우기
+function opsEditHtml(p){
+  if (!state.isOps) return "";
+  const apk = !!window.APK_BUILD, canPhoto = apk ? true : state.canUpload;
+  const mine = apk ? OWNER.photos[p.id] : state.uploads[p.id], has = photoFor(p);
+  return `<div class="opsedit"><button class="opsbtn" data-opsmenu="${p.id}" aria-haspopup="true" aria-expanded="false">✎ 수정</button>
+    <div class="opsmenu" id="opsm-${p.id}" hidden role="menu">
+      <button role="menuitem" data-cardedit="${p.id}">✏️ 내용 수정</button>
+      ${canPhoto ? `<label role="menuitem">📷 ${mine||has ? "사진 바꾸기" : "사진 등록"}<input type="file" accept="image/*" data-photo="${p.id}" hidden></label>` : `<span class="meta">사진 등록은 페이지 주인 계정 화면에서 할 수 있어요.</span>`}
+      ${mine ? `<button role="menuitem" data-photodel="${p.id}">🗑 올린 사진 지우기</button>` : ""}
+    </div></div>`;
+}
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-opsmenu]");
+  document.querySelectorAll(".opsmenu:not([hidden])").forEach(m=>{ if (!b || m.id!=="opsm-"+b.dataset.opsmenu){ m.hidden = true; m.previousElementSibling?.setAttribute("aria-expanded","false"); } });
+  if (!b) return;
+  const m = document.getElementById("opsm-"+b.dataset.opsmenu); if (!m) return;
+  m.hidden = !m.hidden; b.setAttribute("aria-expanded", String(!m.hidden));
+});
 const APK = { open:false, busy:false, msg:"" };
 function renderApkEntry(){
   const el = document.getElementById("apkEntry"); if (!el) return;
   el.hidden = !window.APK_BUILD; if (!window.APK_BUILD) return;
-  if (state.isOps){ el.innerHTML = `<button class="linkbtn" data-apkops="logout">운영자 로그아웃</button>`; return; }
+  if (state.isOps){ el.innerHTML = `<button class="linkbtn" data-apkops="logout">운영자 로그아웃</button><p class="meta">수첩 버전 ${esc(String(window.NOTE_VER||"-"))}</p>`; return; }
   el.innerHTML = APK.open ? `<form id="apkLogin">
       <b>운영자 로그인</b>
       <p class="meta">GitHub에서 만든 운영자 토큰(gangwon-travel 저장소, Contents 읽기·쓰기 권한)을 붙여 넣으세요. 토큰은 이 휴대폰에만 저장돼요.</p>
@@ -2117,7 +2145,8 @@ function renderSponsors(){
 }
 function card(p){
   const s = status(p), inC = state.course.includes(p.id), D = DEALMAP[p.id] || {}, ad = SPONSORED.find(x=>x.id===p.id);
-  return `<article class="card" id="card-${p.id}">
+  return `<article class="card${state.isOps?" hasops":""}" id="card-${p.id}">
+    ${opsEditHtml(p)}
     ${photoHtml(p)}
     <div class="head"><div><div class="eyebrow">${p.cat} · ${where(p)}</div><h3>${p.name}</h3></div>
       <div class="badges">${ad?`<span class="adpill">광고</span>`:""}${p.source==="kto"?`<span class="pill ktopill">관광공사</span>`:""}<span class="pill ${s.cls}">${s.label}</span>${seasonPick(p)?`<span class="pill seasonpill">${seasonOf(tripDay().getMonth()+1)} 추천</span>`:""}${p.tags.includes("요즘핫플")?`<span class="pill hotpill">요즘 핫플</span>`:""}${D.deal?`<span class="dealbadge" title="할인 가능">${ICON_TAG}할인</span>`:""}</div></div>
