@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611031139";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611031326";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1465,8 +1465,8 @@ function placeManager(){
         <button data-pm="edit" data-id="${p.id}">수정</button>${p.custom?`<button data-pm="del" data-id="${p.id}">삭제</button>`:""}
       </span></li>`).join("") || `<li class="empty">이 지역·분류에는 장소가 없어요.</li>`}</ol>
     <div class="pmsave">
-      <button class="btn" data-pm="save" ${PM.dirty&&!PM.busy?"":"disabled"}>${PM.busy?"저장하는 중…":"저장하고 공개"}</button>
-      <button class="btn ghost" data-pm="reset" ${PM.dirty?"":"disabled"}>바꾼 내용 되돌리기</button>
+      <button class="btn" type="button" data-pm="save" ${PM.busy?"disabled":""}>${PM.busy?"저장하는 중…":"저장하고 공개"}</button>
+      <button class="btn ghost" type="button" data-pm="reset" ${PM.busy?"disabled":""}>바꾼 내용 되돌리기</button>
       ${PM.dirty?`<span class="meta">저장하지 않은 변경이 있어요.</span>`:""}
       ${PM.msg?`<span class="okline">${esc(PM.msg)}</span>`:""}${PM.err?`<span class="errline">${esc(PM.err)}</span>`:""}
     </div>
@@ -1547,8 +1547,12 @@ document.addEventListener("click", e=>{
     const i = ALL_PLACES.findIndex(p=>p.id===id); if (i>=0) ALL_PLACES.splice(i,1);
     OWNER.order = OWNER.order.filter(x=>x!==id); HIDDEN.delete(id);
     state.course = state.course.filter(x=>x!==id); applyOwner(); PM.dirty = true; pmRerender(); return; }
-  if (a==="save"){ pmSave(); return; }
-  if (a==="reset"){ location.reload(); return; }
+  if (a==="save"){ if (PM.edit && document.getElementById("pmForm")){ PM.err = "열려 있는 수정 양식의 ‘수정 반영’을 먼저 눌러 주세요."; renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" }); return; }
+    pmSave(); return; }
+  if (a==="reset"){
+    if (PM.dirty && !confirm("저장하지 않은 변경을 버리고 마지막으로 공개한 상태로 되돌릴까요?")) return;
+    if (window.APK_BUILD){ try { localStorage.removeItem("gw_owner"); } catch(_) {} }   // 앱: GitHub에 공개된 운영 데이터를 다시 받는다
+    location.reload(); return; }
 });
 document.addEventListener("submit", e=>{
   if (e.target.id!=="pmForm") return; e.preventDefault();
