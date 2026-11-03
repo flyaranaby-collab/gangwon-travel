@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611031523";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611031544";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -218,6 +218,7 @@ body.apk .revbox:not(.pm):not(.revapp), body.apk .ownerline:not(.apkop), body.ap
 .opsmenu .meta { padding: 8px 14px; font-size: 12px; }
 .card.hasops .head { padding-right: 92px; }
 .card.hasops .photo + .head { padding-right: 0; }
+.loginf input { font-size: 16px; padding: 10px 12px; }
 .apkentry form { display: grid; gap: 8px; max-width: 520px; margin: 10px auto 0; text-align: left; }
 .apkentry input { width: 100%; }
 .pmph { font-size: 12px; color: var(--muted, #888); }
@@ -1528,7 +1529,7 @@ function placeManager(){
     </details>
   </section>`;
 }
-const ownerJson = () => JSON.stringify({ v:1, rev:OWNER.rev||0, places:ALL_PLACES.filter(p=>p.custom).map(({custom, ...rest})=>rest), hidden:[...HIDDEN], order:OWNER.order, photos:OWNER.photos, edits:OWNER.edits, picks:OWNER.picks, biz:OWNER.biz });
+const ownerJson = () => JSON.stringify({ v:1, rev:OWNER.rev||0, places:ALL_PLACES.filter(p=>p.custom).map(({custom, ...rest})=>rest), hidden:[...HIDDEN], order:OWNER.order, photos:OWNER.photos, edits:OWNER.edits, picks:OWNER.picks, biz:OWNER.biz, auth:OWNER.auth||null });
 function pmRerender(){ renderOps(); renderGrid(); renderTop(); }
 function pmReadForm(){
   const v = id => (document.getElementById(id)?.value || "").trim();
@@ -1709,33 +1710,125 @@ document.addEventListener("click", e=>{
   m.hidden = !m.hidden; b.setAttribute("aria-expanded", String(!m.hidden));
 });
 // 웹 운영 탭: 앱과 같은 운영 데이터를 쓰도록 GitHub 토큰을 연결(선택). 연결하면 웹에서 저장할 때 앱에도 반영된다.
-const GHL = { busy:false, msg:"", err:"" };
+const GHL = { busy:false, msg:"", err:"", tok:false };
+// ───────── 운영자 아이디·비밀번호 로그인 ─────────
+// 서버 없이 동작하도록, 운영자가 정한 비밀번호로 GitHub 토큰을 암호화(PBKDF2 60만 회 + AES-GCM)해 운영 데이터(auth)에 둔다.
+// 로그인할 때 이 기기에서만 풀어 쓰고, 풀린 토큰은 로그아웃할 때까지 이 기기에 남는다(로그인 유지).
+const te = new TextEncoder(), td = new TextDecoder();
+const b64e = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const b64d = t => Uint8Array.from(atob(t), c=>c.charCodeAt(0));
+async function pwKey(id, pw, salt, it){
+  const base = await crypto.subtle.importKey("raw", te.encode(String(id).trim().toLowerCase() + "\n" + pw), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name:"PBKDF2", salt, iterations:it, hash:"SHA-256" }, base, { name:"AES-GCM", length:256 }, false, ["encrypt","decrypt"]);
+}
+async function sealToken(id, pw, tok){
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), it = 600000;
+  const k = await pwKey(id, pw, salt, it);
+  return { id:String(id).trim(), salt:b64e(salt), iv:b64e(iv), it, ct:b64e(await crypto.subtle.encrypt({ name:"AES-GCM", iv }, k, te.encode(tok))) };
+}
+async function openToken(id, pw){
+  const a = OWNER.auth; if (!a || !a.ct) throw { code:"noauth" };
+  if (String(id).trim().toLowerCase() !== String(a.id).toLowerCase()) throw { code:"bad" };
+  const k = await pwKey(id, pw, b64d(a.salt), a.it || 600000);
+  try { return td.decode(await crypto.subtle.decrypt({ name:"AES-GCM", iv:b64d(a.iv) }, k, b64d(a.ct))); } catch(_) { throw { code:"bad" }; }
+}
+// 로그인 양식(앱 하단, 웹 '앱과 연결' 공용). 아이디·비밀번호가 기본, 토큰은 처음 설정할 때만.
+function loginForm(fid, S){
+  const hasAuth = !!(OWNER.auth && OWNER.auth.ct), tokMode = S.tok || !hasAuth;
+  return `<form id="${fid}" class="loginf">
+      <b>운영자 로그인</b>
+      ${tokMode ? `<p class="meta">${hasAuth ? "GitHub 토큰으로 로그인해요." : "아직 운영자 아이디·비밀번호가 없어요. 처음 한 번만 GitHub 토큰으로 로그인한 뒤 운영 탭에서 아이디·비밀번호를 만들어 주세요."}</p>
+        <input id="${fid}Tok" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ghp_ 또는 github_pat_로 시작하는 토큰" aria-label="GitHub 토큰">`
+      : `<input id="${fid}Id" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="아이디" aria-label="아이디">
+        <input id="${fid}Pw" type="password" autocomplete="current-password" placeholder="비밀번호" aria-label="비밀번호">`}
+      <div class="row"><button class="btn" ${S.busy?"disabled":""}>${S.busy?"확인하는 중…":"로그인"}</button>
+        ${fid==="apkLogin"?`<button class="btn ghost" type="button" data-apkops="close">닫기</button>`:""}</div>
+      ${hasAuth ? `<button class="linkbtn" type="button" data-logmode="${fid}">${tokMode ? "아이디·비밀번호로 로그인" : "토큰으로 로그인"}</button>` : ""}
+      ${S.msg?`<p class="errline">${esc(S.msg)}</p>`:""}
+    </form>`;
+}
+async function doLogin(fid, S, done){
+  const v = id => (document.getElementById(id)?.value || "").trim();
+  const hasAuth = !!(OWNER.auth && OWNER.auth.ct), tokMode = S.tok || !hasAuth;
+  const idv = v(fid+"Id"), pwv = document.getElementById(fid+"Pw")?.value || "", tokv = v(fid+"Tok");
+  S.busy = true; S.msg = ""; done(false);
+  try {
+    let tok;
+    if (tokMode){ tok = tokv; if (!tok) throw { code:"empty" }; }
+    else { if (!idv || !pwv) throw { code:"empty" }; tok = await openToken(idv, pwv); }
+    const r = await ghApi("", {}, tok);
+    if (!r || !r.permissions || !r.permissions.push) throw { status:403 };
+    try { localStorage.setItem("gw_ghtoken", tok); } catch(_) {}
+    S.busy = false; S.tok = false; done(true);
+  } catch(err){
+    S.busy = false; err = err || {};
+    S.msg = err.code==="empty" ? (tokMode ? "토큰을 붙여 넣어 주세요." : "아이디와 비밀번호를 넣어 주세요.")
+      : err.code==="bad" ? "아이디 또는 비밀번호가 맞지 않아요."
+      : (err.status===401||err.status===403||err.status===404) ? (tokMode ? "토큰이 맞지 않거나 쓰기 권한이 없어요." : "아이디·비밀번호는 맞지만 저장된 GitHub 토큰이 만료되었거나 지워졌어요. 새 토큰으로 로그인한 뒤 아이디·비밀번호를 다시 만들어 주세요.")
+      : "확인하지 못했어요. 인터넷 연결을 확인해 주세요.";
+    done(false);
+  }
+}
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-logmode]"); if (!b) return;
+  const S = b.dataset.logmode==="apkLogin" ? APK : GHL; S.tok = !S.tok; S.msg = "";
+  b.dataset.logmode==="apkLogin" ? renderApkEntry() : renderOps();
+});
+document.addEventListener("submit", e=>{
+  if (e.target.id==="apkLogin"){ e.preventDefault();
+    doLogin("apkLogin", APK, ok=>{ if (ok){ APK.open = false; apkOpsOn(); document.getElementById("opsTab")?.click(); } else renderApkEntry(); }); }
+  if (e.target.id==="ghLink"){ e.preventDefault();
+    doLogin("ghLink", GHL, ok=>{ if (ok){ GHL.msg = ""; GHL.ok = "연결했어요. 앱의 최신 운영 데이터를 확인할게요."; ownerSync(); } renderOps(); }); }
+});
+// 운영 탭: 운영자 아이디·비밀번호 만들기·바꾸기(로그인한 상태에서)
+const ACC = { busy:false, msg:"", err:"" };
+function accountBox(){
+  if (!ghToken()) return "";
+  const a = OWNER.auth;
+  return `<section class="revbox pm" aria-label="운영자 계정"><h2>운영자 계정</h2>
+    <p class="meta">${a && a.ct ? `지금 아이디: <b>${esc(a.id)}</b>. 다른 휴대폰·PC에서는 이 아이디와 비밀번호로 로그인하면 돼요.` : "아이디·비밀번호를 만들면 다음부터 토큰 없이 로그인할 수 있어요."} 비밀번호는 10자 이상, 영문과 숫자를 섞어 주세요. 잊으면 토큰으로 로그인해 다시 만들면 돼요.</p>
+    <form id="accForm" class="bizgrid" autocomplete="off">
+      <label>아이디<input id="accId" value="${esc(a&&a.id||"")}" autocapitalize="off" spellcheck="false" autocomplete="username" placeholder="예: aranavi"></label>
+      <label>새 비밀번호<input id="accPw" type="password" autocomplete="new-password"></label>
+      <label>새 비밀번호 확인<input id="accPw2" type="password" autocomplete="new-password"></label>
+      <button class="btn" ${ACC.busy?"disabled":""}>${ACC.busy?"저장하는 중…":(a&&a.ct?"아이디·비밀번호 바꾸기":"아이디·비밀번호 만들기")}</button>
+    </form>
+    ${ACC.msg?`<p class="okline">${esc(ACC.msg)}</p>`:""}${ACC.err?`<p class="errline">${esc(ACC.err)}</p>`:""}
+  </section>`;
+}
+document.addEventListener("submit", async e=>{
+  if (e.target.id!=="accForm") return; e.preventDefault();
+  const id = (document.getElementById("accId")?.value || "").trim(), pw = document.getElementById("accPw")?.value || "", pw2 = document.getElementById("accPw2")?.value || "";
+  ACC.msg = ACC.err = "";
+  if (!/^[A-Za-z0-9._-]{3,30}$/.test(id)) ACC.err = "아이디는 영문·숫자 3~30자로 만들어 주세요.";
+  else if (pw.length < 10 || !/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) ACC.err = "비밀번호는 10자 이상, 영문과 숫자를 섞어 주세요.";
+  else if (pw !== pw2) ACC.err = "비밀번호 확인이 달라요.";
+  if (ACC.err){ renderOps(); return; }
+  ACC.busy = true; renderOps();
+  try {
+    const prev = OWNER.auth;
+    OWNER.auth = await sealToken(id, pw, ghToken());
+    try { await ghSaveOwner(); } catch(err){ OWNER.auth = prev; throw err; }
+    if (!window.APK_BUILD) pmSave();
+    ACC.msg = "만들었어요. 다른 기기에서는 이 아이디·비밀번호로 로그인하세요.";
+  } catch(err){ ACC.err = err && err.status ? ghErrText(err) : "만들지 못했어요. 다시 시도해 주세요."; }
+  ACC.busy = false; renderOps();
+});
+
 function ghLinkBox(){
   const on = !!ghToken();
   return `<div class="sec-title"><h2>앱과 연결</h2><span class="en">Sync with app</span></div>
     <div class="wallet" style="margin-bottom:22px">
-      <p class="meta">${on ? "연결됨: 여기서 저장하면 휴대폰 앱에도 같은 내용이 반영되고, 앱에서 저장한 내용도 이 페이지를 열 때 받아 와요." : "연결하지 않으면 웹 수첩과 휴대폰 앱의 장소 수정·사진·순서가 따로 저장돼요. 앱 운영자 로그인에 쓴 GitHub 토큰을 넣으면 하나로 합쳐져요."}</p>
-      ${on ? `<button class="btn ghost" data-ghl="off">연결 끊기</button>` : `<form id="ghLink" class="formgrid" style="margin-top:6px">
-        <input id="ghTok" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="github_pat_ 또는 ghp_로 시작하는 토큰" aria-label="GitHub 토큰">
-        <button class="btn" ${GHL.busy?"disabled":""}>${GHL.busy?"확인하는 중…":"연결"}</button></form>`}
-      ${GHL.msg?`<p class="okline">${esc(GHL.msg)}</p>`:""}${GHL.err?`<p class="errline">${esc(GHL.err)}</p>`:""}
+      <p class="meta">${on ? "연결됨: 여기서 저장하면 휴대폰 앱에도 같은 내용이 반영되고, 앱에서 저장한 내용도 이 페이지를 열 때 받아 와요." : "연결하지 않으면 웹 수첩과 휴대폰 앱의 장소 수정·사진·순서가 따로 저장돼요. 앱 운영자 아이디·비밀번호로 로그인하면 하나로 합쳐져요."}</p>
+      ${on ? `<button class="btn ghost" data-ghl="off">연결 끊기</button>` : loginForm("ghLink", GHL)}
+      ${GHL.ok?`<p class="okline">${esc(GHL.ok)}</p>`:""}
     </div>`;
 }
-document.addEventListener("submit", async e=>{
-  if (e.target.id!=="ghLink") return; e.preventDefault();
-  const tok = (document.getElementById("ghTok")?.value || "").trim(); if (!tok) return;
-  GHL.busy = true; GHL.err = GHL.msg = ""; renderOps();
-  try { const r = await ghApi("", {}, tok); if (!r || !r.permissions || !r.permissions.push) throw { status:403 };
-    try { localStorage.setItem("gw_ghtoken", tok); } catch(_) {}
-    GHL.msg = "연결했어요. 앱의 최신 운영 데이터를 확인할게요."; ownerSync();
-  } catch(err){ GHL.err = (err && err.status) ? "토큰이 맞지 않거나 쓰기 권한이 없어요." : "연결하지 못했어요. 이 화면에서 GitHub에 접속할 수 없을 수 있어요."; }
-  GHL.busy = false; renderOps();
-});
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-ghl]"); if (!b) return;
   if (!confirm("이 기기에서 앱 연결을 끊을까요?")) return;
   try { localStorage.removeItem("gw_ghtoken"); } catch(_) {}
-  GHL.msg = "연결을 끊었어요."; renderOps();
+  GHL.ok = "연결을 끊었어요."; renderOps();
 });
 // ───────── 운영: 수익 설정 ─────────
 const BZ = { msg:"" };
@@ -1806,43 +1899,24 @@ document.addEventListener("click", e=>{
   }
   bizRefresh(); renderOps();
 });
-const APK = { open:false, busy:false, msg:"" };
+const APK = { open:false, busy:false, msg:"", tok:false };
 function renderApkEntry(){
   const el = document.getElementById("apkEntry"); if (!el) return;
   el.hidden = !window.APK_BUILD; if (!window.APK_BUILD) return;
-  if (state.isOps){ el.innerHTML = `<button class="linkbtn" data-apkops="logout">운영자 로그아웃</button><p class="meta">수첩 버전 ${esc(String(window.NOTE_VER||"-"))}</p>`; return; }
-  el.innerHTML = APK.open ? `<form id="apkLogin">
-      <b>운영자 로그인</b>
-      <p class="meta">GitHub에서 만든 운영자 토큰(gangwon-travel 저장소, Contents 읽기·쓰기 권한)을 붙여 넣으세요. 토큰은 이 휴대폰에만 저장돼요.</p>
-      <input id="apkTok" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="github_pat_로 시작하는 토큰" aria-label="운영자 토큰">
-      <div class="row"><button class="btn" ${APK.busy?"disabled":""}>${APK.busy?"확인하는 중…":"로그인"}</button><button class="btn ghost" type="button" data-apkops="close">닫기</button></div>
-      ${APK.msg?`<p class="errline">${esc(APK.msg)}</p>`:""}
-    </form>` : `<button class="linkbtn" data-apkops="open">운영자</button>`;
+  if (state.isOps){ el.innerHTML = `<button class="linkbtn" data-apkops="logout">운영자 로그아웃</button><p class="meta">로그아웃하기 전까지 로그인이 유지돼요 · 수첩 버전 ${esc(String(window.NOTE_VER||"-"))}</p>`; return; }
+  el.innerHTML = APK.open ? loginForm("apkLogin", APK) : `<button class="linkbtn" data-apkops="open">운영자</button>`;
 }
 function apkOpsOn(){ state.isOps = true; document.body.classList.add("opsmode"); renderTop(); renderOps(); renderGrid(); renderApkEntry(); }
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-apkops]"); if (!b) return;
   const a = b.dataset.apkops;
-  if (a==="open"){ APK.open = true; APK.msg = ""; renderApkEntry(); document.getElementById("apkTok")?.focus(); }
+  if (a==="open"){ APK.open = true; APK.msg = ""; renderApkEntry(); (document.getElementById("apkLoginId") || document.getElementById("apkLoginTok"))?.focus(); }
   if (a==="close"){ APK.open = false; renderApkEntry(); }
   if (a==="logout"){ if (!confirm("이 휴대폰에서 운영자 로그아웃할까요?")) return;
     try { localStorage.removeItem("gw_ghtoken"); } catch(_) {}
     state.isOps = false; APK.open = false; document.body.classList.remove("opsmode");
     if (state.tab==="ops") document.querySelector('[data-tab="places"]')?.click();
     renderTop(); renderOps(); renderGrid(); renderApkEntry(); }
-});
-document.addEventListener("submit", async e=>{
-  if (e.target.id!=="apkLogin") return; e.preventDefault();
-  const tok = (document.getElementById("apkTok")?.value || "").trim();
-  if (!tok){ APK.msg = "토큰을 붙여 넣어 주세요."; renderApkEntry(); return; }
-  APK.busy = true; APK.msg = ""; renderApkEntry();
-  try {
-    const r = await ghApi("", {}, tok);
-    if (!r || !r.permissions || !r.permissions.push) throw { status:403 };
-    try { localStorage.setItem("gw_ghtoken", tok); } catch(_) {}
-    APK.busy = false; APK.open = false; apkOpsOn();
-    document.getElementById("opsTab")?.click();
-  } catch(err){ APK.busy = false; APK.msg = (err && (err.status===401||err.status===403||err.status===404)) ? "토큰이 맞지 않거나 이 저장소에 쓰기 권한이 없어요." : "확인하지 못했어요. 인터넷 연결을 확인해 주세요."; renderApkEntry(); }
 });
 // 켤 때마다 GitHub의 최신 운영 데이터(owner.json)를 확인한다. 더 새것(rev가 큰 것)일 때만 받아 다시 연다.
 // 운영자(토큰 있음)는 캐시 없는 GitHub API로, 방문자는 raw 주소로 받는다. 수정 중이면 다시 열지 않고 알려만 준다.
@@ -2947,6 +3021,7 @@ function renderOps(){
   if (window.APK_BUILD){
     el.innerHTML = `<div class="sec-title"><h2>앱 운영자</h2><span class="en">Operator</span></div>
       <p class="meta" style="margin-bottom:12px">이 휴대폰에서 바꾼 장소·순서·사진은 GitHub에 저장돼 앱을 쓰는 모든 휴대폰에 반영돼요. 사진이 없는 장소는 ‘사진 없는 곳만’을 켜서 바로 등록할 수 있어요. 가볼 곳 카드에서도 ‘사진 등록’을 누를 수 있어요.</p>
+      ${accountBox()}
       ${placeManager()}
       ${bizManager()}`;
     return;
@@ -2976,6 +3051,7 @@ function renderOps(){
   el.innerHTML = `${placeManager()}
     ${bizManager()}
     ${ghLinkBox()}
+    ${accountBox()}
     <p class="notice">이 탭은 운영자(이 페이지 소유자)에게만 보여요.${local?" 지금은 로컬 미리보기라 문의·통계가 이 기기에만 저장돼요.":""}${state.ops.note?" "+esc(state.ops.note):""}</p>
     <div class="revbox"><h2>${REV}수익 모델 기능</h2>
       <p class="meta">₩ 표시가 붙은 기능이 수익으로 이어질 수 있는 곳이에요. 사용자에게 보여 줄 때는 표시를 끌 수 있어요.</p>
