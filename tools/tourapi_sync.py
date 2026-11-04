@@ -50,6 +50,24 @@ def detail(key, it):
     except Exception: return {}
     return {v: d.get(k, "") for k, v in m.items() if d.get(k)}
 
+def extra_image(key, cid):
+    """대표 사진이 없거나 쓸 수 없는 유형일 때, 관광공사 추가 이미지(detailImage2) 중 공공누리 제1·3유형 사진을 찾는다."""
+    try: rows = items(call(key, "detailImage2", contentId=cid, imageYN="Y", numOfRows=20, pageNo=1))
+    except Exception: return ""
+    for r in rows:
+        if r.get("cpyrhtDivCd") in OK_LICENSE and r.get("originimgurl"): return r["originimgurl"]
+    return ""
+
+def fill_images(key, snap):
+    need = [x for x in snap if not x.get("firstimage")]
+    with cf.ThreadPoolExecutor(8) as ex:
+        got = list(ex.map(lambda x: extra_image(key, x["contentid"]), need))
+    n = 0
+    for x, u in zip(need, got):
+        if u: x["firstimage"] = u; x["imgsrc"] = "detail"; n += 1
+    print(f"추가 이미지로 사진 {n}곳 채움 (대상 {len(need)}곳)", file=sys.stderr)
+    return n
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--key", required=True); ap.add_argument("--html", default=None)
     ap.add_argument("--json", default=None, help="앱이 받아 쓰는 kto.json 경로"); ap.add_argument("--ver", default=None, help="kto_ver.txt 경로")
@@ -70,6 +88,7 @@ def main():
         row = {"contentid":it["contentid"], "contenttypeid":it["contenttypeid"], "title":it["title"], "addr1":it.get("addr1",""),
                "sigungucode":it["sigungucode"], "mapx":it["mapx"], "mapy":it["mapy"], "firstimage":img, "tel":it.get("tel","")}
         row.update(d); snap.append(row)
+    fill_images(key, snap)
     p = pathlib.Path(a.html or a.json and "web/index.html" or "index.html"); s = p.read_text(encoding="utf-8")
     # 직접 정리한 장소에 사진이 없으면 같은 이름의 관광공사 사진을 붙인다
     norm = lambda v: re.sub(r"[\s·()（）]", "", v or "")
