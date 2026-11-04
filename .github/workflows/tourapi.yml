@@ -34,4 +34,6 @@ jobs:
           git add web/kto.json web/kto_ver.txt
           git diff --cached --quiet && echo "바뀐 내용 없음" && exit 0
           git commit -m "관광공사 장소 업데이트 (자동)"
-          git pull --rebase -q && git push
+          # GitHub 쪽 일시 오류에 대비해 몇 번 다시 시도한다
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push && exit 0; echo "올리기 재시도 $i"; sleep $((i*10)); done
+          exit 1
