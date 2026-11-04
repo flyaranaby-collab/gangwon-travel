@@ -6,15 +6,23 @@
 import argparse, json, re, subprocess, urllib.parse, concurrent.futures as cf, time, pathlib, sys
 B = "https://apis.data.go.kr/B551011/PhotoGalleryService1"
 class NotReady(Exception): pass
+class Quota(Exception): pass
+STATE = { "calls":0, "stop":False }
+MAX_CALLS = 900   # 개발 단계 하루 한도(약 1,000회) 안에서만 쓴다
 def call(key, op, **p):
     p.update(serviceKey=key, MobileOS="ETC", MobileApp="GangwonTrip", _type="json")
     u = B + "/" + op + "?" + urllib.parse.urlencode(p, safe="")
+    if STATE["stop"] or STATE["calls"] >= MAX_CALLS: STATE["stop"] = True; raise Quota("limit")
+    STATE["calls"] += 1
     for _ in range(4):
         r = subprocess.run(["curl","-sS","-m","40",u], capture_output=True, text=True)
         out = r.stdout.strip()
         if r.returncode == 0 and out.startswith("{"):
             j = json.loads(out)
-            if "OpenAPI_ServiceResponse" in j: raise NotReady(json.dumps(j, ensure_ascii=False)[:160])
+            if "OpenAPI_ServiceResponse" in j:
+                msg = json.dumps(j, ensure_ascii=False)
+                if "LIMITED_NUMBER" in msg: STATE["stop"] = True; raise Quota(msg[:160])
+                raise NotReady(msg[:160])
             body = j["response"]["body"]; it = body.get("items") or {}
             it = it.get("item") if isinstance(it, dict) else None
             return it if isinstance(it, list) else ([it] if it else [])
@@ -26,7 +34,6 @@ def find(key, pl):
     q = clean(pl["name"]); nq = norm(q)
     if len(nq) < 2: return None
     try: rows = call(key, "gallerySearchList1", keyword=q, numOfRows=30, pageNo=1, arrange="A")
-    except NotReady: raise
     except Exception: return None
     best = None
     for r in rows:
@@ -56,9 +63,10 @@ def main():
     for k in ("key","kto","html"): ap.add_argument("--"+k, required=True)
     ap.add_argument("--ver", default=None); a = ap.parse_args()
     kto = json.loads(pathlib.Path(a.kto).read_text(encoding="utf-8")); kto.setdefault("photos", {})
-    tg = targets(kto, a.html)
+    tried = set(kto.get("gtried", []))
+    tg = [t for t in targets(kto, a.html) if t["id"] not in tried]
     try: call(a.key, "galleryList1", numOfRows=1, pageNo=1)
-    except NotReady as e: print("관광사진 서비스 키가 아직 등록되지 않아 건너뜀:", e); return
+    except (NotReady, Quota) as e: print("관광사진 서비스를 지금 쓸 수 없어 건너뜀:", e); return
     with cf.ThreadPoolExecutor(6) as ex: res = list(ex.map(lambda pl: find(a.key, pl), tg))
     got = { pl["id"]: r for pl, r in zip(tg, res) if r }
     # 2단계: 그래도 없으면 같은 읍·면·동의 풍경 사진을 '주변 풍경 사진'으로 표시해 쓴다(그 가게 사진이 아님을 밝힘)
@@ -76,8 +84,11 @@ def main():
     area = { pl["id"]: tp[pl["town"]] for pl in tg if pl["id"] not in got and tp.get(pl.get("town","")) }
     print(f"장소 사진 {len(got)}곳, 주변 풍경 사진 {len(area)}곳", file=sys.stderr)
     got.update(area)
-    kto["photos"].update(got); kto["rev"] = int(time.time()*1000)
+    done_ids = [pl["id"] for pl, r in zip(tg, res) if r is not None or not STATE["stop"]]
+    kto["photos"].update(got); kto["gtried"] = sorted(tried | set(done_ids)); kto["rev"] = int(time.time()*1000)
+    if STATE["stop"]: print("하루 호출 한도에 닿아 여기까지 저장했어요. 다음 업데이트 때 이어서 찾아요.")
     pathlib.Path(a.kto).write_text(json.dumps(kto, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
     if a.ver: pathlib.Path(a.ver).write_text(str(kto["rev"]), encoding="utf-8")
     print(f"관광사진으로 사진 {len(got)}곳 채움 / 대상 {len(tg)}곳")
-main()
+try: main()
+except Exception as e: print("관광사진 단계 오류(장소 업데이트는 계속):", e)

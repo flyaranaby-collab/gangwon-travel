@@ -24,6 +24,7 @@ jobs:
         env: { KTO_KEY: "${{ secrets.KTO_KEY }}" }
         run: python3 tools/tourapi_sync.py --key "$KTO_KEY" --json web/kto.json --ver web/kto_ver.txt
       - name: 관광사진(포토코리아)으로 사진 없는 곳 채우기
+        continue-on-error: true
         env: { KTO_KEY: "${{ secrets.KTO_KEY }}" }
         run: python3 tools/gallery_sync.py --key "$KTO_KEY" --kto web/kto.json --html web/index.html --ver web/kto_ver.txt
       - name: 저장소에 올리기

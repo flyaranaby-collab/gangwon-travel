@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611041726";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611041839";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -479,6 +479,11 @@ body { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
 .expamt { grid-area: amt; font-weight: 700; text-align: right; } .expamt.need { color: #e8743b; font-size: 12px; } .expctl { grid-area: ctl; display: flex; gap: 8px; justify-content: flex-end; font-size: 12px; }
 .favbtn.on { color: #e5483b; border-color: #f2b8b2; }
 @media print { .bnav, .subpage { display: none !important; } }
+.updprog { display: grid; gap: 8px; margin: 10px 0; }
+.updbar { height: 10px; border-radius: 6px; background: var(--line); overflow: hidden; } .updbar i { display: block; height: 100%; background: linear-gradient(90deg, #4f9bd9, #3fb38a); transition: width .6s; }
+.updsteps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.updsteps li { display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); font-size: 14px; }
+.updsteps li.in_progress { border-color: #4f9bd9; } .updsteps li.queued, .updsteps li.pending { opacity: .6; } .updsteps small { color: var(--muted); font-size: 12px; }
 .moreRow { grid-column: 1 / -1; display: flex; justify-content: center; padding: 8px 0 4px; }
 .moreRow .btn { min-width: 220px; }
 @media (max-width: 640px){ .tabbar .inner { align-items: flex-start; } .searchbtn { padding: 10px; margin-top: 6px; } .searchbtn .stxt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .searchbtn svg { width: 20px; height: 20px; } }
@@ -3658,10 +3663,42 @@ async function ktoSync(force){
   } catch(_) { return false; }
 }
 setTimeout(()=>ktoSync(false), 2500);
-const UPD = { msg:"", err:"", busy:false, run:null };
+const UPD = { msg:"", err:"", busy:false, run:null, steps:[], polling:false, auto:false };
+// 진행 과정: GitHub 작업 단계를 사람이 읽는 이름으로 보여 준다
+const UPD_STEPS = { "인증키 확인":"인증키 확인", "관광공사 데이터 받기":"관광공사 장소·음식점·숙박 정보 받기", "관광사진(포토코리아)으로 사진 없는 곳 채우기":"관광사진으로 사진 없는 곳 채우기", "저장소에 올리기":"앱에 반영할 파일 올리기" };
+function updProgressHtml(){
+  const st = UPD.steps.filter(x=>UPD_STEPS[x.name]); if (!st.length) return "";
+  const done = st.filter(x=>x.status==="completed").length, pct = Math.round(done / st.length * 100);
+  const sec = x => { const a = x.started_at ? new Date(x.started_at) : null, b = x.completed_at ? new Date(x.completed_at) : new Date(); if (!a) return ""; const t = Math.max(0, Math.round((b - a)/1000)); return t >= 60 ? `${Math.floor(t/60)}분 ${t%60}초` : `${t}초`; };
+  const ico = x => x.status!=="completed" ? (x.status==="in_progress" ? "⏳" : "⬜") : x.conclusion==="success" ? "✅" : x.conclusion==="skipped" ? "➖" : (x.name.includes("관광사진") ? "⚠️" : "❌");
+  return `<div class="updprog"><div class="updbar"><i style="width:${pct}%"></i></div><span class="meta">${done}/${st.length}단계 · ${pct}%</span>
+    <ol class="updsteps">${st.map(x=>`<li class="${x.status}"><span>${ico(x)}</span><b>${esc(UPD_STEPS[x.name])}</b><small>${x.status==="in_progress"?"진행 중 · ":""}${sec(x)}</small></li>`).join("")}</ol>
+    ${st.some(x=>x.name.includes("관광사진") && x.conclusion==="failure") ? `<p class="meta">⚠️ 관광사진 단계는 하루 호출 한도 등으로 건너뛰었어요. 장소 정보는 정상 반영되고, 사진은 다음 업데이트 때 이어서 찾아요.</p>` : ""}</div>`;
+}
+async function updPoll(){
+  if (UPD.polling) return; UPD.polling = true;
+  try {
+    for (let i = 0; i < 120; i++){
+      UPD.run = await updLastRun();
+      if (UPD.run){ try { const j = await ghApi("/actions/runs/" + UPD.run.id + "/jobs"); UPD.steps = (j.jobs && j.jobs[0] && j.jobs[0].steps) || []; } catch(_) {} }
+      if (state.tab==="ops") renderOps();
+      if (!UPD.run || UPD.run.status==="completed") break;
+      await new Promise(r=>setTimeout(r, 8000));
+    }
+    if (UPD.run && UPD.run.status==="completed"){
+      if (UPD.run.conclusion==="success"){ UPD.err = ""; UPD.msg = "업데이트가 끝났어요. 이 휴대폰에 새 정보를 불러오는 중…"; renderOps();
+        const got = await ktoSync(true); await ownerSync();
+        UPD.msg = got ? "업데이트가 끝나 새 정보를 받았어요. 화면을 다시 열게요." : "업데이트가 끝났어요. 바뀐 내용이 없거나 이미 최신이에요.";
+        renderOps(); if (got) setTimeout(()=>location.reload(), 1200); }
+      else { UPD.msg = ""; UPD.err = "업데이트가 실패했어요. 잠시 뒤 다시 눌러 주세요. 계속 실패하면 저장소 Settings → Secrets의 KTO_KEY를 확인해 주세요."; renderOps(); }
+    }
+  } catch(_) {}
+  UPD.polling = false;
+}
 const WF = "tourapi.yml";
 function updateBox(){
   if (!ghToken()) return "";
+  if (!UPD.auto){ UPD.auto = true; setTimeout(async()=>{ try { const r = await updLastRun(); if (r && r.status!=="completed"){ UPD.run = r; updPoll(); } else if (r){ UPD.run = r; renderOps(); } } catch(_) {} }, 400); }
   const r = UPD.run, st = r ? ({ queued:"대기 중", in_progress:"받는 중", completed:(r.conclusion==="success"?"완료":"실패") })[r.status] || r.status : "";
   const when = d => { const x = new Date(d); return `${x.getMonth()+1}/${x.getDate()} ${String(x.getHours()).padStart(2,"0")}:${String(x.getMinutes()).padStart(2,"0")}`; };
   return `<section class="revbox pm" aria-label="장소 업데이트"><h2>장소 업데이트</h2>
@@ -3673,6 +3710,7 @@ function updateBox(){
       <button class="btn ghost" data-upd="pull" ${UPD.busy?"disabled":""}>지금 새로 불러오기</button>
     </div>
     ${r ? `<p class="meta">최근 작업: ${when(r.created_at)} 시작 · <b>${esc(st)}</b>${r.status==="completed" && r.conclusion!=="success" ? ` · <a href="${esc(r.html_url)}" target="_blank" rel="noopener">기록 보기</a>` : ""}</p>` : ""}
+    ${updProgressHtml()}
     ${UPD.msg?`<p class="okline">${esc(UPD.msg)}</p>`:""}${UPD.err?`<p class="errline">${esc(UPD.err)}</p>`:""}
     <p class="meta">‘지금 새로 불러오기’는 관광공사 데이터와 운영 데이터(수정·사진·순서·수익 설정)를 GitHub에서 바로 다시 받아요.</p>
   </section>`;
@@ -3684,11 +3722,13 @@ document.addEventListener("click", async e=>{
   try {
     if (a==="run"){
       await ghApi("/actions/workflows/" + WF + "/dispatches", { method:"POST", body:JSON.stringify({ ref:GH.branch }) });
-      UPD.msg = "요청했어요. 3~5분 뒤 ‘진행 상황 확인’을 눌러 보세요. 완료되면 모든 앱이 다음에 열 때 새 정보를 받아요.";
-      setTimeout(async()=>{ try { UPD.run = await updLastRun(); renderOps(); } catch(_) {} }, 6000);
+      UPD.msg = "요청했어요. 아래에 진행 과정이 보여요(보통 5~10분). 끝나면 이 휴대폰에 자동으로 불러와요.";
+      UPD.steps = []; setTimeout(()=>updPoll(), 5000);
     }
     if (a==="check"){
       UPD.run = await updLastRun();
+      if (UPD.run){ try { const j = await ghApi("/actions/runs/" + UPD.run.id + "/jobs"); UPD.steps = (j.jobs && j.jobs[0] && j.jobs[0].steps) || []; } catch(_) {} }
+      if (UPD.run && UPD.run.status!=="completed") setTimeout(()=>updPoll(), 3000);
       if (!UPD.run) UPD.msg = "아직 실행한 기록이 없어요.";
       else if (UPD.run.status==="completed" && UPD.run.conclusion==="success") UPD.msg = "완료됐어요. ‘지금 새로 불러오기’를 누르면 이 휴대폰에 바로 반영돼요.";
       else if (UPD.run.status==="completed") UPD.err = "실패했어요. 저장소 Settings → Secrets에 KTO_KEY(관광공사 인증키)가 있는지 확인해 주세요.";
