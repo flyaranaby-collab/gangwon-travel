@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611041704";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611041726";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2131,7 +2131,8 @@ function photoFor(p){
   if (c) { const tag = PHOTO_KIND[c.kind] || "";
     return { url:c.url, tag, example:!!tag, credit:`${tag ? tag+" · " : ""}사진: ${c.artist || "작가 미상"} · ${c.license} · `, link:c.page, linkText:"위키미디어 공용", artist:c.artist }; }
   const k = KTO_PHOTOS[p.id] || (p.img ? { url:p.img } : null);
-  if (k) return { url:httpsUrl(k.url), credit:k.credit || "사진: 한국관광공사 · 공공누리 제1유형(출처 표시)", artist:k.by || "한국관광공사" };
+  if (k){ const tag = PHOTO_KIND[k.kind] || "";
+    return { url:httpsUrl(k.url), tag, example:!!tag, credit:(tag ? tag + " · " : "") + (k.credit || "사진: 한국관광공사 · 공공누리 제1유형(출처 표시)"), artist:k.by || "한국관광공사" }; }
   const up = state.uploads[p.id];
   if (up && up.url) return { url:up.url, credit:up.credit || "운영자 등록 사진", artist:"운영자 등록" };
   return null;

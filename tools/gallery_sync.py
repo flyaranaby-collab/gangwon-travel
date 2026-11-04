@@ -47,8 +47,9 @@ def targets(kto, html):
     for x in kto["items"]:
         pid = "kto-" + x["contentid"]
         if x.get("firstimage") or pid in have: continue
-        city = (x.get("addr1","").split(" ") + ["",""])[1]
-        out.append({ "id":pid, "name":x["title"], "city":city })
+        parts = x.get("addr1","").split(" ") + ["","",""]
+        town = re.sub(r"(읍|면|동|리|가)$", "", parts[2]) if re.search(r"(읍|면|동)$", parts[2]) else ""
+        out.append({ "id":pid, "name":x["title"], "city":parts[1], "town":town })
     return out
 def main():
     ap = argparse.ArgumentParser()
@@ -60,6 +61,21 @@ def main():
     except NotReady as e: print("관광사진 서비스 키가 아직 등록되지 않아 건너뜀:", e); return
     with cf.ThreadPoolExecutor(6) as ex: res = list(ex.map(lambda pl: find(a.key, pl), tg))
     got = { pl["id"]: r for pl, r in zip(tg, res) if r }
+    # 2단계: 그래도 없으면 같은 읍·면·동의 풍경 사진을 '주변 풍경 사진'으로 표시해 쓴다(그 가게 사진이 아님을 밝힘)
+    towns = sorted({ pl["town"] for pl in tg if pl["id"] not in got and len(pl.get("town","")) >= 2 })
+    def town_photo(t):
+        try: rows = call(a.key, "gallerySearchList1", keyword=t, numOfRows=30, pageNo=1, arrange="A")
+        except Exception: return None
+        for r in rows:
+            loc = r.get("galPhotographyLocation") or ""
+            if "강원" in loc and t in (loc + (r.get("galTitle") or "")) and r.get("galWebImageUrl"):
+                return { "url": r["galWebImageUrl"].replace("http://","https://"), "by": r.get("galPhotographer","") or "한국관광공사", "kind":"area",
+                         "credit": "사진: 한국관광공사 포토코리아(" + (r.get("galTitle") or t) + ")" + (" · " + r["galPhotographer"] if r.get("galPhotographer") else "") + " · 공공누리 제1유형" }
+        return None
+    with cf.ThreadPoolExecutor(6) as ex: tp = dict(zip(towns, ex.map(town_photo, towns)))
+    area = { pl["id"]: tp[pl["town"]] for pl in tg if pl["id"] not in got and tp.get(pl.get("town","")) }
+    print(f"장소 사진 {len(got)}곳, 주변 풍경 사진 {len(area)}곳", file=sys.stderr)
+    got.update(area)
     kto["photos"].update(got); kto["rev"] = int(time.time()*1000)
     pathlib.Path(a.kto).write_text(json.dumps(kto, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
     if a.ver: pathlib.Path(a.ver).write_text(str(kto["rev"]), encoding="utf-8")
