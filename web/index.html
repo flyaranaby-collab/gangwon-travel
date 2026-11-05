@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611051507";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611051540";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2276,6 +2276,7 @@ OWNER.biz = (()=>{ const b = OWNER.biz && typeof OWNER.biz==="object" ? OWNER.bi
 OWNER.places = Array.isArray(OWNER.places) ? OWNER.places : [];
 OWNER.hidden = Array.isArray(OWNER.hidden) ? OWNER.hidden : [];
 OWNER.order = Array.isArray(OWNER.order) ? OWNER.order : [];
+OWNER.deleted = Array.isArray(OWNER.deleted) ? OWNER.deleted.filter(x=>x && x.id) : [];   // 운영자가 지운 장소: [{id,name,region}]
 function normPlace(p){
   const r = REG[p.region] ? p.region : "gangneung";
   return { id:p.id, region:r, name:String(p.name||"").trim(), cat:p.cat||"맛집", area:p.area||REG[r].name,
@@ -2287,11 +2288,13 @@ OWNER.places = OWNER.places.map(normPlace);
 OWNER.places.forEach(p=>{ PLACES.push(p); if (!META[p.id]) META[p.id] = { o:null, c:null, stay:60, cost:0 }; });
 const ALL_PLACES = PLACES.slice();
 const HIDDEN = new Set(OWNER.hidden);
+const DELETED = new Set(OWNER.deleted.map(x=>x.id));
 function applyOwner(){
   const keep = PLACES.filter(p=>!ALL_PLACES.includes(p));          // 관광공사 등 나중에 더해진 장소는 그대로 둔다
   PLACES.length = 0;
-  ALL_PLACES.forEach(p=>{ if (!HIDDEN.has(p.id)) PLACES.push(p); });
-  keep.forEach(p=>PLACES.push(p));
+  ALL_PLACES.forEach(p=>{ if (!HIDDEN.has(p.id) && !DELETED.has(p.id)) PLACES.push(p); });
+  keep.forEach(p=>{ if (!DELETED.has(p.id)) PLACES.push(p); });
+  if (typeof LODGING !== "undefined") for (let i=LODGING.length-1;i>=0;i--) if (DELETED.has(LODGING[i].id)) LODGING.splice(i,1);
 }
 applyOwner();
 const orderIdx = id => { const i = OWNER.order.indexOf(id); return i<0 ? 1e9 : i; };
@@ -2302,8 +2305,8 @@ function pmChanged(){
   PM.dirty = true;
   if (window.APK_BUILD && ghToken()){ clearTimeout(pmTimer); pmTimer = setTimeout(()=>{ if (!PM.busy && PM.dirty) pmSave(); }, 1000); }
 }
-const pmList = () => (PM.nophoto ? [...ALL_PLACES, ...PLACES.filter(p=>p.source==="kto")] : ALL_PLACES)
-  .filter(p=>p.region===PM.region && (PM.cat==="전체"||p.cat===PM.cat) && (!PM.nophoto || !photoFor(p)))
+const pmList = () => ((PM.nophoto || PM.kto) ? [...ALL_PLACES, ...PLACES.filter(p=>p.source==="kto")] : ALL_PLACES)
+  .filter(p=>!DELETED.has(p.id) && p.region===PM.region && (PM.cat==="전체"||p.cat===PM.cat) && (!PM.nophoto || !photoFor(p)))
   .sort((a,b)=>orderIdx(a.id)-orderIdx(b.id) || (b.who.가족+b.who.친구)-(a.who.가족+a.who.친구) || a.name.localeCompare(b.name));
 function pmMove(id, dir){
   const list = pmList().map(p=>p.id), i = list.indexOf(id), j = i+dir;
@@ -2351,6 +2354,7 @@ function placeManager(){
       <select id="pmCatSel" aria-label="관리할 분류">${opt([["전체","전체 분류"], ...cats], PM.cat)}</select>
       <button class="btn" data-pm="new">+ 새 장소</button>
       <label class="pmday"><input type="checkbox" id="pmNoPhoto" ${PM.nophoto?"checked":""}> 사진 없는 곳만</label>
+      <label class="pmday"><input type="checkbox" id="pmKto" ${PM.kto?"checked":""}> 관광공사 장소도 보기</label>
     </div>
     ${PM.nophoto ? `<p class="meta">사진이 없는 장소 ${list.length}곳이에요. ‘사진 등록’을 누르면 휴대폰 사진첩이나 카메라에서 고를 수 있어요. 직접 찍었거나 사용 허락을 받은 사진만 올려 주세요.</p>` : ""}
     ${form}
@@ -2361,8 +2365,9 @@ function placeManager(){
         <button data-pm="up" data-id="${p.id}" ${i===0?"disabled":""} aria-label="위로">▲</button>
         <button data-pm="down" data-id="${p.id}" ${i===list.length-1?"disabled":""} aria-label="아래로">▼</button>
         <button data-pm="hide" data-id="${p.id}">${HIDDEN.has(p.id)?"보이기":"숨기기"}</button>
-        <button data-pm="edit" data-id="${p.id}">수정</button>${p.custom?`<button data-pm="del" data-id="${p.id}">삭제</button>`:""}
+        <button data-pm="edit" data-id="${p.id}">수정</button><button data-pm="del" data-id="${p.id}">삭제</button>
       </span></li>`).join("") || `<li class="empty">이 지역·분류에는 장소가 없어요.</li>`}</ol>
+    ${OWNER.deleted.length ? `<details class="playbook"><summary>삭제한 장소 ${OWNER.deleted.length}곳 (눌러서 복구)</summary><ul class="pmdel">${OWNER.deleted.map(x=>`<li>${esc(x.name)}${x.region&&REG[x.region]?` · ${esc(REG[x.region].name)}`:""} <button class="linkbtn" data-pm="undel" data-id="${esc(x.id)}">복구</button></li>`).join("")}</ul></details>` : ""}
     ${OSYNC.pending ? `<p class="okline">다른 곳에서 저장한 더 새로운 운영 데이터가 있어요. 지금 작업을 저장한 뒤 앱(페이지)을 다시 열면 합쳐져요.</p>` : ""}
     <div class="pmsave">
       <button class="btn" type="button" data-pm="save" ${PM.busy?"disabled":""}>${PM.busy?"저장하는 중…":"저장하고 공개"}</button>
@@ -2376,7 +2381,17 @@ function placeManager(){
     </details>
   </section>`;
 }
-const ownerJson = () => JSON.stringify({ v:1, rev:OWNER.rev||0, places:ALL_PLACES.filter(p=>p.custom).map(({custom, ...rest})=>rest), hidden:[...HIDDEN], order:OWNER.order, photos:OWNER.photos, edits:OWNER.edits, picks:OWNER.picks, biz:OWNER.biz, auth:OWNER.auth||null });
+const ownerJson = () => JSON.stringify({ v:1, rev:OWNER.rev||0, places:ALL_PLACES.filter(p=>p.custom).map(({custom, ...rest})=>rest), hidden:[...HIDDEN], deleted:OWNER.deleted, order:OWNER.order, photos:OWNER.photos, edits:OWNER.edits, picks:OWNER.picks, biz:OWNER.biz, auth:OWNER.auth||null });
+// 장소 삭제: 직접 추가한 장소는 목록에서 아예 지우고, 기본·관광공사 장소는 ‘삭제 목록’에 올려 업데이트 때도 다시 나오지 않게 한다
+function pmDelete(id){
+  const t = ALL_PLACES.find(p=>p.id===id) || PLACES.find(p=>p.id===id) || (typeof LODGING!=="undefined" && LODGING.find(p=>p.id===id));
+  if (t && t.custom){ const i = ALL_PLACES.findIndex(p=>p.id===id); if (i>=0) ALL_PLACES.splice(i,1); }
+  else if (t && !DELETED.has(id)){ OWNER.deleted.push({ id, name:t.name, region:t.region||"" }); DELETED.add(id); }
+  OWNER.order = OWNER.order.filter(x=>x!==id); HIDDEN.delete(id);
+  state.course = state.course.filter(x=>x!==id); Object.keys(state.courses||{}).forEach(k=>{ if (Array.isArray(state.courses[k])) state.courses[k] = state.courses[k].filter(x=>x!==id); });
+  state.favs = state.favs.filter(x=>x!==id);
+  applyOwner(); pmChanged(); save();
+}
 function pmRerender(){ renderOps(); renderGrid(); renderTop(); }
 function pmReadForm(){
   const v = id => (document.getElementById(id)?.value || "").trim();
@@ -2435,6 +2450,7 @@ document.addEventListener("change", e=>{
   if (e.target.id==="pmRegionSel"){ PM.region = e.target.value; PM.edit = null; renderOps(); }
   if (e.target.id==="pmCatSel"){ PM.cat = e.target.value; renderOps(); }
   if (e.target.id==="pmNoPhoto"){ PM.nophoto = e.target.checked; renderOps(); }
+  if (e.target.id==="pmKto"){ PM.kto = e.target.checked; renderOps(); }
 });
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-pm]"); if (!b) return;
@@ -2448,9 +2464,10 @@ document.addEventListener("click", e=>{
     delete OWNER.edits[id]; if (t.__orig) Object.assign(t, t.__orig); PM.edit = null; pmChanged(); PM.msg = `‘${t.name}’을(를) 원래 정보로 되돌렸어요. 저장해야 공개돼요.`; pmRerender(); return; }
   if (a==="del"){
     if (b.dataset.sure!=="1"){ b.dataset.sure = "1"; b.textContent = "한 번 더 누르면 삭제"; return; }
-    const i = ALL_PLACES.findIndex(p=>p.id===id); if (i>=0) ALL_PLACES.splice(i,1);
-    OWNER.order = OWNER.order.filter(x=>x!==id); HIDDEN.delete(id);
-    state.course = state.course.filter(x=>x!==id); applyOwner(); pmChanged(); pmRerender(); return; }
+    pmDelete(id); PM.msg = "삭제했어요. ‘저장하고 공개’를 눌러야 다른 휴대폰에도 반영돼요."; pmRerender(); return; }
+  if (a==="undel"){
+    OWNER.deleted = OWNER.deleted.filter(x=>x.id!==id); DELETED.delete(id); applyOwner(); pmChanged();
+    PM.msg = "복구했어요. 저장하고 공개한 뒤 앱을 다시 열면 목록에 다시 나와요."; pmRerender(); return; }
   if (a==="save"){ if (PM.edit && document.getElementById("pmForm")){ PM.err = "열려 있는 수정 양식의 ‘수정 반영’을 먼저 눌러 주세요."; renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" }); return; }
     pmSave(); return; }
   if (a==="reset"){
@@ -2537,6 +2554,12 @@ document.addEventListener("click", e=>{
   PM.region = t.region; PM.cat = "전체"; PM.nophoto = false; PM.msg = PM.err = ""; PM.edit = { ...t };
   const prevTab = state.tab; state.tab = "ops"; navPush(prevTab!=="ops"); renderTop(); renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" });
 });
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-carddel]"); if (!b || !state.isOps) return;
+  const t = byId(b.dataset.carddel); if (!t) return;
+  if (!confirm(`‘${t.name}’을(를) 삭제할까요?\n삭제하면 이 앱을 쓰는 모든 휴대폰에서 사라져요. (운영 탭 ‘삭제한 장소’에서 복구할 수 있어요)`)) return;
+  pmDelete(t.id); PM.msg = `‘${t.name}’을(를) 삭제했어요.`; closeSub && closeSub(); renderGrid(); renderTop(); try { renderOps(); } catch(_) {}
+});
 // 카드 오른쪽 위 ‘✎ 수정’ 버튼(운영자만): 내용 수정 / 사진 등록·바꾸기 / 올린 사진 지우기
 function opsEditHtml(p){
   if (!state.isOps) return "";
@@ -2545,6 +2568,7 @@ function opsEditHtml(p){
   return `<div class="opsedit"><button class="opsbtn" data-opsmenu="${p.id}" aria-haspopup="true" aria-expanded="false">✎ 수정</button>
     <div class="opsmenu" id="opsm-${p.id}" hidden role="menu">
       <button role="menuitem" data-cardedit="${p.id}">✏️ 내용 수정</button>
+      <button role="menuitem" data-carddel="${p.id}">🗑 장소 삭제</button>
       ${canPhoto ? `<label role="menuitem">📷 ${mine||has ? "사진 바꾸기" : "사진 등록"}<input type="file" accept="image/*" data-photo="${p.id}" hidden></label>` : `<span class="meta">사진 등록은 페이지 주인 계정 화면에서 할 수 있어요.</span>`}
       ${mine ? `<button role="menuitem" data-photodel="${p.id}">🗑 올린 사진 지우기</button>` : ""}
     </div></div>`;
@@ -2976,6 +3000,7 @@ function mergeKto(items){
   items.forEach(it=>{
     if (String(it.contenttypeid)==="38" && !shopOk(String(it.title||""))) return;
     const x = String(it.contenttypeid)==="32" ? ktoToStay(it) : ktoToPlace(it);
+    if (x && DELETED.has(x.id)) return;
     const twin = x && (mine.get(normName(x.name)) || mine.get(baseName(x.name)));
     if (twin && !twin.__official && km(twin, x) < 3){
       twin.lat = x.lat; twin.lng = x.lng; twin.__official = true; OFFICIAL_FIX++;
@@ -3172,7 +3197,7 @@ state.courses = store.get("courses", null) || { 0: state.course };
 state.day = Math.max(0, store.get("day", 0)|0);
 state.day = Math.min(state.day, tripDays().length-1);
 state.course = state.courses[state.day] || [];
-const byId = id => PLACES.find(p=>p.id===id) || ALL_PLACES.find(p=>p.id===id);
+const byId = id => PLACES.find(p=>p.id===id) || ALL_PLACES.find(p=>p.id===id && !DELETED.has(p.id));
 // 지금 고른 지역의 장소(전체면 모두)
 const inRegion = p => state.region==="all" || p.region===state.region;
 const regionPlaces = () => PLACES.filter(inRegion);
@@ -3425,7 +3450,7 @@ function card(p){
       <button class="btn ghost" data-stamp="${p.id}" aria-pressed="${!!state.stamps[p.id]}">${state.stamps[p.id]?"스탬프 지우기":"스탬프 찍기"}</button>
       <button class="btn ghost" data-review="${p.id}">${state.reviews[p.id]?"후기 보기":"후기 쓰기"}</button>
     </div>
-    ${window.APK_BUILD ? (state.isOps ? `<div class="ownerline apkop"><button class="linkbtn" data-cardedit="${p.id}">✎ 수정하기</button>${photoCtl(p)}</div>` : "") : `<div class="ownerline"><span>${REV}<button class="linkbtn" data-inquire="${p.id}" data-inqtype="업주 정보 수정">사장님이신가요? 정보 수정·광고 문의</button></span><button class="linkbtn" data-inquire="${p.id}" data-inqtype="정보 오류 제보">정보 오류 제보</button>${state.isOps?`<button class="linkbtn" data-cardedit="${p.id}">✎ 수정하기</button>`:""}${photoCtl(p)}</div>`}
+    ${window.APK_BUILD ? (state.isOps ? `<div class="ownerline apkop"><button class="linkbtn" data-cardedit="${p.id}">✎ 수정하기</button>${photoCtl(p)} <button class="linkbtn" data-carddel="${p.id}">🗑 삭제</button></div>` : "") : `<div class="ownerline"><span>${REV}<button class="linkbtn" data-inquire="${p.id}" data-inqtype="업주 정보 수정">사장님이신가요? 정보 수정·광고 문의</button></span><button class="linkbtn" data-inquire="${p.id}" data-inqtype="정보 오류 제보">정보 오류 제보</button>${state.isOps?`<button class="linkbtn" data-cardedit="${p.id}">✎ 수정하기</button>`:""}${photoCtl(p)}</div>`}
     ${state.stamps[p.id]?`<div class="seal-mark" aria-label="방문함">${shortName(p)}<small>${fmtD(state.stamps[p.id])}</small></div>`:""}</article>`;
 }
 
