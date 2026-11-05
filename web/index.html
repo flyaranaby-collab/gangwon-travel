@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611051545";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611052034";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1919,6 +1919,37 @@ const PLACES = [
   { id:"hyojune", region:"yangyang", name:"효주네머구리횟집", cat:"맛집", area:"전진리", lat:38.0060, lng:128.7350,
     sig:"방파제 너머 바다를 보며 먹는 회·물회", hours:"현장 확인", fee:"시가", closed:[], closedNote:"휴무일 방문 전 확인",
     tip:"창가 자리에서 바다가 바로 보여요.", who:{친구:3,연인:3,가족:3,혼자:1}, tags:["회","바다뷰"] },
+  // ── 양양 맛집 추가(2026-11, 블로그·SNS·맛집 앱 언급 기준). 좌표는 마을(항구) 기준 대략값이라 지도 버튼은 가게 이름으로 찾는다
+  { id:"yy-eochon", region:"yangyang", name:"어촌횟집 (남애항)", cat:"맛집", area:"남애항", lat:37.9440, lng:128.7865, mapq:"양양 남애 어촌횟집", addr:"강원 양양군 현남면 남애리 (남애항)",
+    sig:"남애항 활어회·회덮밥, 속 편한 어죽", hours:"현장 확인", fee:"어죽·회덮밥 1~2만 원대, 회 시가", closed:[], closedNote:"휴무일 방문 전 확인",
+    tip:"남애항 앞이라 회 먹고 남애 스카이워크·해변 산책을 이어 가기 좋아요. 아침엔 어죽 한 그릇.", who:{친구:3,연인:3,가족:3,혼자:3}, tags:["어죽","회","바다뷰","로컬푸드"] },
+  { id:"yy-namaechang", region:"yangyang", name:"남애창횟집", cat:"맛집", area:"남애항", lat:37.9425, lng:128.7840, mapq:"양양 남애창횟집", addr:"강원 양양군 현남면 동해대로 254 (남애리)",
+    sig:"어죽과 물회로 유명한 남애항 횟집", hours:"08:30~21:00 (주문 마감 19:30)", fee:"어죽·물회 1~2만 원대", closed:[2], closedNote:"화요일 휴무(방문 전 확인)",
+    tip:"아침 8시 반부터 열어 해돋이 보고 어죽 먹기 좋아요. 033-671-5627", who:{친구:3,연인:2,가족:3,혼자:3}, tags:["어죽","물회","아침"] },
+  { id:"yy-haenyeo", region:"yangyang", name:"해녀횟집 (남애)", cat:"맛집", area:"남애항", lat:37.9452, lng:128.7872, mapq:"양양 남애 해녀횟집", addr:"강원 양양군 현남면 매바위길 163",
+    sig:"섭국과 자연산 모둠회", hours:"10:00~22:00", fee:"섭국 1만 원대, 모둠회 9만 원~", closed:[], closedNote:"휴무일 방문 전 확인",
+    tip:"양양 향토음식 섭(홍합)국을 맛보세요. 033-671-7473", who:{친구:3,연인:3,가족:3,혼자:2}, tags:["섭국","회","바다뷰"] },
+  { id:"yy-choego", region:"yangyang", name:"최고횟집 (동호리)", cat:"맛집", area:"동호리", lat:38.0545, lng:128.6612, mapq:"양양 동호리 최고횟집",
+    sig:"얼큰한 섭국과 물회", hours:"현장 확인", fee:"1~2만 원대", closed:[], closedNote:"휴무일 방문 전 확인",
+    tip:"동호해변 바로 근처. 해장으로 섭국을 많이 찾아요.", who:{친구:3,연인:2,가족:3,혼자:3}, tags:["섭국","물회"] },
+  { id:"yy-susanmulhoe", region:"yangyang", name:"수산항 물회", cat:"맛집", area:"수산항", lat:38.0405, lng:128.6745, mapq:"양양 수산항 물회",
+    sig:"째복(조개)물회·째복전·째복무침", hours:"현장 확인", fee:"1~2만 원대", closed:[], closedNote:"휴무일 방문 전 확인",
+    tip:"양양 사람들이 즐겨 먹는 째복 요리를 맛볼 수 있어요.", who:{친구:3,연인:3,가족:3,혼자:2}, tags:["물회","로컬푸드"] },
+  { id:"yy-namyeongho", region:"yangyang", name:"남영호횟집 (낙산항 회센터)", cat:"맛집", area:"낙산항", lat:38.1220, lng:128.6345, mapq:"양양 낙산 남영호횟집",
+    sig:"대게찜과 물회, 회센터 바깥쪽 가게", hours:"현장 확인", fee:"대게·회 시가", closed:[], closedNote:"휴무일 방문 전 확인",
+    tip:"어촌계 회센터 바깥쪽이 안쪽보다 저렴했다는 후기가 많아요.", who:{친구:3,연인:3,가족:3,혼자:1}, tags:["대게","회","물회"] },
+  { id:"yy-2doaging", region:"yangyang", name:"2도에이징 (낙산해변)", cat:"맛집", area:"낙산해변", lat:38.1165, lng:128.6300, mapq:"양양 2도에이징",
+    sig:"숙성 돼지고기 구이·관자·된장술밥", hours:"현장 확인", fee:"1인 2만 원대", closed:[], closedNote:"휴무일 방문 전 확인",
+    tip:"낙산해변 어반스테이 건물 1층. 저녁 고기 한 판으로 좋아요.", who:{친구:3,연인:3,가족:3,혼자:1}, tags:["저녁","고기"] },
+  { id:"yy-danyang", region:"yangyang", name:"단양면옥", cat:"맛집", area:"양양읍", lat:38.0752, lng:128.6205, mapq:"양양 단양면옥",
+    sig:"함흥식 회냉면과 수육", hours:"현장 확인", fee:"1만 원 안팎", closed:[], closedNote:"휴무일 방문 전 확인",
+    tip:"양양시장 근처. 시장 구경과 함께 들르기 좋아요.", who:{친구:3,연인:2,가족:3,혼자:3}, tags:["냉면","점심","로컬푸드"] },
+  { id:"yy-songi", region:"yangyang", name:"송이버섯마을", cat:"맛집", area:"양양읍", lat:38.0800, lng:128.6120, mapq:"양양 송이버섯마을 식당",
+    sig:"양양 송이로 끓이는 샤브샤브·송이전골", hours:"현장 확인", fee:"1인 2~4만 원대", closed:[], closedNote:"휴무일 방문 전 확인",
+    tip:"가을 송이 철(9~10월)에 가면 향이 가장 좋아요.", who:{친구:2,연인:3,가족:3,혼자:1}, tags:["송이","로컬푸드","가족"] },
+  { id:"yy-janggane", region:"yangyang", name:"장가네칼국수", cat:"맛집", area:"양양읍", lat:38.0748, lng:128.6190, mapq:"양양 장가네칼국수",
+    sig:"해물 장칼국수·송이칼국수", hours:"현장 확인", fee:"1만 원 안팎", closed:[], closedNote:"휴무일 방문 전 확인",
+    tip:"강원도식 고추장 장칼국수. 오일장(4·9일)과 같이 들러 보세요.", who:{친구:3,연인:2,가족:3,혼자:3}, tags:["장칼국수","점심","로컬푸드"] },
   { id:"hangyeol", region:"donghae", name:"카페 한결 (어달항)", cat:"카페", area:"묵호", lat:37.5640, lng:129.1150,
     sig:"어달항 바로 앞 오션뷰", hours:"현장 확인", fee:"음료 6~7천 원대", closed:[], closedNote:"영업일 방문 전 확인",
     tip:"묵호에서 해안도로 따라 5분. 망상해변으로 이어 가기 좋아요.", who:{친구:3,연인:3,가족:2,혼자:3}, tags:["바다뷰","커피"] },
@@ -2241,7 +2272,7 @@ const META = {
   hindajeong:{o:null,c:null,stay:50,cost:11000}, shltr:{o:9,c:19,stay:50,cost:8000}, woody:{o:null,c:null,stay:50,cost:8000},
   wonderfulday:{o:null,c:null,stay:50,cost:8000}, hone:{o:null,c:null,stay:70,cost:20000},
   oao:{o:null,c:null,stay:60,cost:9000}, "7drivein":{o:null,c:null,stay:50,cost:8000}, singlefin:{o:null,c:null,stay:70,cost:20000},
-  bumbau:{o:null,c:null,stay:50,cost:11000}, gamnamu:{o:7,c:null,stay:40,cost:10000}, hyojune:{o:null,c:null,stay:70,cost:30000},
+  bumbau:{o:null,c:null,stay:50,cost:11000}, gamnamu:{o:7,c:null,stay:40,cost:10000}, hyojune:{o:null,c:null,stay:70,cost:30000}, "yy-eochon":{o:null,c:null,stay:60,cost:15000}, "yy-namaechang":{o:8,c:21,stay:60,cost:15000}, "yy-haenyeo":{o:10,c:22,stay:70,cost:20000}, "yy-choego":{o:null,c:null,stay:50,cost:15000}, "yy-susanmulhoe":{o:null,c:null,stay:50,cost:15000}, "yy-namyeongho":{o:null,c:null,stay:70,cost:35000}, "yy-2doaging":{o:null,c:null,stay:80,cost:25000}, "yy-danyang":{o:null,c:null,stay:40,cost:11000}, "yy-songi":{o:null,c:null,stay:70,cost:30000}, "yy-janggane":{o:null,c:null,stay:40,cost:10000},
   hangyeol:{o:null,c:null,stay:50,cost:7000}, mucomoon:{o:null,c:null,stay:70,cost:25000}, deokjang:{o:null,c:null,stay:40,cost:10000},
   "solbeach-samcheok":{o:null,c:null,stay:40,cost:0},
   yuyujae:{o:10,c:21,stay:50,cost:9000}, saga:{o:null,c:null,stay:30,cost:8000}, najeon:{o:null,c:null,stay:40,cost:5000},
