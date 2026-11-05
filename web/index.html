@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611051453";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611051507";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1259,6 +1259,7 @@ body.compact .pagebar { display: flex; align-items: center; gap: 10px; position:
       <button role="tab" data-tab="season">계절&amp;행사</button>
       <button role="tab" data-tab="deals">할인 방법</button>
       <button role="tab" data-tab="pack">준비물</button>
+      <button role="tab" data-tab="souv">특산품·선물</button>
       <button role="tab" data-tab="ops" id="opsTab" hidden>운영</button>
     </nav>
     <button class="searchbtn" id="searchBtn" type="button" aria-label="장소 검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="stxt">검색</span></button>
@@ -1271,6 +1272,7 @@ body.compact .pagebar { display: flex; align-items: center; gap: 10px; position:
   <section class="panel" id="tab-course" hidden></section>
   <section class="panel" id="tab-deals" hidden></section>
   <section class="panel" id="tab-pack" hidden></section>
+  <section class="panel" id="tab-souv" hidden></section>
   <section class="panel" id="tab-journal" hidden></section>
   <section class="panel ops" id="tab-ops" hidden></section>
   <section class="panel" id="tab-favs" hidden></section>
@@ -3249,7 +3251,7 @@ function renderTop(){
   const cc = document.getElementById("courseCount"); if (cc) cc.hidden = !state.course.length;
   document.getElementById("courseCount").textContent = state.course.length;
   document.getElementById("stampCount").textContent = Object.keys(state.stamps).length;
-  ["places","season","course","deals","pack","journal","ops","favs","coupons","my","more"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==state.tab);
+  ["places","season","course","deals","pack","souv","journal","ops","favs","coupons","my","more"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==state.tab);
   if (state.tab==="course") setTimeout(upgradeCourseMap, 0);
   // 하단 메뉴 화면(일정·찜·쿠폰북·마이·더보기와 그 하위)은 상단 그림·탭 없이 그 메뉴만 보여 준다
   const compact = COMPACT_TABS.has(state.tab);
@@ -3314,8 +3316,6 @@ function renderPlaces(){
     <p class="notice">운영시간·요금·휴무는 대략적인 정보예요. 공휴일·명절·기상 상황에 따라 바뀔 수 있으니 출발 전 한 번 더 확인하세요.</p>
     <div class="hot"><div class="sec-title"><h2>${regionLabel()}, ${({친구:"친구와",연인:"연인과",가족:"가족과",혼자:"혼자"})[state.who]} 가기 좋은 곳</h2><span class="en">Curated</span></div>
       <div class="strip">${hotList(10).map((p,i)=>stripItem(p, "No."+(i+1))).join("")}</div>${hotEditor(hot)}</div>
-    ${festStrip()}
-    ${souvStrip()}
     ${renderSponsors()}
     <div class="sec-title"><h2>${state.region==="all"?"강원 모든 장소":REG[state.region].name+" 모든 장소"}</h2><span class="en">${regionPlaces().length} places${KTO_ADDED?` · 관광공사 ${PLACES.filter(p=>p.source==="kto"&&inRegion(p)).length}`:""}</span></div>
     <div class="filters" role="group" aria-label="분류">${[...CATS, ...(PLACES.some(p=>p.cat==="관광지")?["관광지"]:[]), "숙소", "교통"].map(c=>`<button class="chipbtn" data-cat="${c}" aria-pressed="${c===state.cat}">${c}</button>`).join("")}<span class="sep"></span><button class="chipbtn" id="trendBtn" aria-pressed="${state.trend}">요즘 뜨는 곳</button><button class="chipbtn" id="localBtn" aria-pressed="${state.local}">현지인 맛집</button><button class="chipbtn" id="dealBtn" aria-pressed="${state.dealOnly}">할인 있는 곳</button><button class="chipbtn" id="rainBtn" aria-pressed="${state.rain}">비 오는 날</button></div>
@@ -3366,6 +3366,7 @@ function renderSeasonTab(){
   fList.sort((x,y)=>Math.min(...x.months.filter(m=>ss.months.includes(m)).map(order)) - Math.min(...y.months.filter(m=>ss.months.includes(m)).map(order)));
   const courseBtn = id => { const inC = state.course.includes(id); return `<button class="btn ${inC?"added":""}" data-toggle="${id}">${inC?"코스에 담김 ✓":"코스에 담기"}</button>`; };
   document.getElementById("tab-season").innerHTML = `
+    ${festStrip()}
     <p class="notice">계절별 추천 시기와 축제 일정은 해마다 조금씩 달라져요. 축제는 출발 전 '일정 확인'으로 올해 날짜를 꼭 확인하세요.</p>
     <div class="season-head">
       <div><div class="sec-title" style="margin:0"><h2>${key}의 강원</h2><span class="en">${ss.en}</span></div>
@@ -3501,9 +3502,14 @@ async function liveMap(el, pts, opt = {}){
     if (all.length > 1){ const bd = new K.maps.LatLngBounds(); all.forEach(x=>bd.extend(x)); m.setBounds(bd, 36, 36, 36, 36); }
     else if (all.length){ m.setCenter(all[0]); m.setLevel(opt.level || 4); }
     else { const c = REG[state.region] || REG.gangneung; m.setCenter(new K.maps.LatLng(c.lat, c.lng)); m.setLevel(8); }
-    if (opt.cap) { const cp = el.parentElement.querySelector(".mapcap"); if (cp) cp.textContent = opt.cap; }
-    void fallback;
-  } catch(e) { console.warn("kakao map:", e && e.message); /* 약도 유지 */ }
+    const cpEl = el.parentElement.querySelector(".mapcap"), capOld = cpEl ? cpEl.textContent : "";
+    if (opt.cap && cpEl) cpEl.textContent = opt.cap;
+    // 지도 조각(타일)이 안 오면 카카오 설정 문제이므로 약도로 되돌리고 이유를 적는다
+    let tilesOk = false; try { K.maps.event.addListener(m, "tilesloaded", ()=>{ tilesOk = true; }); } catch(_) { tilesOk = true; }
+    setTimeout(()=>{ if (!el.isConnected || !el.classList.contains("lmap")) return;
+      if (!tilesOk){ el.classList.remove("lmap","small"); el.innerHTML = fallback; KMAPS.delete(el);
+        if (cpEl) cpEl.textContent = "카카오 지도를 받지 못해 약도를 보여 드려요. (카카오 개발자 사이트에서 ‘카카오맵 사용 설정’ ON, 플랫폼 Web에 https://appassets.androidplatform.net 등록을 확인해 주세요.) " + capOld; } }, 6000);
+  } catch(e) { if (window.KAKAO_KEY){ const cp = el.parentElement && el.parentElement.querySelector(".mapcap"); if (cp) cp.textContent = "카카오 지도를 불러오지 못했어요(" + ((e && e.message) || "오류") + "). 인터넷 연결과 카카오 설정을 확인해 주세요. " + cp.textContent; } /* 약도 유지 */ }
 }
 function upgradeCourseMap(){
   const tab = document.getElementById("tab-course"), cm = document.getElementById("courseMap");
@@ -4053,7 +4059,8 @@ function renderOps(){
       : `<div class="empty">아직 응모가 없어요.</div>`}`;
 }
 
-function render(){ renderTop(); renderPlaces(); renderSeasonTab(); renderCourse(); renderDeals(); renderOps(); renderPack(); renderJournal(); renderFavs(); renderCouponBook(); renderMy(); renderMore(); refreshDetail(); }
+function renderSouvTab(){ const el = document.getElementById("tab-souv"); if (!el) return; const a = souvAll(); el.innerHTML = `<div class="sec-title"><h2>${a.title}</h2><span class="en">Local gifts</span></div><p class="meta" style="margin:-4px 0 12px">누르면 어디서 살 수 있는지 보여 드려요.</p>${a.html}`; }
+function render(){ renderTop(); renderPlaces(); renderSeasonTab(); renderSouvTab(); renderCourse(); renderDeals(); renderOps(); renderPack(); renderJournal(); renderFavs(); renderCouponBook(); renderMy(); renderMore(); refreshDetail(); }
 
 // ───────── 이벤트 ─────────
 document.addEventListener("click", e=>{
@@ -4337,7 +4344,7 @@ function renderMore(){
     <div class="mlist">
       <button class="mrow" data-tab="places"><span class="mico">🏞️</span><span class="mtx"><b>가볼 곳</b><small>지역·동행별 추천과 전체 장소</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-tab="season"><span class="mico">🎉</span><span class="mtx"><b>계절&amp;행사</b><small>계절 추천과 축제 일정</small></span><span class="mgo">›</span></button>
-      <button class="mrow" data-detail="slist:all"><span class="mico">🎁</span><span class="mtx"><b>특산품·기념 선물</b><small>지역별 특산품과 살 수 있는 곳</small></span><span class="mgo">›</span></button>
+      <button class="mrow" data-tab="souv"><span class="mico">🎁</span><span class="mtx"><b>특산품·기념 선물</b><small>지역별 특산품과 살 수 있는 곳</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-near="4"><span class="mico">📍</span><span class="mtx"><b>내 주변</b><small>1km·4km·10km 맛집·가볼 곳·추천지</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-gocat="교통"><span class="mico">🚄</span><span class="mtx"><b>교통</b><small>KTX·버스터미널·택시</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-tab="deals"><span class="mico">🏷️</span><span class="mtx"><b>할인 방법</b><small>강원 여행 할인 제도</small></span><span class="mgo">›</span></button>
@@ -4821,12 +4828,12 @@ window.addEventListener("popstate", e=>{
     else openDetail(st.k, st.id, false);
     return; }
   closeSearch(); closeSub();
-  const tab = st.tab || (["places","season","course","deals","pack","journal","ops","favs","coupons","my","more"].includes(hh) ? hh : "places");
+  const tab = st.tab || (["places","season","course","deals","pack","souv","journal","ops","favs","coupons","my","more"].includes(hh) ? hh : "places");
   if (tab==="ops" && !state.isOps) state.tab = "places"; else state.tab = tab;
   if (state.tab==="ops") renderOps(); renderTop(); keepTabPos();
 });
 const h = location.hash.replace("#","");
-if (["places","season","course","deals","pack","journal","ops","favs","coupons","my","more"].includes(h)) state.tab = h;
+if (["places","season","course","deals","pack","souv","journal","ops","favs","coupons","my","more"].includes(h)) state.tab = h;
 if (h==="stay"){ state.tab = "places"; state.cat = "숙소"; }
 if (window.APK_BUILD) document.body.classList.add("apk");
 render();
