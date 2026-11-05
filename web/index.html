@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611051449";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611051453";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1247,6 +1247,7 @@ body.compact .pagebar { display: flex; align-items: center; gap: 10px; position:
     </div>
     <div id="heroPhotos" style="display:grid;gap:6px"></div>
     <div class="field"><span class="lbl">WHERE · 지역</span><div class="days regions" id="regionChips" role="group" aria-label="지역 선택"></div></div>
+    <div class="days" id="dayChips" role="group" aria-label="일차 선택"></div>
   </div>
 </header>
 
@@ -3225,11 +3226,6 @@ const kakaoRoute = (a,b) => `https://map.kakao.com/link/from/${encodeURIComponen
 function save(){ state.courses[state.day] = state.course; ["date","dateEnd","day","courses","who","course","start","checks","coupons","startTime","people","mode","stamps","reviews","region","showRev","claimed","clicks","mapFit","favs"].forEach(k=>store.set(k, state[k])); }
 
 // ───────── 렌더: 상단 ─────────
-function dayChipsHtml(){
-  const ds = tripDays(); if (ds.length < 2) return "";
-  return `<div class="days" id="dayChips" role="group" aria-label="일차 선택" style="margin-bottom:12px">` + ds.map((x,i)=>{ const c = i===state.day ? state.course : (state.courses[i]||[]);
-    return `<button data-day="${i}" aria-pressed="${i===state.day}">${i+1}일차${c.length?` · ${c.length}곳`:""}<small>${x.getMonth()+1}/${x.getDate()} ${WD[x.getDay()]}요일</small></button>`; }).join("") + `</div>`;
-}
 function renderTop(){
   renderHeroPhotos();
   const d = tripDay();
@@ -3239,6 +3235,10 @@ function renderTop(){
   document.getElementById("tripDate").value = state.date;
   document.getElementById("tripDateEnd").value = state.dateEnd;
   document.getElementById("tripDateEnd").min = state.date;
+  const ds = tripDays(), dc = document.getElementById("dayChips");
+  dc.hidden = ds.length < 2;
+  dc.innerHTML = ds.map((x,i)=>{ const c = i===state.day ? state.course : (state.courses[i]||[]);
+    return `<button data-day="${i}" aria-pressed="${i===state.day}">${i+1}일차${c.length?` · ${c.length}곳`:""}<small>${x.getMonth()+1}/${x.getDate()} ${WD[x.getDay()]}요일</small></button>`; }).join("");
   document.getElementById("regionChips").innerHTML = [{ id:"all", name:"강원 전체" }, ...REGIONS].map(r=>{
     const n = r.id==="all" ? PLACES.length : PLACES.filter(p=>p.region===r.id).length;
     return `<button data-region="${r.id}" aria-pressed="${r.id===state.region}">${r.name}<small>${n}곳</small></button>`; }).join("");
@@ -3314,6 +3314,8 @@ function renderPlaces(){
     <p class="notice">운영시간·요금·휴무는 대략적인 정보예요. 공휴일·명절·기상 상황에 따라 바뀔 수 있으니 출발 전 한 번 더 확인하세요.</p>
     <div class="hot"><div class="sec-title"><h2>${regionLabel()}, ${({친구:"친구와",연인:"연인과",가족:"가족과",혼자:"혼자"})[state.who]} 가기 좋은 곳</h2><span class="en">Curated</span></div>
       <div class="strip">${hotList(10).map((p,i)=>stripItem(p, "No."+(i+1))).join("")}</div>${hotEditor(hot)}</div>
+    ${festStrip()}
+    ${souvStrip()}
     ${renderSponsors()}
     <div class="sec-title"><h2>${state.region==="all"?"강원 모든 장소":REG[state.region].name+" 모든 장소"}</h2><span class="en">${regionPlaces().length} places${KTO_ADDED?` · 관광공사 ${PLACES.filter(p=>p.source==="kto"&&inRegion(p)).length}`:""}</span></div>
     <div class="filters" role="group" aria-label="분류">${[...CATS, ...(PLACES.some(p=>p.cat==="관광지")?["관광지"]:[]), "숙소", "교통"].map(c=>`<button class="chipbtn" data-cat="${c}" aria-pressed="${c===state.cat}">${c}</button>`).join("")}<span class="sep"></span><button class="chipbtn" id="trendBtn" aria-pressed="${state.trend}">요즘 뜨는 곳</button><button class="chipbtn" id="localBtn" aria-pressed="${state.local}">현지인 맛집</button><button class="chipbtn" id="dealBtn" aria-pressed="${state.dealOnly}">할인 있는 곳</button><button class="chipbtn" id="rainBtn" aria-pressed="${state.rain}">비 오는 날</button></div>
@@ -3608,7 +3610,6 @@ function renderCourse(){
   const { st, stops, seq, legs, total, mv, rows, end, cost } = computeCourse();
   const closed = stops.filter(p=>status(p).cls==="closed");
   el.innerHTML = `
-    ${dayChipsHtml()}
     <div class="tpl"><span class="meta">추천 코스 불러오기</span>${TEMPLATES.map((t,i)=>inRegion(t)?`<button class="chipbtn" data-tpl="${i}">${t.name}</button>`:"").join("")}</div>
     <form class="revbox" id="aiForm">
       <h3>${REV}AI 맞춤 코스 <span class="meta" style="margin-left:8px;font-family:var(--font-body)">프리미엄 후보 기능</span></h3>
