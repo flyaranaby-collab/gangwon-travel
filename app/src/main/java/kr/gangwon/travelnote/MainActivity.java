@@ -12,6 +12,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.webkit.JavascriptInterface;
+import android.webkit.GeolocationPermissions;
+import android.content.pm.PackageManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -53,6 +55,10 @@ public class MainActivity extends Activity {
     private WebViewAssetLoader loader;
     private ValueCallback<Uri[]> fileCallback;
     private static final int PICK_FILE = 41;
+    private static final int REQ_LOC = 42;
+    // '내 주변' 기능이 위치를 물을 때: 안드로이드 위치 권한을 받은 뒤 수첩 화면에 알려 준다
+    private GeolocationPermissions.Callback geoCallback;
+    private String geoOrigin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +81,7 @@ public class MainActivity extends Activity {
         s.setAllowUniversalAccessFromFileURLs(false);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         s.setSafeBrowsingEnabled(true);         // 구글 세이프 브라우징으로 위험한 주소 차단
-        s.setGeolocationEnabled(false);
+        s.setGeolocationEnabled(true);          // '내 주변 1·4·10km'에서만 사용(수첩 화면이 요청할 때)
         s.setSupportMultipleWindows(false);
         s.setTextZoom(100);
         web.setWebViewClient(new WebViewClient() {
@@ -104,6 +110,16 @@ public class MainActivity extends Activity {
         });
         // 운영자 사진 등록(사진첩·카메라 선택 창)과 확인·입력 창을 쓸 수 있게 한다
         web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                if (!"https://appassets.androidplatform.net".equals(origin)) { callback.invoke(origin, false, false); return; }
+                boolean fine = checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+                boolean coarse = checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+                if (fine || coarse) { callback.invoke(origin, true, false); return; }
+                geoCallback = callback; geoOrigin = origin;
+                requestPermissions(new String[]{ android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION }, REQ_LOC);
+            }
+
             @Override
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> cb, FileChooserParams params) {
                 if (fileCallback != null) fileCallback.onReceiveValue(null);
@@ -230,6 +246,16 @@ public class MainActivity extends Activity {
                 return true;
             } catch (Exception e) { return false; }
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+        if (requestCode != REQ_LOC || geoCallback == null) return;
+        boolean ok = false;
+        for (int r : results) if (r == PackageManager.PERMISSION_GRANTED) ok = true;
+        geoCallback.invoke(geoOrigin, ok, false);
+        geoCallback = null;
     }
 
     @Override
