@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611051023";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611051027";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1414,27 +1414,74 @@ const SEASONS = {
 // 강원 대표 행사·축제. 시기는 해마다 조금씩 달라지는 대략값이라 카드마다 '일정 확인' 링크를 둔다.
 // place: 같은 장소 카드가 있으면 그 id(코스에 담기 가능)
 const FESTIVALS = [
-  { id:"f-haemaji", region:"gangneung", months:[1], when:"1월 1일", name:"정동진·경포 해맞이축제", desc:"새해 첫 해를 동해에서. 해변마다 해맞이 행사가 열려요.", place:"jeongdongjin" },
-  { id:"f-sancheoneo", region:"hwacheon", months:[1], when:"1월", name:"화천 산천어축제", desc:"언 화천천 위에서 얼음낚시·맨손 잡기, 눈썰매.", place:"sancheoneo" },
-  { id:"f-bingeo", region:"inje", months:[1,2], when:"1~2월", name:"인제 빙어축제", desc:"빙어호 얼음낚시와 즉석 빙어튀김.", place:"bingeo" },
-  { id:"f-songeo", region:"pyeongchang", months:[12,1,2], when:"12월 말~2월", name:"평창송어축제", desc:"진부 오대천에서 송어 얼음낚시·맨손 잡기, 눈썰매." },
-  { id:"f-kkongkkong", region:"hongcheon", months:[1], when:"1월", name:"홍천강 꽁꽁축제", desc:"홍천강 얼음 위 송어낚시와 겨울 놀이." },
-  { id:"f-daeboreum", region:"donghae", months:[2], when:"정월대보름 무렵", name:"삼척 정월대보름제", desc:"기줄다리기·달집태우기 같은 대보름 전통 행사." },
-  { id:"f-cherry", region:"gangneung", months:[4], when:"4월 초", name:"경포 벚꽃축제", desc:"경포호 둘레 벚꽃길과 밤 벚꽃 조명.", place:"gyeongpodae" },
-  { id:"f-yuchae", region:"donghae", months:[4], when:"4월 초·중순", name:"삼척 맹방 유채꽃축제", desc:"바다 옆 노란 유채꽃밭과 벚꽃 터널.", place:"maengbang" },
-  { id:"f-mime", region:"chuncheon", months:[5], when:"5월 말", name:"춘천마임축제", desc:"거리 곳곳에서 열리는 마임·공연 예술 축제." },
-  { id:"f-dano", region:"gangneung", months:[6], when:"6월(음력 5월 5일 앞뒤)", name:"강릉단오제", desc:"유네스코 인류무형문화유산. 그네·씨름·관노가면극·난장.", place:"danoje" },
-  { id:"f-corn", region:"hongcheon", months:[7], when:"7월 말", name:"홍천 찰옥수수축제", desc:"갓 쪄낸 홍천 찰옥수수 맛보기와 구매." },
-  { id:"f-music", region:"pyeongchang", months:[7,8], when:"7~8월", name:"평창 대관령음악제", desc:"서늘한 대관령에서 열리는 클래식 음악제." },
-  { id:"f-jjokbae", region:"hwacheon", months:[8], when:"8월", name:"화천 쪽배축제", desc:"직접 만든 쪽배로 북한강 물 위를 건너는 여름 축제." },
-  { id:"f-dakgalbi", region:"chuncheon", months:[8,9], when:"8~9월", name:"춘천 닭갈비·막국수 축제", desc:"춘천 대표 먹거리를 한자리에서." },
-  { id:"f-hyoseok", region:"pyeongchang", months:[9], when:"9월 초", name:"평창 효석문화제", desc:"봉평 메밀꽃밭과 '메밀꽃 필 무렵' 문학 축제.", place:"bongpyeong" },
-  { id:"f-dancing", region:"wonju", months:[9], when:"9월", name:"원주 다이내믹댄싱카니발", desc:"거리 퍼레이드와 대규모 댄스 경연." },
-  { id:"f-eoksae", region:"jeongseon", months:[9,10], when:"9월 말~10월", name:"정선 민둥산 억새꽃축제", desc:"정상을 뒤덮은 은빛 억새 평원 산행.", place:"minungsan" },
-  { id:"f-arirang", region:"jeongseon", months:[10], when:"10월", name:"정선아리랑제", desc:"정선아리랑 공연과 전통 놀이." },
-  { id:"f-coffee", region:"gangneung", months:[10], when:"10월", name:"강릉커피축제", desc:"커피 도시 강릉의 바리스타·로스터리 체험 축제.", place:"anmok" },
-  { id:"f-songi", region:"yangyang", months:[10], when:"10월", name:"양양 송이연어축제", desc:"제철 양양 송이와 남대천 연어 맨손 잡기.", place:"yangyang-market" },
-  { id:"f-seorak", region:"sokcho", months:[10], when:"10월", name:"속초 설악문화제", desc:"단풍철에 열리는 속초 대표 문화 축제.", place:"seorak" },
+  // 출처: 한국관광공사 행사정보(2026년 일정), 기사로 확인한 축제, 해마다 열려 온 축제. 날짜는 해마다 바뀌니 출발 전 확인 안내를 함께 보여 준다.
+  { id:"f-kkongkkong", region:"hongcheon", months:[1], when:"1월 (2026년 1/9~1/25)", name:"홍천강 꽁꽁축제", desc:"홍천강 얼음 위 송어낚시와 겨울 놀이.", img:"http://tong.visitkorea.or.kr/cms/resource/12/3580712_image2_1.JPG", src:"관광공사" },
+  { id:"f-snow", region:"pyeongchang", months:[2], when:"2월 (2026년 2/13~2/22)", name:"대관령눈꽃축제", desc:"대관령 눈 조각과 눈썰매, 겨울 놀이 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/89/3588789_image2_1.JPG", src:"관광공사" },
+  { id:"f-moonfire", region:"yangyang", months:[2, 3], when:"2월 (2026년 2/28~3/1)", name:"양양 낙산해변 달빛 모닥불축제", desc:"낙산해변에서 정월대보름 달빛 아래 모닥불을 피우는 축제.", place:"naksansa", img:"https://tong.visitkorea.or.kr/cms/resource/16/4009716_image2_1.png", src:"관광공사" },
+  { id:"f-jeonbyeong", region:"jeongseon", months:[2, 3], when:"2월 (2026년 2/28~3/2)", name:"정선메밀전병축제", desc:"정선 향토 음식 메밀전병을 맛보고 만들어 보는 축제.", place:"jeongseon-market", img:"https://tong.visitkorea.or.kr/cms/resource/36/4025536_image2_1.jpg", src:"관광공사" },
+  { id:"f-cherry", region:"gangneung", months:[4], when:"4월 (2026년 4/4~4/11)", name:"강릉 경포벚꽃축제", desc:"경포호 둘레 벚꽃길과 밤 벚꽃 조명.", place:"gyeongpodae", img:"https://tong.visitkorea.or.kr/cms/resource/23/4041323_image2_1.jpg", src:"관광공사" },
+  { id:"f-yycherry", region:"yangyang", months:[4], when:"4월 (2026년 4/4~4/5)", name:"양양 남대천 벚꽃축제", desc:"양양 남대천 둑방 벚꽃길 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/05/4046005_image2_1.jpg", src:"관광공사" },
+  { id:"f-yeongnang", region:"sokcho", months:[4], when:"4월 (2026년 4/11~4/12)", name:"영랑호 벚꽃축제", desc:"속초 영랑호 둘레 벚꽃길 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/87/4041387_image2_1.jpg", src:"관광공사" },
+  { id:"f-danjong", region:"jeongseon", months:[4], when:"4월 (2026년 4/24~4/26)", name:"단종문화제", desc:"영월의 단종 역사를 기리는 문화제. 국장 재현과 공연.", img:"https://tong.visitkorea.or.kr/cms/resource/21/4004221_image2_1.jpg", src:"관광공사" },
+  { id:"f-naora", region:"wonju", months:[4, 5, 6, 7, 8, 9, 10], when:"4월 (2026년 4/25~10/31)", name:"나오라쇼", desc:"원주 소금산 그랜드밸리의 야간 미디어 쇼(봄~가을 운영).", place:"sogeumsan", img:"https://tong.visitkorea.or.kr/cms/resource/09/4059609_image2_1.png", src:"관광공사" },
+  { id:"f-sannamul", region:"hongcheon", months:[5], when:"5월 (2026년 5/1~5/3)", name:"홍천 산나물축제", desc:"봄 산나물을 맛보고 사는 홍천 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/99/3301599_image2_1.jpg", src:"관광공사" },
+  { id:"f-duwibong", region:"jeongseon", months:[5], when:"5월 (2026년 5/8~5/10)", name:"두위봉 철쭉축제&산맥페스티벌", desc:"정선 두위봉의 철쭉 산행과 공연.", img:"https://tong.visitkorea.or.kr/cms/resource/29/4060629_image2_1.jpeg", src:"관광공사" },
+  { id:"f-haneulsup", region:"jeongseon", months:[5], when:"5월 (2026년 5/16)", name:"하늘숲길 걷기축제", desc:"정선 하이원 운탄고도 하늘숲길을 함께 걷는 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/97/4061397_image2_1.jpg", src:"관광공사" },
+  { id:"f-poppy", region:"wonju", months:[5, 6], when:"5월 (2026년 5/20~6/7)", name:"원주용수골꽃양귀비축제", desc:"원주 용수골의 꽃양귀비 들판 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/89/4084289_image2_1.jpg", src:"관광공사" },
+  { id:"f-bread", region:"gangneung", months:[5], when:"5월 (2026년 5/22~5/25)", name:"빵터지는 강릉 빵 페스타", desc:"강릉 빵집들이 모이는 빵 축제(강릉대도호부 관아 일대).", img:"https://tong.visitkorea.or.kr/cms/resource/15/4065915_image2_1.jpg", src:"관광공사" },
+  { id:"f-mime", region:"chuncheon", months:[5], when:"5월 (2026년 5/24~5/31)", name:"춘천마임축제", desc:"거리 곳곳에서 열리는 마임·공연 예술 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/77/4024377_image2_1.JPG", src:"관광공사" },
+  { id:"f-silhyang", region:"sokcho", months:[6], when:"6월 (2026년 6/12~6/13)", name:"실향민문화축제", desc:"속초 아바이마을 실향민 문화와 음식을 나누는 축제.", place:"abai", img:"https://tong.visitkorea.or.kr/cms/resource/81/4069081_image2_1.jpg", src:"관광공사" },
+  { id:"f-octopus", region:"sokcho", months:[6], when:"6월 (2026년 6/12~6/14)", name:"저도 대문어축제", desc:"고성 대진항 대문어 축제. 문어 맛보기와 판매.", img:"https://tong.visitkorea.or.kr/cms/resource/22/4070022_image2_1.jpg", src:"관광공사" },
+  { id:"f-lavender", region:"donghae", months:[6], when:"6월 (2026년 6/13~6/21)", name:"무릉별유천지 라벤더축제", desc:"동해 무릉별유천지의 보랏빛 라벤더 정원 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/40/4067740_image2_1.JPG", src:"관광공사" },
+  { id:"f-dano", region:"gangneung", months:[6], when:"6월 (2026년 6/15~6/22)", name:"강릉단오제", desc:"유네스코 인류무형문화유산. 그네·씨름·관노가면극과 난장.", place:"danoje", img:"https://tong.visitkorea.or.kr/cms/resource/76/4057376_image2_1.JPG", src:"관광공사" },
+  { id:"f-hanwoo", region:"chuncheon", months:[6], when:"6월 (2026년 6/19~6/21)", name:"강원한우데이", desc:"강원 한우를 할인 판매·시식하는 행사.", img:"https://tong.visitkorea.or.kr/cms/resource/78/4073378_image2_1.JPG", src:"관광공사" },
+  { id:"f-sulmini", region:"chuncheon", months:[6], when:"6월 (2026년 6/19~6/20)", name:"춘천 미니 술페스타", desc:"춘천 지역 술을 맛보는 작은 술 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/13/4069913_image2_1.jpg", src:"관광공사" },
+  { id:"f-beer", region:"gangneung", months:[7], when:"7월 (2026년 7/3~7/5)", name:"강릉비치비어페스티벌", desc:"경포해변에서 열리는 여름 맥주 축제.", place:"gyeongpo-beach", img:"https://tong.visitkorea.or.kr/cms/resource/30/4078330_image2_1.jpg", src:"관광공사" },
+  { id:"f-photo", region:"jeongseon", months:[7, 8, 9, 10], when:"7월 (2026년 7/17~10/11)", name:"동강국제사진제", desc:"영월 동강사진박물관 일대의 국제 사진 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/56/4075256_image2_1.jpg", src:"관광공사" },
+  { id:"f-water", region:"chuncheon", months:[7, 8], when:"7월 (2026년 7/17~8/17)", name:"춘천 썸머워터 페스티벌", desc:"춘천 물놀이 여름 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/31/4086431_image2_1.jpg", src:"관광공사" },
+  { id:"f-corn", region:"hongcheon", months:[7], when:"7월 (2026년 7/17~7/19)", name:"홍천 찰옥수수 축제", desc:"갓 쪄낸 홍천 찰옥수수 맛보기와 구매.", img:"https://tong.visitkorea.or.kr/cms/resource/14/4108014_image2_1.jpg", src:"관광공사" },
+  { id:"f-myeongju", region:"gangneung", months:[7], when:"7월 (2026년 7/22~7/26)", name:"명주인형극제", desc:"강릉 명주동 일대에서 열리는 인형극 축제.", place:"oldtown-shops", img:"https://tong.visitkorea.or.kr/cms/resource/43/4078843_image2_1.jpg", src:"관광공사" },
+  { id:"f-music", region:"pyeongchang", months:[7, 8], when:"7월 (2026년 7/23~8/2)", name:"평창대관령음악제", desc:"서늘한 대관령에서 열리는 클래식 음악제.", img:"https://tong.visitkorea.or.kr/cms/resource/08/4080008_image2_1.jpg", src:"관광공사" },
+  { id:"f-heat", region:"pyeongchang", months:[7, 8], when:"7월 (2026년 7/24~8/2)", name:"평창더위사냥축제", desc:"평창 여름 물놀이·더위 사냥 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/23/4061523_image2_1.JPG", src:"관광공사" },
+  { id:"f-gpsummer", region:"gangneung", months:[7, 8], when:"7월 (2026년 7/30~8/5)", name:"경포 썸머 페스티벌", desc:"경포해변 여름 공연·불꽃 축제.", place:"gyeongpo-beach", img:"https://tong.visitkorea.or.kr/cms/resource/15/4091115_image2_1.jpg", src:"관광공사" },
+  { id:"f-scsummer", region:"sokcho", months:[7, 8], when:"7월 (2026년 7/31~8/2)", name:"속초 썸머페스티벌", desc:"속초해수욕장 여름 공연 축제.", place:"sokcho-beach", img:"https://tong.visitkorea.or.kr/cms/resource/77/4087277_image2_1.jpg", src:"관광공사" },
+  { id:"f-hcbeer", region:"hongcheon", months:[8], when:"8월 (2026년 8/5~8/9)", name:"홍천강 별빛음악 맥주축제", desc:"홍천강변 맥주와 음악 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/45/4108045_image2_1.jpg", src:"관광공사" },
+  { id:"f-gnnight", region:"gangneung", months:[8], when:"8월 (2026년 8/14~8/16)", name:"강릉 국가유산야행", desc:"밤에 여는 강릉대도호부 관아·문화유산 야간 행사.", img:"https://tong.visitkorea.or.kr/cms/resource/77/3317777_image2_1.jpg", src:"관광공사" },
+  { id:"f-rooftop", region:"wonju", months:[8], when:"8월 (2026년 8/27~8/29)", name:"원주옥상영화제", desc:"원주 옥상에서 보는 여름 영화제.", img:"https://tong.visitkorea.or.kr/cms/resource/47/4103047_image2_1.jpg", src:"관광공사" },
+  { id:"f-wjnight", region:"wonju", months:[9], when:"9월 (2026년 9/4~9/6)", name:"원주 국가유산야행", desc:"원주 강원감영 일대의 야간 문화유산 행사.", img:"https://tong.visitkorea.or.kr/cms/resource/20/4106120_image2_1.jpg", src:"관광공사" },
+  { id:"f-hyoseok", region:"pyeongchang", months:[9], when:"9월 (2026년 9/4~9/13)", name:"평창효석문화제", desc:"봉평 메밀꽃밭과 ‘메밀꽃 필 무렵’ 문학 축제.", place:"bongpyeong", img:"https://tong.visitkorea.or.kr/cms/resource/28/3523028_image2_1.jpg", src:"관광공사" },
+  { id:"f-puppet", region:"chuncheon", months:[9], when:"9월 (2026년 9/10~9/16)", name:"춘천인형극제", desc:"국내 대표 인형극 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/13/4087113_image2_1.png", src:"관광공사" },
+  { id:"f-sul", region:"chuncheon", months:[9], when:"9월 (2026년 9/11~9/12)", name:"춘천 술 페스타", desc:"강원 전통주와 지역 술 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/09/4105509_image2_1.jpg", src:"관광공사" },
+  { id:"f-folk", region:"pyeongchang", months:[9], when:"9월 (2026년 9/18~9/20)", name:"한국민속예술제", desc:"전국 민속예술 경연 축제(평창 진부).", img:"https://tong.visitkorea.or.kr/cms/resource/80/4090380_image2_1.jpg", src:"관광공사" },
+  { id:"f-dancing", region:"wonju", months:[9], when:"9월 (2026년 9/18~9/20)", name:"원주 댄싱카니발", desc:"거리 퍼레이드와 대규모 댄스 경연.", img:"https://tong.visitkorea.or.kr/cms/resource/56/4110556_image2_1.jpg", src:"관광공사" },
+  { id:"f-injeflower", region:"inje", months:[9, 10], when:"9월 (2026년 9/24~10/18)", name:"인제가을꽃축제", desc:"인제 용대리 일대 가을꽃 정원 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/47/4109647_image2_1.jpg", src:"관광공사" },
+  { id:"f-arirang", region:"jeongseon", months:[10], when:"10월 (2026년 10/1~10/4)", name:"정선아리랑제", desc:"정선아리랑 공연과 전통 놀이.", place:"jeongseon-market", img:"https://tong.visitkorea.or.kr/cms/resource/03/4085103_image2_1.jpg", src:"관광공사" },
+  { id:"f-seorak", region:"sokcho", months:[10], when:"10월 (2026년 10/2~10/4)", name:"설악문화제", desc:"단풍철에 열리는 속초 대표 문화 축제.", place:"seorak", img:"https://tong.visitkorea.or.kr/cms/resource/58/4107758_image2_1.jpg", src:"관광공사" },
+  { id:"f-coal", region:"jeongseon", months:[10], when:"10월 (2026년 10/7~10/10)", name:"탄광문화축제", desc:"정선 사북의 탄광 역사를 체험하는 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/14/4117714_image2_1.png", src:"관광공사" },
+  { id:"f-ojukbread", region:"gangneung", months:[10], when:"10월 (2026년 10/9~10/11)", name:"강릉 빵굽는 마을, 오죽", desc:"오죽헌 일대에서 열리는 빵 축제.", place:"ojukheon", img:"https://tong.visitkorea.or.kr/cms/resource/13/4114313_image2_1.jpg", src:"관광공사" },
+  { id:"f-military", region:"chuncheon", months:[10], when:"10월 (2026년 10/9~10/11)", name:"K-밀리터리 페스티벌：춘천대첩", desc:"춘천대첩 기념 밀리터리 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/13/4113213_image2_1.png", src:"관광공사" },
+  { id:"f-noodle", region:"gangneung", months:[10], when:"10월 (2026년 10/15~10/18)", name:"강릉 국수 축제", desc:"강릉 장칼국수 등 국수를 맛보는 축제(월화거리 일대).", place:"jungang", img:"https://tong.visitkorea.or.kr/cms/resource/49/4115249_image2_1.jpg", src:"관광공사" },
+  { id:"f-jsnight", region:"jeongseon", months:[10], when:"10월 (2026년 10/16~10/18)", name:"정선 국가유산야행", desc:"정선의 밤 문화유산 행사.", img:"https://tong.visitkorea.or.kr/cms/resource/71/4126871_image2_1.jpg", src:"관광공사" },
+  { id:"f-goguma", region:"wonju", months:[10], when:"10월 (2026년 10/17~10/18)", name:"원주농협 치악산 고구마축제", desc:"치악산 고구마 판매·체험 축제.", img:"https://tong.visitkorea.or.kr/cms/resource/26/4122226_image2_1.jpg", src:"관광공사" },
+  { id:"f-coffee", region:"gangneung", months:[10], when:"10월 (2026년 10/21~10/25)", name:"강릉커피축제", desc:"커피 도시 강릉의 바리스타·로스터리 체험 축제.", place:"anmok", img:"https://tong.visitkorea.or.kr/cms/resource/24/3546224_image2_1.JPG", src:"관광공사" },
+  { id:"f-handon", region:"gangneung", months:[10], when:"10월 (2026년 10/23~10/25)", name:"강원한돈페스타", desc:"강원 한돈 할인 판매·시식 행사.", img:"https://tong.visitkorea.or.kr/cms/resource/51/4127851_image2_1.png", src:"관광공사" },
+  { id:"f-songeo", region:"pyeongchang", months:[1], when:"1월 (2027년 1/1~1/31)", name:"평창송어축제", desc:"진부 오대천에서 송어 얼음낚시·맨손 잡기.", img:"https://tong.visitkorea.or.kr/cms/resource/81/4002581_image2_1.jpg", src:"관광공사" },
+  { id:"f-sancheoneo", region:"hwacheon", months:[1], when:"1월 (2027년 1/9~1/31)", name:"얼음나라화천 산천어축제", desc:"언 화천천 위에서 얼음낚시·맨손 잡기, 눈썰매.", place:"sancheoneo", img:"https://tong.visitkorea.or.kr/cms/resource/46/4071246_image2_1.jpg", src:"관광공사" },
+  { id:"f-domuk", region:"sokcho", months:[11], when:"11월 중순 (2025년엔 11/7~11/16, 속초항)", name:"속초 양미리·도루묵 축제", desc:"제철 양미리·도루묵 구이와 찌개를 맛보는 속초항 겨울 축제.", place:"sokcho-market", src:"기사" },
+  { id:"f-myeongtae", region:"sokcho", months:[10], when:"10월 (2026년 10/2 개막, 거진항)", name:"고성 명태축제", desc:"고성 거진항의 명태 요리·체험 축제.", src:"기사" },
+  { id:"f-rose", region:"donghae", months:[5, 6], when:"5월 (2026년 5/19 개막, 오십천 장미공원)", name:"삼척 장미축제", desc:"오십천 장미공원의 천만 송이 장미 축제.", src:"기사" },
+  { id:"f-jdfilm", region:"gangneung", months:[8], when:"8월 (2026년 8/7~8/10)", name:"정동진독립영화제", desc:"정동진 바다와 기차역에서 밤에 보는 독립영화제.", place:"jeongdongjin", src:"기사" },
+  { id:"f-songi", region:"yangyang", months:[10], when:"10월 (2026년 10/16 개막)", name:"양양 송이연어축제", desc:"제철 양양 송이와 남대천 연어 맨손 잡기.", place:"yangyang-market", src:"기사" },
+  { id:"f-hajodae", region:"yangyang", months:[8], when:"8월 (2026년 8/1, 하조대해변)", name:"하조대 비치페스티벌", desc:"하조대 해변 여름 공연 축제.", place:"hajodae", src:"기사" },
+  { id:"f-goseongsquid", region:"sokcho", months:[8], when:"8월 (2026년 8/8~8/9, 송지호해수욕장)", name:"고성 오징어 맨손잡기 축제", desc:"송지호해수욕장에서 오징어를 맨손으로 잡는 체험 축제.", src:"기사" },
+  { id:"f-susan", region:"yangyang", months:[10], when:"10월 (2026년 10/2~10/4, 수산항)", name:"수산항 바다체험축제", desc:"양양 수산항의 바다 체험 축제.", src:"기사" },
+  { id:"f-haemaji", region:"gangneung", months:[1], when:"1월 1일", name:"정동진·경포 해맞이축제", desc:"새해 첫 해를 동해에서. 해변마다 해맞이 행사가 열려요.", place:"jeongdongjin", src:"해마다 확인" },
+  { id:"f-bingeo", region:"inje", months:[1,2], when:"1~2월", name:"인제 빙어축제", desc:"빙어호 얼음낚시와 즉석 빙어튀김.", place:"bingeo", src:"해마다 확인" },
+  { id:"f-daeboreum", region:"donghae", months:[2], when:"정월대보름 무렵", name:"삼척 정월대보름제", desc:"기줄다리기·달집태우기 같은 대보름 전통 행사.", src:"해마다 확인" },
+  { id:"f-yuchae", region:"donghae", months:[4], when:"4월 초·중순", name:"삼척 맹방 유채꽃축제", desc:"바다 옆 노란 유채꽃밭과 벚꽃 터널.", place:"maengbang", src:"해마다 확인" },
+  { id:"f-jjokbae", region:"hwacheon", months:[8], when:"8월", name:"화천 쪽배축제", desc:"직접 만든 쪽배로 북한강 물 위를 건너는 여름 축제.", src:"해마다 확인" },
+  { id:"f-dakgalbi", region:"chuncheon", months:[8,9], when:"8~9월", name:"춘천 닭갈비·막국수 축제", desc:"춘천 대표 먹거리를 한자리에서.", src:"해마다 확인" },
+  { id:"f-eoksae", region:"jeongseon", months:[9,10], when:"9월 말~10월", name:"정선 민둥산 억새꽃축제", desc:"정상을 뒤덮은 은빛 억새 평원 산행.", place:"minungsan", src:"해마다 확인" },
 ];
 const seasonOf = m =>Object.keys(SEASONS).find(k=>SEASONS[k].months.includes(m)) || "겨울";
 const seasonPick = p => { const ss = SEASONS[seasonOf(tripDay().getMonth()+1)]; const x = ss.picks.find(r=>r[0]===p.id); return x ? x : null; };
@@ -3675,7 +3722,7 @@ function festStrip(){
   const L = festList(); if (!L.length) return "";
   const m = tripDay().getMonth()+1;
   return `<div class="stripwrap"><div class="sec-title"><h2>${m}월·${m%12+1}월 축제·행사</h2><span class="en">Festivals</span></div>
-    <div class="strip">${L.map(f=>{ const pl = f.place && byId(f.place), ph = pl && photoFor(pl);
+    <div class="strip">${L.map(f=>{ const pl = f.place && byId(f.place), ph = f.img ? { url:httpsUrl(f.img) } : (pl && photoFor(pl));
       return `<button class="sitemc" data-detail="f:${f.id}"><span class="ic">${ph && !ph.example ? `<img src="${esc(ph.url)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<i>${festIcon(f)}</i></span><em>${esc(f.when)}</em><b>${esc(f.name.replace(/^(강릉|속초|양양|평창|정선|영월|춘천|원주|인제|홍천|화천|동해|삼척|고성)\s/,""))}</b></button>`; }).join("")}</div></div>`;
 }
 // ═════════ 지역 특산품 · 기념 선물 ═════════
@@ -3787,6 +3834,8 @@ function cpLi(c, i){
 function loadRcImgs(el){ (el||document).querySelectorAll("img[data-rcimg]").forEach(img=>{ if (img.src) return; rcGet(img.dataset.rcimg).then(v=>{ if (v) img.src = v; }).catch(()=>{}); }); }
 const cpImgHtml = c => c.img ? `<img class="cpimgv" src="${esc(c.img)}" alt="${esc(c.title)} 쿠폰 이미지" loading="lazy" onerror="this.remove()">` : "";
 
+// 상세 페이지에서도 쓰는 '코스에 담기' 버튼(계절 탭의 것과 같은 모양)
+function courseBtn(id){ const inC = state.course.includes(id); return `<button class="btn ${inC?"added":""}" data-toggle="${id}">${inC?"코스에 담김 ✓":"코스에 담기"}</button>`; }
 // ── 상세(서브) 페이지 ──
 const SUB = { k:null, id:null };
 function openSub(title, html, st){
@@ -3809,7 +3858,7 @@ function detailHtml(k, id){
       <h3 class="dh">가까운 곳</h3><div class="strip">${near.map(x=>stripItem(x)).join("")}</div>` }; }
   if (k==="f"){ const f = FESTIVALS.find(x=>x.id===id); if (!f) return null;
     const pl = f.place && byId(f.place), others = FESTIVALS.filter(x=>x.id!==f.id && x.months.some(m=>f.months.includes(m)));
-    return { title:f.name, html:`<div class="dfest"><span class="dfi">${festIcon(f)}</span><span class="meta">${esc(REG[f.region]?REG[f.region].name:"강원")} · ${esc(f.when)}</span><h2>${esc(f.name)}</h2><p>${esc(f.desc)}</p>
+    return { title:f.name, html:`${f.img?`<div class="dphoto"><img src="${esc(httpsUrl(f.img))}" alt="${esc(f.name)}" onerror="this.parentNode.remove()"><span>사진: 한국관광공사 · 공공누리</span></div>`:""}<div class="dfest"><span class="dfi">${festIcon(f)}</span><span class="meta">${esc(REG[f.region]?REG[f.region].name:"강원")} · ${esc(f.when)}</span><h2>${esc(f.name)}</h2><p>${esc(f.desc)}</p>
       <div class="cbar"><a class="btn" href="${naver(f.name+" 일정")}" target="_blank" rel="noopener">올해 일정 확인 ↗</a>${pl?courseBtn(pl.id):""}${pl?favBtn(pl):""}</div>
       <p class="meta">축제 날짜는 해마다 바뀌어요. 출발 전 공식 일정을 꼭 확인하세요.</p></div>
       ${pl?`<h3 class="dh">행사 장소</h3><div class="dcard">${card(pl).replace(` id="card-${pl.id}"`, "")}</div>`:""}
