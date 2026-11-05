@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611051540";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611051545";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -926,6 +926,10 @@ body.apk .revbox:not(.pm):not(.revapp), body.apk .ownerline:not(.apkop), body.ap
 .photo figcaption { font-size: 11px; color: var(--muted); line-height: 1.4; }
 .photo figcaption a { color: inherit; }
 .photoadd { display: inline-flex; align-items: center; gap: 4px; }
+.opsbar { display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+.opsbar button, .opsbar label { border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 8px 13px; font-size: 13px; font-weight: 600; cursor: pointer; line-height: 1.2; }
+.opsbar .danger { color: #c62828; border-color: #e7b4b4; }
+.addplacebar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 10px 0 14px; }
 .ownerline { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; border-top: 1px solid var(--line); padding-top: 10px; }
 .linkbtn { border: 0; background: none; padding: 0; color: var(--sea); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
 .sponsors { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
@@ -2555,23 +2559,29 @@ document.addEventListener("click", e=>{
   const prevTab = state.tab; state.tab = "ops"; navPush(prevTab!=="ops"); renderTop(); renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" });
 });
 document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-addplace]"); if (!b || !state.isOps) return;
+  PM.region = state.region==="all" ? "gangneung" : state.region; PM.cat = "전체"; PM.nophoto = false; PM.msg = PM.err = "";
+  PM.edit = { region:PM.region, cat:"맛집" };
+  const prevTab = state.tab; state.tab = "ops"; navPush(prevTab!=="ops"); renderTop(); renderOps();
+  document.getElementById("pmForm")?.scrollIntoView({ block:"start" }); document.getElementById("pmName")?.focus();
+});
+document.addEventListener("click", e=>{
   const b = e.target.closest("[data-carddel]"); if (!b || !state.isOps) return;
   const t = byId(b.dataset.carddel); if (!t) return;
   if (!confirm(`‘${t.name}’을(를) 삭제할까요?\n삭제하면 이 앱을 쓰는 모든 휴대폰에서 사라져요. (운영 탭 ‘삭제한 장소’에서 복구할 수 있어요)`)) return;
   pmDelete(t.id); PM.msg = `‘${t.name}’을(를) 삭제했어요.`; closeSub && closeSub(); renderGrid(); renderTop(); try { renderOps(); } catch(_) {}
 });
 // 카드 오른쪽 위 ‘✎ 수정’ 버튼(운영자만): 내용 수정 / 사진 등록·바꾸기 / 올린 사진 지우기
-function opsEditHtml(p){
+function opsEditHtml(p){ return ""; }   // (예전 카드 오른쪽 위 ✎ 메뉴는 카드 아래 운영 줄로 옮겼다)
+function opsBarHtml(p){
   if (!state.isOps) return "";
   const apk = !!window.APK_BUILD, canPhoto = apk ? true : state.canUpload;
   const mine = apk ? OWNER.photos[p.id] : state.uploads[p.id], has = photoFor(p);
-  return `<div class="opsedit"><button class="opsbtn" data-opsmenu="${p.id}" aria-haspopup="true" aria-expanded="false">✎ 수정</button>
-    <div class="opsmenu" id="opsm-${p.id}" hidden role="menu">
-      <button role="menuitem" data-cardedit="${p.id}">✏️ 내용 수정</button>
-      <button role="menuitem" data-carddel="${p.id}">🗑 장소 삭제</button>
-      ${canPhoto ? `<label role="menuitem">📷 ${mine||has ? "사진 바꾸기" : "사진 등록"}<input type="file" accept="image/*" data-photo="${p.id}" hidden></label>` : `<span class="meta">사진 등록은 페이지 주인 계정 화면에서 할 수 있어요.</span>`}
-      ${mine ? `<button role="menuitem" data-photodel="${p.id}">🗑 올린 사진 지우기</button>` : ""}
-    </div></div>`;
+  return `<div class="opsbar" role="group" aria-label="운영자 메뉴">
+    <button type="button" data-cardedit="${p.id}">✏️ 수정하기</button>
+    ${canPhoto ? `<label>📷 사진 ${mine||has ? "바꾸기" : "등록"}<input type="file" accept="image/*" data-photo="${p.id}" hidden></label>` : ""}
+    ${mine ? `<button type="button" data-photodel="${p.id}">올린 사진 지우기</button>` : ""}
+    <button type="button" class="danger" data-carddel="${p.id}">🗑 장소 삭제하기</button></div>`;
 }
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-opsmenu]");
@@ -3338,6 +3348,7 @@ function renderPlaces(){
   document.getElementById("tab-places").innerHTML = `
     ${promoHtml()}
     ${nearBar()}
+    ${state.isOps ? `<div class="addplacebar"><button class="btn" data-addplace>＋ 장소 추가하기</button><span class="meta">이름·분류·주소·사진을 적어 직접 추가해요</span></div>` : ""}
     <p class="notice">운영시간·요금·휴무는 대략적인 정보예요. 공휴일·명절·기상 상황에 따라 바뀔 수 있으니 출발 전 한 번 더 확인하세요.</p>
     <div class="hot"><div class="sec-title"><h2>${regionLabel()}, ${({친구:"친구와",연인:"연인과",가족:"가족과",혼자:"혼자"})[state.who]} 가기 좋은 곳</h2><span class="en">Curated</span></div>
       <div class="strip">${hotList(10).map((p,i)=>stripItem(p, "No."+(i+1))).join("")}</div>${hotEditor(hot)}</div>
@@ -3450,7 +3461,7 @@ function card(p){
       <button class="btn ghost" data-stamp="${p.id}" aria-pressed="${!!state.stamps[p.id]}">${state.stamps[p.id]?"스탬프 지우기":"스탬프 찍기"}</button>
       <button class="btn ghost" data-review="${p.id}">${state.reviews[p.id]?"후기 보기":"후기 쓰기"}</button>
     </div>
-    ${window.APK_BUILD ? (state.isOps ? `<div class="ownerline apkop"><button class="linkbtn" data-cardedit="${p.id}">✎ 수정하기</button>${photoCtl(p)} <button class="linkbtn" data-carddel="${p.id}">🗑 삭제</button></div>` : "") : `<div class="ownerline"><span>${REV}<button class="linkbtn" data-inquire="${p.id}" data-inqtype="업주 정보 수정">사장님이신가요? 정보 수정·광고 문의</button></span><button class="linkbtn" data-inquire="${p.id}" data-inqtype="정보 오류 제보">정보 오류 제보</button>${state.isOps?`<button class="linkbtn" data-cardedit="${p.id}">✎ 수정하기</button>`:""}${photoCtl(p)}</div>`}
+    ${state.isOps ? opsBarHtml(p) : (window.APK_BUILD ? "" : `<div class="ownerline"><span>${REV}<button class="linkbtn" data-inquire="${p.id}" data-inqtype="업주 정보 수정">사장님이신가요? 정보 수정·광고 문의</button></span><button class="linkbtn" data-inquire="${p.id}" data-inqtype="정보 오류 제보">정보 오류 제보</button></div>`)}
     ${state.stamps[p.id]?`<div class="seal-mark" aria-label="방문함">${shortName(p)}<small>${fmtD(state.stamps[p.id])}</small></div>`:""}</article>`;
 }
 
