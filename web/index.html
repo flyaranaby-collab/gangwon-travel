@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611050956";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611051011";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1531,7 +1531,7 @@ function normPlace(p){
   return { id:p.id, region:r, name:String(p.name||"").trim(), cat:p.cat||"맛집", area:p.area||REG[r].name,
     lat:+p.lat || REG[r].lat, lng:+p.lng || REG[r].lng, sig:p.sig||"", hours:p.hours||"현장 확인", fee:p.fee||"현장 확인",
     closed:Array.isArray(p.closed)?p.closed.map(Number):[], closedNote:p.closedNote||"", tip:p.tip||"",
-    who:p.who||{친구:2,연인:2,가족:2,혼자:2}, tags:Array.isArray(p.tags)?p.tags:[], link:p.link||"", custom:true };
+    who:p.who||{친구:2,연인:2,가족:2,혼자:2}, tags:Array.isArray(p.tags)?p.tags:[], link:p.link||"", mapq:p.mapq||"", addr:p.addr||"", custom:true };
 }
 OWNER.places = OWNER.places.map(normPlace);
 OWNER.places.forEach(p=>{ PLACES.push(p); if (!META[p.id]) META[p.id] = { o:null, c:null, stay:60, cost:0 }; });
@@ -1585,6 +1585,8 @@ function placeManager(){
         <label>지도 위도(선택)<input id="pmLat" inputmode="decimal" value="${e.lat&&e.id?esc(e.lat):""}" placeholder="비우면 지역 중심"></label>
         <label>지도 경도(선택)<input id="pmLng" inputmode="decimal" value="${e.lng&&e.id?esc(e.lng):""}" placeholder="예: 128.90"></label>
         <label>관련 링크(선택)<input id="pmLink" type="url" value="${esc(e.link||"")}" placeholder="https://"></label>
+        <label>주소(선택)<input id="pmAddr" value="${esc(e.addr||"")}" placeholder="예: 강원특별자치도 강릉시 ○○로 12"></label>
+        <label>지도 검색어(입구·안내센터)<input id="pmMapq" value="${esc(e.mapq||"")}" placeholder="예: 강릉중앙시장 정문, 경포해변 관광안내소"></label>
       </div>
       <div class="row"><span class="meta">정기 휴무</span>${WDS.map((w,i)=>`<label class="pmday"><input type="checkbox" id="pmDay${i}" ${(e.closed||[]).includes(i)?"checked":""}> ${w}</label>`).join("")}</div>
       <label>팁<textarea id="pmTip" placeholder="방문자에게 알려 줄 팁">${esc(e.tip||"")}</textarea></label>
@@ -1632,7 +1634,7 @@ function pmReadForm(){
   const days = ["일","월","화","수","목","금","토"];
   const base = PM.edit && PM.edit.id ? PM.edit : {};
   return normPlace({ ...base, id: base.id || ("c-" + Date.now().toString(36)), name:v("pmName"), cat:v("pmCat"), region:v("pmRegion"), area:v("pmArea"),
-    sig:v("pmSig"), hours:v("pmHours"), fee:v("pmFee"), tip:v("pmTip"), link:v("pmLink"),
+    sig:v("pmSig"), hours:v("pmHours"), fee:v("pmFee"), tip:v("pmTip"), link:v("pmLink"), mapq:v("pmMapq"), addr:v("pmAddr"),
     closed, closedNote: v("pmCnote") || (closed.length ? `매주 ${closed.map(i=>days[i]).join("·")}요일 휴무` : ""),
     tags: v("pmTags").split(/[,，]/).map(s=>s.trim()).filter(Boolean),
     lat: v("pmLat"), lng: v("pmLng") });
@@ -2210,15 +2212,25 @@ function ktoToStay(it){
     lat:+it.mapy, lng:+it.mapx, price:"예약처 확인", why:stripTags(it.addr1) || "한국관광공사 등록 숙박", tip: it.tel ? "문의 "+stripTags(it.tel) : "관광공사 등록 정보예요.", q:stripTags(it.title) };
 }
 // 스냅샷 + 이 기기에서 불러온 캐시를 기존 목록에 합친다(이름이 같으면 직접 정리한 정보를 우선)
+// 직접 정리한 장소의 좌표는 대략값이라, 같은 이름의 관광공사 장소가 있으면 공식 좌표·주소로 바꾼다
+const baseName = n => normName(String(n||"").split(" · ")[0].replace(/\(.*?\)|（.*?）/g,""));
+let OFFICIAL_FIX = 0;
 function mergeKto(items){
   let n = 0;
   const names = new Set([...PLACES, ...LODGING].map(x=>normName(x.name)));
+  const mine = new Map();
+  [...PLACES, ...LODGING].forEach(x=>{ if (x.source!=="kto"){ mine.set(normName(x.name), x); if (!mine.has(baseName(x.name))) mine.set(baseName(x.name), x); } });
   // 관광공사 '쇼핑'에는 편의점·마트·일반 매장이 많아, 시장·특산물·공방 같은 여행객용 매장만 남긴다
   const shopOk = t => /시장|장터|오일장|5일장|고개|상회|건어물|약과|한과|특산|로컬|공방|기념품|아울렛|면세|양조|와이너리|치즈|초콜릿|커피|빵|떡|황태|젓갈|수산|어시장|농원|농장/.test(t) && !/마트|편의점|이마트|GS25|CU|세븐일레븐|다이소|안경|의료기|복권/.test(t);
   items.forEach(it=>{
     if (String(it.contenttypeid)==="38" && !shopOk(String(it.title||""))) return;
     const x = String(it.contenttypeid)==="32" ? ktoToStay(it) : ktoToPlace(it);
-    if (!x || names.has(normName(x.name)) || [...PLACES, ...LODGING].some(y=>y.id===x.id)) return;
+    const twin = x && (mine.get(normName(x.name)) || mine.get(baseName(x.name)));
+    if (twin && !twin.__official && km(twin, x) < 3){
+      twin.lat = x.lat; twin.lng = x.lng; twin.__official = true; OFFICIAL_FIX++;
+      if (!twin.addr && it.addr1) twin.addr = stripTags(it.addr1);
+    }
+    if (!x || names.has(normName(x.name)) || (twin && km(twin, x) < 3) || [...PLACES, ...LODGING].some(y=>y.id===x.id)) return;
     names.add(normName(x.name)); n++;
     if (x.type) LODGING.push(x); else { PLACES.push(x); META[x.id] = { o:null, c:null, stay:60, cost:0 }; }
   });
@@ -2303,8 +2315,16 @@ const ICON_TAG = `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d
 const naver = q => "https://search.naver.com/search.naver?query=" + encodeURIComponent(q);
 const naverBlog = q => "https://search.naver.com/search.naver?where=blog&query=" + encodeURIComponent(q);
 // 사진이 없는 장소: 사진을 가져오지 않고 네이버 이미지 검색으로 연결만 한다(저작권은 각 사진 주인에게 있음)
+// 지도는 좌표 대신 장소 이름으로 검색해 연다(지도 앱의 정식 위치·입구로 안내). 운영자가 '지도 검색어'를 정하면 그걸 쓴다
+function mapQuery(p){
+  if (p.mapq) return p.mapq;
+  const nm = String(p.name).split(" · ")[0].replace(/\s*\((본점|.*점)\)/, " $1").trim();
+  const city = REG[p.region] ? REG[p.region].name.split("·")[0] : "";
+  return (!city || nm.includes(city) || nm.includes(city.replace(/(시|군)$/,""))) ? nm : city + " " + nm;
+}
+const kmapSearch = p => "https://map.kakao.com/link/search/" + encodeURIComponent(mapQuery(p));
 const naverImg = q => "https://search.naver.com/search.naver?where=image&query=" + encodeURIComponent(q);
-const photoQuery = p => (REG[p.region] ? REG[p.region].name.split("·")[0] + " " : "") + p.name.split(" · ")[0];
+const photoQuery = p => mapQuery(p);
 function linksFor(p){
   const D = DEALMAP[p.id] || {}, base = D.q || (REG[p.region].q + " " + p.name.split(" · ")[0]), out = [];
   if (D.paid) out.push({ label:"티켓 예매", href:ticketHref(base), primary:true, rev:"ticket:"+p.id });
@@ -2312,7 +2332,8 @@ function linksFor(p){
   if (D.deal) out.push({ label:"할인 정보", href:naver(base+" 할인") });
   out.push({ label:"후기·꿀팁", href:naverBlog(base+" 꿀팁") });
   out.push({ label:"사진 보기", href:naverImg(photoQuery(p)) });
-  out.push({ label:"지도", href:`https://map.kakao.com/link/map/${encodeURIComponent(p.name)},${p.lat},${p.lng}` });
+  out.push({ label:"카카오맵", href:kmapSearch(p) });
+  out.push({ label:"네이버지도", href:nmap(mapQuery(p)) });
   return out;
 }
 const fmt = m => { m = ((Math.round(m)%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0"); };
@@ -2382,7 +2403,7 @@ const state = {
 const KTO_CACHE = store.get("ktoCache", []);
 const KTO_ADDED = mergeKto([...KTO_SNAPSHOT, ...KTO_CACHE]);
 // 운영자가 고친 장소 정보: 바꾼 항목만 덮어쓰고, 원래 값은 __orig 에 남겨 '원래대로'를 할 수 있다
-const EDIT_KEYS = ["name","cat","region","area","sig","hours","fee","closed","closedNote","tags","lat","lng","link","tip"];
+const EDIT_KEYS = ["name","cat","region","area","sig","hours","fee","closed","closedNote","tags","lat","lng","link","tip","mapq","addr"];
 function applyEdits(){
   const all = [...PLACES, ...ALL_PLACES];
   Object.entries(OWNER.edits).forEach(([id, e])=>{
@@ -2431,6 +2452,9 @@ function status(p){
 }
 
 // ───────── 거리 계산 ─────────
+// 화면에 보여 주는 직선거리(보정 없음)
+function kmLine(a,b){ const R=6371, r=x=>x*Math.PI/180, dLat=r(b.lat-a.lat), dLng=r(b.lng-a.lng);
+  const h=Math.sin(dLat/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dLng/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
 function km(a,b){
   const R=6371, r=x=>x*Math.PI/180;
   const dLat=r(b.lat-a.lat), dLng=r(b.lng-a.lng);
@@ -2908,7 +2932,7 @@ const stayCard = (l, d) => `<article class="card" id="card-${l.id}">
       <nav class="links" aria-label="${l.name} 관련 링크">
         <a class="primary" href="${stayHref(l)}" target="_blank" rel="noopener" data-rev="stay:${l.id}">${REV}최저가 예약<span aria-hidden="true">↗</span></a>
         <a href="${naverBlog(l.q+" 후기")}" target="_blank" rel="noopener">후기<span aria-hidden="true">↗</span></a>
-        <a href="https://map.kakao.com/link/map/${encodeURIComponent(l.name)},${l.lat},${l.lng}" target="_blank" rel="noopener">지도<span aria-hidden="true">↗</span></a>
+        <a href="${kmapSearch(l)}" target="_blank" rel="noopener">지도<span aria-hidden="true">↗</span></a>
       </nav>
       <div class="actions"><button class="btn ${state.start===l.id?"added":""}" data-stay="${l.id}">${state.start===l.id?"코스 출발지로 설정됨 ✓":"이 숙소에서 출발"}</button></div>
     </article>`;
@@ -3715,37 +3739,41 @@ function nearBar(){
 function getPos(){
   return new Promise(ok=>{
     if (!navigator.geolocation) return ok(null);
-    let done = false; const t = setTimeout(()=>{ if (!done){ done = true; ok(null); } }, 12000);
-    try { navigator.geolocation.getCurrentPosition(p=>{ if (done) return; done = true; clearTimeout(t); ok({ lat:p.coords.latitude, lng:p.coords.longitude }); },
-      ()=>{ if (done) return; done = true; clearTimeout(t); ok(null); }, { enableHighAccuracy:false, timeout:10000, maximumAge:120000 }); }
+    let done = false; const t = setTimeout(()=>{ if (!done){ done = true; ok(null); } }, 17000);
+    // 예전 위치를 재사용하지 않게 매번 새로 받고(maximumAge 0), GPS 정확도를 요청한다
+    try { navigator.geolocation.getCurrentPosition(p=>{ if (done) return; done = true; clearTimeout(t); ok({ lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy||0) }); },
+      ()=>{ if (done) return; done = true; clearTimeout(t); ok(null); }, { enableHighAccuracy:true, timeout:15000, maximumAge:0 }); }
     catch(_) { done = true; clearTimeout(t); ok(null); }
   });
 }
 const nearFood = p => p.cat==="맛집" || p.cat==="카페";
 function nearDetail(){
-  if (!NEAR.pos) return { title:"내 주변", html:`<p class="meta">위치를 확인하는 중이에요…</p>` };
-  const all = PLACES.map(p=>[km(NEAR.pos, p), p]).filter(x=>x[0] <= NEAR.r).sort((a,b)=>a[0]-b[0]);
+  if (!NEAR.pos) return { title:`내 주변 ${NEAR.r}km`, html:`<p class="meta">📍 지금 위치를 찾는 중이에요… (최대 15초)</p>` };
+  const all = PLACES.map(p=>[kmLine(NEAR.pos, p), p]).filter(x=>x[0] <= NEAR.r).sort((a,b)=>a[0]-b[0]);
   const rec = all.filter(([,p])=>p.source!=="kto" || OWNER.order.includes(p.id));
   const L = NEAR.tab==="food" ? all.filter(([,p])=>nearFood(p)) : NEAR.tab==="spot" ? all.filter(([,p])=>!nearFood(p)) : rec;
   const fmtKm = d => d < 1 ? Math.round(d*1000)+"m" : d.toFixed(1)+"km";
   const cnt = { rec:rec.length, food:all.filter(([,p])=>nearFood(p)).length, spot:all.filter(([,p])=>!nearFood(p)).length };
-  return { title:`내 주변 ${NEAR.r}km`, html:`<div class="nearhead"><span class="meta">기준: ${esc(NEAR.src)}</span>
+  return { title:`내 주변 ${NEAR.r}km`, html:`<div class="nearhead"><span class="meta">기준: ${esc(NEAR.src)} · 거리는 직선거리 <button class="linkbtn" data-nearre="1">📍 위치 다시 찾기</button></span>
+      ${NEAR.pos.acc > 300 ? `<p class="errline">위치 오차가 약 ${NEAR.pos.acc >= 1000 ? (NEAR.pos.acc/1000).toFixed(1)+"km" : NEAR.pos.acc+"m"}로 커요. 휴대폰 설정 → 애플리케이션 → 강원 여행 수첩 → 권한 → 위치에서 ‘정확한 위치 사용’을 켜고, 휴대폰 위치(GPS)도 켜 주세요.</p>` : ""}
       <div class="seg" role="group" aria-label="거리">${[1,4,10].map(r=>`<button data-nearr="${r}" aria-pressed="${r===NEAR.r}">${r}km</button>`).join("")}</div>
       <div class="seg" role="group" aria-label="종류">${[["rec","추천지"],["food","맛집"],["spot","가볼 곳"]].map(([k,t])=>`<button data-neart="${k}" aria-pressed="${k===NEAR.tab}">${t} ${cnt[k]}</button>`).join("")}</div></div>
     ${L.length ? `<div class="mlist">${L.slice(0,80).map(([d,p])=>`<div class="mline">${miniRow(p)}<span class="neard">${fmtKm(d)}</span></div>`).join("")}</div>${L.length>80?`<p class="meta">가까운 80곳만 보여요.</p>`:""}`
       : `<div class="empty">${NEAR.r}km 안에 ${({rec:"추천지",food:"맛집",spot:"가볼 곳"})[NEAR.tab]}가 없어요. 거리를 늘려 보세요.</div>`}` };
 }
-async function openNear(r){
-  NEAR.r = r; openDetail("near", String(r), true);
-  if (!NEAR.pos || Date.now() - (NEAR.at||0) > 120000){
+async function openNear(r, again){
+  if (!again){ NEAR.r = r; openDetail("near", String(r), true); }
+  NEAR.pos = null; refreshDetail();
+  {
     const pos = await getPos();
-    if (pos){ NEAR.pos = pos; NEAR.src = "내 위치"; }
+    if (pos){ NEAR.pos = pos; NEAR.src = "내 위치" + (pos.acc ? ` (오차 ±${pos.acc >= 1000 ? (pos.acc/1000).toFixed(1)+"km" : pos.acc+"m"})` : ""); }
     else { const c = REG[state.region] || REG.gangneung; NEAR.pos = { lat:c.lat, lng:c.lng }; NEAR.src = `${c.name} 중심 (위치를 쓸 수 없어 지역 중심으로 찾았어요. 휴대폰 위치 권한을 확인해 주세요)`; }
     NEAR.at = Date.now(); refreshDetail();
   }
 }
 document.addEventListener("click", e=>{
   const n = e.target.closest("[data-near]"); if (n){ openNear(+n.dataset.near); return; }
+  if (e.target.closest("[data-nearre]")){ openNear(NEAR.r, true); return; }
   const r = e.target.closest("[data-nearr]"); if (r){ NEAR.r = +r.dataset.nearr; document.getElementById("subTitle").textContent = `내 주변 ${NEAR.r}km`; refreshDetail(); return; }
   const t = e.target.closest("[data-neart]"); if (t){ NEAR.tab = t.dataset.neart; refreshDetail(); return; }
 });

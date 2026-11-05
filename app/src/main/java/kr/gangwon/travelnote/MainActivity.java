@@ -112,7 +112,7 @@ public class MainActivity extends Activity {
         web.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                if (!"https://appassets.androidplatform.net".equals(origin)) { callback.invoke(origin, false, false); return; }
+                if (origin == null || !origin.startsWith("https://appassets.androidplatform.net")) { callback.invoke(origin, false, false); return; }   // 끝에 / 가 붙어 오는 경우도 허용
                 boolean fine = checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
                 boolean coarse = checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
                 if (fine || coarse) { callback.invoke(origin, true, false); return; }
