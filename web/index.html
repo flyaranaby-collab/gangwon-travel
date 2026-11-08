@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611052034";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611090112";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1170,6 +1170,13 @@ body { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
 .updsteps li.in_progress { border-color: #4f9bd9; } .updsteps li.queued, .updsteps li.pending { opacity: .6; } .updsteps small { color: var(--muted); font-size: 12px; }
 .nearbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; padding: 10px 12px; border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
 .nearbar .nearlbl { font-weight: 700; } .nearbar .meta { margin-left: auto; }
+.nearbar .medchip { margin-left: auto; }
+.medlist { display: grid; gap: 10px; margin: 10px 0; }
+.medrow { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 11px 13px; display: grid; gap: 4px; }
+.medtop { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.medst { font-size: 12px; font-weight: 700; white-space: nowrap; padding: 2px 8px; border-radius: 999px; background: #eceff3; color: #4a5562; }
+.medst.open { background: #e3f4e8; color: #1f7a3a; } .medst.closed { background: #fbe9e9; color: #b3261e; } .medst.later { background: #fff4d6; color: #8a5a00; }
+.medrow .cbar { margin-top: 4px; } .medrow .btn { padding: 6px 11px; font-size: 13px; } .medopen { display: inline-flex; margin: 10px 0 2px; }
 .nearhead { display: grid; gap: 8px; margin-bottom: 12px; } .nearhead .seg { display: flex; } .nearhead .seg button { flex: 1; }
 .mline .neard { font-size: 13px; font-weight: 700; color: var(--sea); white-space: nowrap; }
 .cplist li { display: flex; align-items: center; gap: 10px; } .cplist li > span { flex: 1; min-width: 0; }
@@ -3531,7 +3538,7 @@ function loadKakao(){
   if (window.kakao && window.kakao.maps && window.kakao.maps.LatLng) return Promise.resolve(window.kakao);
   return KK_P = KK_P || new Promise((ok, no)=>{
     const sc = document.createElement("script");
-    sc.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey=" + encodeURIComponent(window.KAKAO_KEY) + "&autoload=false";
+    sc.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey=" + encodeURIComponent(window.KAKAO_KEY) + "&autoload=false&libraries=services";
     const fail = e=>{ KK_P = null; no(e); };
     sc.onload = ()=>{ try { window.kakao.maps.load(()=>ok(window.kakao)); } catch(e){ fail(e); } };
     sc.onerror = ()=>fail(new Error("sdk"));
@@ -4413,6 +4420,7 @@ function renderMore(){
       <button class="mrow" data-tab="season"><span class="mico">🎉</span><span class="mtx"><b>계절&amp;행사</b><small>계절 추천과 축제 일정</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-tab="souv"><span class="mico">🎁</span><span class="mtx"><b>특산품·기념 선물</b><small>지역별 특산품과 살 수 있는 곳</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-near="4"><span class="mico">📍</span><span class="mtx"><b>내 주변</b><small>1km·4km·10km 맛집·가볼 곳·추천지</small></span><span class="mgo">›</span></button>
+      <button class="mrow" data-openmed="1"><span class="mico">🌙</span><span class="mtx"><b>야간 병원·약국</b><small>지금 문 연 약국·병원 · 응급실 · 상비약 편의점</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-gocat="교통"><span class="mico">🚄</span><span class="mtx"><b>교통</b><small>KTX·버스터미널·택시</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-tab="deals"><span class="mico">🏷️</span><span class="mtx"><b>할인 방법</b><small>강원 여행 할인 제도</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-opensearch="1"><span class="mico">🔍</span><span class="mtx"><b>검색</b><small>장소·음식·동네로 찾기</small></span><span class="mgo">›</span></button>
@@ -4624,7 +4632,7 @@ function souvAll(){
 // ═════════ 내 주변 1km · 4km · 10km ═════════
 const NEAR = { r:4, tab:"rec", pos:null, src:"", busy:false };
 function nearBar(){
-  return `<div class="nearbar"><span class="nearlbl">📍 내 주변</span>${[1,4,10].map(r=>`<button class="chipbtn" data-near="${r}">${r}km</button>`).join("")}<span class="meta">맛집 · 가볼 곳 · 추천지</span></div>`;
+  return `<div class="nearbar"><span class="nearlbl">📍 내 주변</span>${[1,4,10].map(r=>`<button class="chipbtn" data-near="${r}">${r}km</button>`).join("")}<button class="chipbtn medchip" data-openmed="1">🌙 야간 병원·약국</button></div>`;
 }
 function getPos(){
   return new Promise(ok=>{
@@ -4667,6 +4675,119 @@ document.addEventListener("click", e=>{
   const r = e.target.closest("[data-nearr]"); if (r){ NEAR.r = +r.dataset.nearr; document.getElementById("subTitle").textContent = `내 주변 ${NEAR.r}km`; refreshDetail(); return; }
   const t = e.target.closest("[data-neart]"); if (t){ NEAR.tab = t.dataset.neart; refreshDetail(); return; }
 });
+// ═════════ 🌙 야간·주말 병원 · 약국 · 응급실 · 상비약 ═════════
+// 자료: 국립중앙의료원 공공데이터(매일 새벽 web/med.json, 응급실 병상은 1시간마다 web/er.json — GitHub 자동 작업 ‘야간 병원·약국 정보 업데이트’)
+// 앱에서는 카카오 지도 검색으로 가까운 편의점(상비약)·약국을 실시간으로 찾는다
+const MED = { tab:"ph", open:true, pos:null, src:"", data:null, er:null, err:"", loading:false, kk:{}, kkErr:"" };
+// 공휴일(대체공휴일 포함). 해마다 추가
+const KR_HOLI = new Set(["2026-01-01","2026-02-16","2026-02-17","2026-02-18","2026-03-02","2026-05-05","2026-05-25","2026-06-03","2026-06-06","2026-08-17","2026-09-24","2026-09-25","2026-09-26","2026-09-28","2026-10-05","2026-10-09","2026-12-25",
+  "2027-01-01","2027-02-08","2027-02-09","2027-03-01","2027-05-05","2027-05-13","2027-06-06","2027-08-16","2027-09-14","2027-09-15","2027-09-16","2027-10-04","2027-10-11","2027-12-27"]);
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const dayIdx = d => KR_HOLI.has(ymd(d)) ? 7 : (d.getDay()+6)%7;   // 0=월 … 6=일, 7=공휴일
+const hhmm = x => `${String(x).padStart(4,"0").slice(0,2)}:${String(x).padStart(4,"0").slice(2)}`;
+// 운영시간 문자열("월|화|…|공휴일")로 지금 여는지 계산
+function medStatus(h, now = new Date()){
+  if (!h) return { open:false, txt:"운영시간 정보 없음", cls:"unk" };
+  const cells = h.split("|"), t = now.getHours()*100 + now.getMinutes();
+  const cell = i => { const c = cells[i]; if (!c) return null; const [s,e] = c.split("-").map(Number); return { s, e }; };
+  const today = cell(dayIdx(now));
+  const y = new Date(now.getTime() - 864e5), yc = cell(dayIdx(y));
+  // 어제 밤부터 이어지는 영업(예: 18:00-02:00 또는 18:00-2600)
+  if (yc){ const ye = yc.e > 2400 ? yc.e - 2400 : (yc.e < yc.s ? yc.e : -1); if (ye >= 0 && t < ye) return { open:true, txt:`${hhmm(ye)}까지`, cls:"open" }; }
+  if (!today) return { open:false, txt:"오늘 휴무", cls:"closed" };
+  const end = today.e < today.s ? today.e + 2400 : today.e;
+  if (t >= today.s && t < end) return { open:true, txt:`${end >= 2400 ? "새벽 " + hhmm(end-2400) : hhmm(end)}까지`, cls:"open", late: end >= 2100 };
+  if (t < today.s) return { open:false, txt:`${hhmm(today.s)} 문 열어요`, cls:"later" };
+  return { open:false, txt:`오늘 영업 끝 (${hhmm(today.s)}~${hhmm(today.e)})`, cls:"closed" };
+}
+async function medLoad(){
+  if (MED.data || MED.loading) return; MED.loading = true; MED.err = "";
+  try { const r = await fetch(GH.raw + "med.json?t=" + Date.now(), { cache:"no-store" }); if (!r.ok) throw new Error(r.status===404 ? "아직 자료가 없어요" : "HTTP " + r.status); MED.data = await r.json(); }
+  catch(e){ MED.err = String(e.message || e); }
+  try { const r = await fetch(GH.raw + "er.json?t=" + Date.now(), { cache:"no-store" }); if (r.ok) MED.er = await r.json(); } catch(_) {}
+  MED.loading = false;
+}
+// 카카오 지도 검색(앱 전용): 가까운 편의점(CS2)·약국(PM9)·병원(HP8)
+async function medKakao(code){
+  if (!window.KAKAO_KEY || !MED.pos || MED.kk[code]) return;
+  MED.kk[code] = "loading";
+  try {
+    const K = await loadKakao(); if (!K.maps.services) throw new Error("검색 기능을 못 불러왔어요");
+    const ps = new K.maps.services.Places();
+    MED.kk[code] = await new Promise((ok, no)=>ps.categorySearch(code, (res, st)=>{ st===K.maps.services.Status.OK ? ok(res) : st===K.maps.services.Status.ZERO_RESULT ? ok([]) : no(new Error("카카오 검색 오류")); },
+      { location:new K.maps.LatLng(MED.pos.lat, MED.pos.lng), radius:5000, sort:K.maps.services.SortBy.DISTANCE }));
+  } catch(e){ MED.kk[code] = null; MED.kkErr = String(e.message || e); }
+  refreshDetail();
+}
+const medKm = d => d < 1 ? Math.round(d*1000)+"m" : d.toFixed(1)+"km";
+const telA = t => t ? `<a class="btn ghost" href="tel:${esc(t.replace(/[^0-9-]/g,""))}">📞 ${esc(t)}</a>` : "";
+const toMap = (n, la, lo) => `<a class="btn ghost" href="https://map.kakao.com/link/to/${encodeURIComponent(n)},${la},${lo}" target="_blank" rel="noopener">🧭 길찾기</a>`;
+function medRows(list, kind){
+  const P = MED.pos;
+  let L = list.map(x=>{ const [n,type,tel,addr,la,lo,h] = kind==="ph" ? [x[0],"약국",x[1],x[2],x[3],x[4],x[5]] : x; const st = medStatus(h); return { n,type,tel,addr,la,lo,h,st, d: kmLine(P, {lat:la, lng:lo}) }; });
+  const all = L.length; if (MED.open) L = L.filter(x=>x.st.open);
+  L.sort((a,b)=>a.d-b.d);
+  const head = `<label class="pmday medopen"><input type="checkbox" data-medopen ${MED.open?"checked":""}> 지금 문 연 곳만 (${L.length}/${all})</label>`;
+  if (!L.length) return head + `<div class="empty">지금 문 연 곳이 없어요. 체크를 풀면 운영시간과 함께 전체를 볼 수 있어요.</div>`;
+  return head + `<div class="medlist">${L.slice(0,40).map(x=>`<div class="medrow">
+    <div class="medtop"><b>${esc(x.n)}</b><span class="medst ${x.st.cls}">${x.st.open?"영업 중 · ":""}${esc(x.st.txt)}</span></div>
+    <div class="meta">${esc(x.type||"")} · ${medKm(x.d)} · ${esc(x.addr||"")}</div>
+    <div class="cbar">${telA(x.tel)}${toMap(x.n, x.la, x.lo)}</div></div>`).join("")}</div>${L.length>40?`<p class="meta">가까운 40곳만 보여요.</p>`:""}`;
+}
+function medKakaoRows(code, label){
+  if (!window.KAKAO_KEY) return `<p class="meta">이 화면(웹)에서는 실시간 주변 검색을 쓸 수 없어요. <a href="https://map.kakao.com/?q=${encodeURIComponent(label)}" target="_blank" rel="noopener">카카오맵에서 ‘${esc(label)}’ 검색 ↗</a> · 안드로이드 앱에서는 바로 보여요.</p>`;
+  const r = MED.kk[code];
+  if (r==="loading" || r===undefined){ setTimeout(()=>medKakao(code), 0); return `<p class="meta">가까운 ${esc(label)}을(를) 찾는 중…</p>`; }
+  if (!r) return `<p class="errline">주변 검색을 못 했어요 (${esc(MED.kkErr)}). <a href="https://map.kakao.com/?q=${encodeURIComponent(label)}" target="_blank" rel="noopener">카카오맵에서 찾기 ↗</a></p>`;
+  if (!r.length) return `<div class="empty">5km 안에 ${esc(label)}이(가) 없어요.</div>`;
+  return `<div class="medlist">${r.slice(0,15).map(x=>`<div class="medrow"><div class="medtop"><b>${esc(x.place_name)}</b><span class="medst unk">${medKm(+x.distance/1000)}</span></div>
+    <div class="meta">${esc(x.road_address_name||x.address_name||"")}</div>
+    <div class="cbar">${telA(x.phone)}${toMap(x.place_name, x.y, x.x)}<a class="btn ghost" href="${esc(x.place_url)}" target="_blank" rel="noopener">정보 ↗</a></div></div>`).join("")}</div>
+    <p class="meta">카카오맵 검색 결과(실시간). 영업시간은 가게마다 달라요.</p>`;
+}
+function medDetail(){
+  const tabs = [["ph","💊 약국"],["hs","🏥 야간·주말 병원"],["er","🚑 응급실"],["otc","🏪 상비약"]];
+  let body = "";
+  if (!MED.pos) body = `<p class="meta">📍 지금 위치를 찾는 중이에요… (최대 15초)</p>`;
+  else if (MED.tab==="otc"){
+    body = `<div class="notice"><b>안전상비의약품</b>은 약국이 문을 닫은 밤·휴일에 <b>24시간 편의점</b>에서 살 수 있어요. 해열진통제(타이레놀·어린이용 해열제), 감기약, 소화제, 파스 등 정해진 품목만 팔고, <b>만 12세 미만에게는 팔지 않으며</b> 한 번에 품목별 1개씩만 살 수 있어요.</div>
+      <h3 class="dh">가까운 편의점</h3>${medKakaoRows("CS2","편의점")}`;
+  } else if (MED.tab==="er"){
+    const E = (MED.data && MED.data.er) || [], B = (MED.er && MED.er.beds) || {};
+    body = `<div class="notice">🚨 생명이 위급하면 바로 <a href="tel:119"><b>119</b></a>에 전화하세요. 응급실은 24시간 운영해요. 아래 가용 병상은 ${MED.er ? esc(MED.er.ts)+" 기준(1시간마다 갱신)" : "자료가 없어요"}이라 실제와 다를 수 있어요.</div>` +
+      (E.length ? `<div class="medlist">${E.map(x=>({ x, d:kmLine(MED.pos,{lat:x[5],lng:x[6]}) })).sort((a,b)=>a.d-b.d).slice(0,15).map(({x,d})=>{ const b = B[x[0]];
+        return `<div class="medrow"><div class="medtop"><b>${esc(x[1])}</b><span class="medst open">24시간</span></div>
+          <div class="meta">${medKm(d)} · ${esc(x[4])}${b ? ` · 응급실 가용 병상 <b>${esc(b[0])}</b>` : ""}</div>
+          <div class="cbar">${telA(x[3]||x[2])}${toMap(x[1], x[5], x[6])}</div></div>`; }).join("")}</div>`
+        : `<div class="empty">응급실 목록 자료가 아직 없어요. <a href="https://www.e-gen.or.kr" target="_blank" rel="noopener">응급의료포털(e-gen)에서 찾기 ↗</a></div>`) +
+      `<p class="meta">실시간 응급실 상황: <a href="https://www.e-gen.or.kr" target="_blank" rel="noopener">응급의료포털 e-gen ↗</a> · 문 연 병원·약국 안내와 의료 상담은 <a href="tel:119">119</a>에서도 받을 수 있어요</p>`;
+  } else if (!MED.data){
+    body = MED.loading ? `<p class="meta">자료를 받는 중…</p>`
+      : `<p class="errline">운영시간 자료를 받지 못했어요 (${esc(MED.err||"아직 없음")}). ${state.isOps?"운영자: 공공데이터포털에서 국립중앙의료원 ‘약국 정보·병의원 찾기·응급의료기관 정보’ 3개를 활용신청한 뒤 GitHub 작업 ‘야간 병원·약국 정보 업데이트’를 실행하세요.":""}</p>` +
+        (MED.tab==="ph" ? `<h3 class="dh">가까운 약국 (영업시간 확인 필요)</h3>${medKakaoRows("PM9","약국")}` : `<h3 class="dh">가까운 병원 (영업시간 확인 필요)</h3>${medKakaoRows("HP8","병원")}`) +
+        `<p class="meta">문 연 약국 찾기: <a href="https://www.pharm114.or.kr" target="_blank" rel="noopener">휴일지킴이약국 ↗</a> · <a href="https://www.e-gen.or.kr" target="_blank" rel="noopener">응급의료포털 ↗</a></p>`;
+  } else {
+    body = MED.tab==="ph" ? medRows(MED.data.ph||[], "ph") : medRows([...(MED.data.baby||[]), ...(MED.data.hs||[])], "hs");
+    body += `<p class="meta">운영시간: 국립중앙의료원 자료(${esc(MED.data.ts)} 갱신). 실제와 다를 수 있으니 가기 전에 꼭 전화로 확인하세요.${MED.tab==="hs"?" 소아 야간 진료는 ‘달빛어린이병원’을 찾으세요.":""}</p>`;
+  }
+  return { title:"🌙 야간 병원 · 약국", html:`<div class="nearhead"><span class="meta">기준: ${esc(MED.src||"위치 찾는 중")} · 거리는 직선거리 <button class="linkbtn" data-medre="1">📍 위치 다시 찾기</button></span>
+    <div class="seg" role="group" aria-label="종류">${tabs.map(([k,t])=>`<button data-medtab="${k}" aria-pressed="${k===MED.tab}">${t}</button>`).join("")}</div></div>${body}` };
+}
+async function openMed(again){
+  if (!again) openDetail("med", "0", true);
+  MED.pos = null; MED.kk = {}; refreshDetail();
+  medLoad().then(refreshDetail);
+  const pos = await getPos();
+  if (pos){ MED.pos = pos; MED.src = "내 위치" + (pos.acc ? ` (오차 ±${pos.acc >= 1000 ? (pos.acc/1000).toFixed(1)+"km" : pos.acc+"m"})` : ""); }
+  else { const c = REG[state.region] || REG.gangneung; MED.pos = { lat:c.lat, lng:c.lng }; MED.src = `${c.name} 중심 (위치 권한이 없어 지역 중심으로 찾았어요)`; }
+  refreshDetail();
+}
+document.addEventListener("click", e=>{
+  if (e.target.closest("[data-openmed]")){ openMed(); return; }
+  if (e.target.closest("[data-medre]")){ openMed(true); return; }
+  const t = e.target.closest("[data-medtab]"); if (t){ MED.tab = t.dataset.medtab; refreshDetail(); return; }
+});
+document.addEventListener("change", e=>{ if (e.target.matches("[data-medopen]")){ MED.open = e.target.checked; refreshDetail(); } });
 // ═════════ 쿠폰 사진 ═════════
 function cpLi(c, i){
   return `<li>${c.img?`<button class="rcthumb" data-rcview="${c.img}" aria-label="쿠폰 사진 보기"><img data-rcimg="${c.img}" alt=""></button>`:""}<span><b>${esc(c.t)}</b>${c.n?` · ${esc(c.n)}`:""}</span><button data-cpdel="${i}" aria-label="삭제">삭제</button></li>`;
@@ -4706,6 +4827,7 @@ function detailHtml(k, id){
   if (k==='s') return souvDetail(id);
   if (k==='slist') return souvAll();
   if (k==='near') return nearDetail();
+  if (k==='med') return medDetail();
   if (k==="p"){ const p = byId(id); if (!p) return null;
     const ph = photoFor(p), fs = FESTIVALS.filter(f=>f.place===p.id);
     const near = PLACES.filter(x=>x.id!==p.id && x.region===p.region).map(x=>[km(p,x),x]).sort((a,b)=>a[0]-b[0]).slice(0,10).map(x=>x[1]);

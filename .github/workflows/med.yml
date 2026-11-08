@@ -1,0 +1,41 @@
+name: 야간 병원·약국 정보 업데이트
+# 국립중앙의료원 공공데이터로 강원 약국·야간 병의원·응급실 정보를 받아 web/med.json, web/er.json 에 저장한다.
+# KTO_KEY(공공데이터포털 일반 인증키)로 아래 3개 서비스를 활용신청해 두어야 한다.
+#   전국 약국 정보 조회 / 전국 병·의원 찾기 / 전국 응급의료기관 정보 조회
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 18 * * *'   # 매일 03:17(한국) 약국·병의원 전체
+    - cron: '41 * * * *'    # 매시 41분 응급실 가용 병상
+permissions:
+  contents: write
+concurrency:
+  group: med
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: 인증키 확인
+        env: { KTO_KEY: "${{ secrets.KTO_KEY }}" }
+        run: |
+          if [ -z "$KTO_KEY" ]; then echo "::error::저장소 비밀값 KTO_KEY가 없습니다."; exit 1; fi
+      - name: 약국·병의원·응급실 목록 (하루 1번 또는 수동 실행)
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '17 18 * * *'
+        env: { KTO_KEY: "${{ secrets.KTO_KEY }}" }
+        run: python3 tools/med_sync.py --key "$KTO_KEY" --out web/med.json
+      - name: 응급실 가용 병상
+        continue-on-error: true
+        env: { KTO_KEY: "${{ secrets.KTO_KEY }}" }
+        run: python3 tools/med_sync.py --key "$KTO_KEY" --er web/er.json
+      - name: 저장소에 올리기
+        run: |
+          git config user.name "gangwon-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add web/med.json web/er.json 2>/dev/null || true
+          git diff --cached --quiet && echo "바뀐 내용 없음" && exit 0
+          git commit -m "야간 병원·약국 정보 업데이트 (자동)"
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push && exit 0; echo "올리기 재시도 $i"; sleep $((i*10)); done
+          exit 1
