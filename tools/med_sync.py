@@ -82,13 +82,13 @@ def num(x):
 
 
 def is_night_or_weekend(h):
-    """밤 8시 이후까지 하거나, 주말·공휴일에 여는 곳만 남긴다(병·의원은 수가 많아서)."""
+    """밤 8시 이후까지 하거나, 일요일·공휴일에 여는 곳만 남긴다(병·의원은 수가 많아서)."""
     cells = h.split("|")
     for i, c in enumerate(cells):
         if not c:
             continue
         s, e = c.split("-")
-        if i >= 5 or int(e) >= 2000 or int(e) < int(s):
+        if i >= 6 or int(e) >= 2000 or int(e) < int(s):   # 일요일·공휴일 진료, 밤 8시 이후, 자정 넘김 (토요일 오전 진료만은 제외)
             return True
     return False
 
