@@ -103,7 +103,11 @@ def main():
 
     if a.out:
         ph = []
-        for d in items(a.key, "ErmctInsttInfoInqireService", "getParmacyListInfoInqire", {"Q0": "@SIDO"}):
+        try:
+            ph_items = items(a.key, "ErmctInsttInfoInqireService", "getParmacyListInfoInqire", {"Q0": "@SIDO"})
+        except Exception as e:
+            print("약국 건너뜀:", e); ph_items = []
+        for d in ph_items:
             la, lo = num(d.get("wgs84Lat")), num(d.get("wgs84Lon"))
             if la is None:
                 continue
@@ -111,7 +115,11 @@ def main():
         print("약국", len(ph))
 
         hs = []
-        for d in items(a.key, "HsptlAsembySearchService", "getHsptlMdcncListInfoInqire", {"Q0": "@SIDO"}):
+        try:
+            hs_items = items(a.key, "HsptlAsembySearchService", "getHsptlMdcncListInfoInqire", {"Q0": "@SIDO"})
+        except Exception as e:
+            print("병의원 건너뜀:", e); hs_items = []
+        for d in hs_items:
             la, lo = num(d.get("wgs84Lat")), num(d.get("wgs84Lon"))
             h = hours(d)
             if la is None or not is_night_or_weekend(h):
