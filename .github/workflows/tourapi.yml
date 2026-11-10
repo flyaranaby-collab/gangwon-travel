@@ -27,6 +27,15 @@ jobs:
         continue-on-error: true
         env: { KTO_KEY: "${{ secrets.KTO_KEY }}" }
         run: python3 tools/gallery_sync.py --key "$KTO_KEY" --kto web/kto.json --html web/index.html --ver web/kto_ver.txt
+      - name: Google Places로 사진 없는 곳 채우기
+        continue-on-error: true
+        env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
+        run: |
+          if [ -z "$GOOGLE_PLACES_KEY" ]; then
+            echo "GOOGLE_PLACES_KEY 없음 - Google Places 단계 건너뜀"
+          else
+            python3 tools/gplaces_sync.py --key "$GOOGLE_PLACES_KEY" --kto web/kto.json --html web/index.html --ver web/kto_ver.txt
+          fi
       - name: 저장소에 올리기
         run: |
           git config user.name "gangwon-bot"
