@@ -34,6 +34,17 @@ jobs:
           git add web/kto.json web/kto_ver.txt
           git diff --cached --quiet && echo "바뀐 내용 없음" && exit 0
           git commit -m "관광공사 장소 업데이트 (자동)"
-          # GitHub 쪽 일시 오류에 대비해 몇 번 다시 시도한다
-          for i in 1 2 3 4 5; do git pull --rebase -q && git push && exit 0; echo "올리기 재시도 $i"; sleep $((i*10)); done
+          # 최신 remote를 받아 kto.json·kto_ver.txt만 우리 버전으로 덮어쓰고 push
+          for i in 1 2 3 4 5; do
+            git fetch origin main -q
+            git rebase origin/main || {
+              # rebase 충돌 시: kto.json과 kto_ver.txt는 항상 우리(작업) 버전 사용
+              git checkout --theirs web/kto.json web/kto_ver.txt 2>/dev/null || true
+              git add web/kto.json web/kto_ver.txt
+              git rebase --continue -q || git rebase --skip -q || true
+            }
+            git push && exit 0
+            echo "올리기 재시도 $i"
+            sleep $((i*10))
+          done
           exit 1
