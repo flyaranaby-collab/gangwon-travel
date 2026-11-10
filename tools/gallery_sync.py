@@ -65,8 +65,15 @@ def main():
     kto = json.loads(pathlib.Path(a.kto).read_text(encoding="utf-8")); kto.setdefault("photos", {})
     tried = set(kto.get("gtried", []))
     tg = [t for t in targets(kto, a.html) if t["id"] not in tried]
-    try: call(a.key, "galleryList1", numOfRows=1, pageNo=1)
-    except (NotReady, Quota) as e: print("관광사진 서비스를 지금 쓸 수 없어 건너뜀:", e); return
+    try:
+        rows = call(a.key, "gallerySearchList1", keyword="강원", numOfRows=1, pageNo=1)
+        print(f"포토코리아 API 연결 확인: 응답 {len(rows)}건", file=sys.stderr)
+    except (NotReady, Quota) as e:
+        print(f"관광사진 서비스를 지금 쓸 수 없어 건너뜀: {e}", file=sys.stderr)
+        return
+    except Exception as e:
+        print(f"관광사진 API 오류로 건너뜀: {type(e).__name__}: {e}", file=sys.stderr)
+        return
     with cf.ThreadPoolExecutor(6) as ex: res = list(ex.map(lambda pl: find(a.key, pl), tg))
     got = { pl["id"]: r for pl, r in zip(tg, res) if r }
     # 2단계: 그래도 없으면 같은 읍·면·동의 풍경 사진을 '주변 풍경 사진'으로 표시해 쓴다(그 가게 사진이 아님을 밝힘)
