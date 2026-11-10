@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611110058";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611110206";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2601,19 +2601,27 @@ function photoCtl(p){
   const mine = apk ? OWNER.photos[p.id] : state.uploads[p.id];
   return `<label class="linkbtn photoadd">${mine ? "올린 사진 바꾸기" : (photoFor(p) ? "사진 바꾸기" : "사진 등록")}<input type="file" accept="image/*" data-photo="${p.id}" hidden></label>${mine ? ` <button class="linkbtn" data-photodel="${p.id}">올린 사진 지우기</button>` : ""}`;
 }
+// 수정 양식을 화면 위쪽으로 가져오되, 위쪽 고정 메뉴 줄에 제목이 가리지 않게 여백을 둔다
+function pmFormShow(){
+  const f = document.getElementById("pmForm"); if (!f) return;
+  f.style.scrollMarginTop = "130px";
+  requestAnimationFrame(()=>f.scrollIntoView({ block:"start" }));
+}
 // 카드의 ‘수정하기’: 운영 탭의 장소 수정 양식을 열어 준다(운영자 로그인 상태에서만 버튼이 보인다)
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-cardedit]"); if (!b || !state.isOps) return;
   const t = byId(b.dataset.cardedit); if (!t) return;
   PM.region = t.region; PM.cat = "전체"; PM.nophoto = false; PM.msg = PM.err = ""; PM.edit = { ...t };
-  const prevTab = state.tab; state.tab = "ops"; navPush(prevTab!=="ops"); renderTop(); renderOps(); document.getElementById("pmForm")?.scrollIntoView({ block:"start" });
+  try { closeSub(); closeSearch(); } catch(_) {}   // 상세·검색 화면이 위에 덮여 있으면 수정 양식이 가려지므로 먼저 닫는다
+  const prevTab = state.tab; state.tab = "ops"; navPush(prevTab!=="ops"); renderTop(); renderOps(); pmFormShow();
 });
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-addplace]"); if (!b || !state.isOps) return;
   PM.region = state.region==="all" ? "gangneung" : state.region; PM.cat = "전체"; PM.nophoto = false; PM.msg = PM.err = "";
   PM.edit = { region:PM.region, cat:"맛집" };
+  try { closeSub(); closeSearch(); } catch(_) {}
   const prevTab = state.tab; state.tab = "ops"; navPush(prevTab!=="ops"); renderTop(); renderOps();
-  document.getElementById("pmForm")?.scrollIntoView({ block:"start" }); document.getElementById("pmName")?.focus();
+  pmFormShow(); document.getElementById("pmName")?.focus();
 });
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-carddel]"); if (!b || !state.isOps) return;
