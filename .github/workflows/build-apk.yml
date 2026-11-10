@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
     # 운영자가 앱에서 저장한 장소·사진은 앱을 다시 만들 필요가 없다
-    paths-ignore: ['web/owner.json', 'web/photos/u-*', 'web/kto.json', 'web/kto_ver.txt', 'web/med.json', 'web/er.json', 'docs/**']
+    paths-ignore: ['web/owner.json', 'web/photos/u-*', 'web/kto.json', 'web/kto_ver.txt', 'web/med.json', 'web/er.json', 'web/weather.json', 'docs/**']
   workflow_dispatch:
 permissions:
   contents: write

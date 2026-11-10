@@ -1,0 +1,35 @@
+name: 날씨 예보 업데이트
+# 강원 권역별 날씨 예보를 받아 web/weather.json 에 저장한다. 인증키가 필요 없다.
+# 자료: 노르웨이 기상청(MET Norway), CC BY 4.0. 앱 화면에 출처를 표시한다.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */3 * * *'   # 3시간마다
+permissions:
+  contents: write
+concurrency:
+  group: weather
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: 날씨 예보 받기
+        run: python3 tools/weather_sync.py --html web/index.html --out web/weather.json
+      - name: 저장소에 올리기
+        run: |
+          git config user.name "gangwon-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add web/weather.json
+          git diff --cached --quiet && echo "바뀐 내용 없음" && exit 0
+          git commit -m "날씨 예보 업데이트 (자동)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase -q origin main && git push && exit 0
+            echo "올리기 재시도 $i"
+            sleep $((i*10))
+          done
+          exit 1
