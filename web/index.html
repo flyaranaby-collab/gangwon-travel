@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611110206";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611111829";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3554,13 +3554,16 @@ function smooth(pts, t = 0.18){
 const RIDGE = [[38.62,128.30],[38.30,128.40],[38.12,128.46],[37.95,128.55],[37.80,128.60],[37.68,128.72],[37.55,128.85],[37.45,128.98],[37.30,128.98],[37.12,128.92],[36.95,128.90]];
 // ───────── 실제 지도(카카오맵) — 앱에서만 켜진다(window.KAKAO_KEY가 있을 때) ─────────
 // 키가 없거나(웹 수첩) 불러오지 못하면 아래 약도(mapSvg)를 그대로 보여 준다
+// 코스 지도용 카카오 JavaScript 키(공개용. 등록한 도메인에서만 작동). 앱은 앱 키를, 웹 수첩은 이 키를 쓴다
+const KMAP_KEY = window.KAKAO_KEY || "0a386489f5dc157a8a5e8773ba2133b6";
+const kmapDomain = () => window.APK_BUILD ? "https://appassets.androidplatform.net" : (location.origin && location.origin!=="null" ? location.origin : "이 페이지 주소");
 let KK_P = null;
 function loadKakao(){
-  if (!window.KAKAO_KEY) return Promise.reject(new Error("no key"));
+  if (!KMAP_KEY) return Promise.reject(new Error("no key"));
   if (window.kakao && window.kakao.maps && window.kakao.maps.LatLng) return Promise.resolve(window.kakao);
   return KK_P = KK_P || new Promise((ok, no)=>{
     const sc = document.createElement("script");
-    sc.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey=" + encodeURIComponent(window.KAKAO_KEY) + "&autoload=false&libraries=services";
+    sc.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey=" + encodeURIComponent(KMAP_KEY) + "&autoload=false&libraries=services";
     const fail = e=>{ KK_P = null; no(e); };
     sc.onload = ()=>{ try { window.kakao.maps.load(()=>ok(window.kakao)); } catch(e){ fail(e); } };
     sc.onerror = ()=>fail(new Error("sdk"));
@@ -3604,12 +3607,12 @@ async function liveMap(el, pts, opt = {}){
     let tilesOk = false; try { K.maps.event.addListener(m, "tilesloaded", ()=>{ tilesOk = true; }); } catch(_) { tilesOk = true; }
     setTimeout(()=>{ if (!el.isConnected || !el.classList.contains("lmap")) return;
       if (!tilesOk){ el.classList.remove("lmap","small"); el.innerHTML = fallback; KMAPS.delete(el);
-        if (cpEl) cpEl.textContent = "카카오 지도를 받지 못해 약도를 보여 드려요. (카카오 개발자 사이트에서 ‘카카오맵 사용 설정’ ON, 플랫폼 Web에 https://appassets.androidplatform.net 등록을 확인해 주세요.) " + capOld; } }, 6000);
-  } catch(e) { if (window.KAKAO_KEY){ const cp = el.parentElement && el.parentElement.querySelector(".mapcap"); if (cp) cp.textContent = "카카오 지도를 불러오지 못했어요(" + ((e && e.message) || "오류") + "). 인터넷 연결과 카카오 설정을 확인해 주세요. " + cp.textContent; } /* 약도 유지 */ }
+        if (cpEl) cpEl.textContent = "카카오 지도를 받지 못해 약도를 보여 드려요. (카카오 개발자 사이트에서 ‘카카오맵 사용 설정’ ON, 플랫폼 Web에 " + kmapDomain() + " 등록을 확인해 주세요.) " + capOld; } }, 6000);
+  } catch(e) { if (KMAP_KEY){ const cp = el.parentElement && el.parentElement.querySelector(".mapcap"); if (cp) cp.textContent = "카카오 지도를 불러오지 못했어요(" + ((e && e.message) || "오류") + "). 인터넷 연결과 카카오 설정을 확인해 주세요. " + cp.textContent.replace(/^(카카오 지도를 불러오지 못했어요\([^)]*\)\. 인터넷 연결과 카카오 설정을 확인해 주세요\. )+/, ""); } /* 약도 유지 */ }
 }
 function upgradeCourseMap(){
   const tab = document.getElementById("tab-course"), cm = document.getElementById("courseMap");
-  if (!window.KAKAO_KEY || !cm || tab.hidden || cm.classList.contains("lmap")) return;
+  if (!KMAP_KEY || !cm || tab.hidden || cm.classList.contains("lmap")) return;
   const { seq, stops } = computeCourse();
   const onlyCourse = state.mapFit==="course" && stops.length;
   liveMap(cm, seq.map((p,i)=>({ ...p, start:i===0, closed:i>0 && status(p).cls==="closed" })),
