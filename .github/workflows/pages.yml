@@ -1,0 +1,32 @@
+name: 홈페이지 올리기
+# web/ 폴더가 바뀌면 GitHub Pages(홈페이지)에 새로 올린다.
+# 저장소 Settings → Pages → Source 를 'GitHub Actions' 로 한 번 바꿔 두어야 한다.
+on:
+  push:
+    branches: [main]
+    paths: ['web/**', 'tools/site_build.py', '.github/workflows/pages.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: python3 tools/site_build.py _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+      - id: deployment
+        uses: actions/deploy-pages@v4
