@@ -4,7 +4,7 @@ name: 홈페이지 올리기
 on:
   push:
     branches: [main]
-    paths: ['web/**', 'tools/site_build.py', '.github/workflows/pages.yml']
+    paths: ['web/**', 'tools/site_build.py', 'tools/place_pages.js', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,7 +24,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
       - run: python3 tools/site_build.py _site
+      - name: 장소별 페이지 만들기
+        run: node tools/place_pages.js _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
