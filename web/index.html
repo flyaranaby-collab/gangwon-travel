@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611122221";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611122242";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1881,7 +1881,7 @@ const PLACES = [
     tip:"김유정역·김유정문학촌과 묶으면 반나절.", who:{친구:3,연인:3,가족:3,혼자:1}, tags:["액티비티"] },
   { id:"gubongsan", region:"chuncheon", name:"구봉산 카페거리", cat:"카페", area:"동면", lat:37.8745, lng:127.7690,
     sig:"춘천 시내가 내려다보이는 언덕 위 전망 카페들", hours:"카페별 대략 10~22시", fee:"카페별", closed:[],
-    tip:"야경이 예뻐 저녁 시간이 인기예요.", who:{친구:3,연인:3,가족:2,혼자:2}, tags:["커피","야경"] },
+    tip:"야경이 예뻐 저녁 시간이 인기예요.", who:{친구:3,연인:3,가족:2,혼자:2}, tags:["커피","야경","커플사진"] },
   { id:"legoland", region:"chuncheon", name:"레고랜드 코리아", cat:"체험", area:"중도", lat:37.8875, lng:127.7170,
     sig:"레고 테마파크, 미니랜드, 놀이기구", hours:"대략 10~18시(시즌별)", fee:"성인 5만 원대~(온라인 할인)", closed:[], closedNote:"비수기 휴장일 있음",
     tip:"온라인 사전 구매가 훨씬 싸요. 휴장일을 꼭 확인하세요.", who:{친구:1,연인:1,가족:3,혼자:1}, tags:["아이와","테마파크"] },
@@ -2048,6 +2048,51 @@ const PLACES = [
     sig:"유네스코 인류무형문화유산 축제, 그네·씨름·관노가면극·난장", hours:"음력 5월 5일 앞뒤 약 8일(양력 6월)", fee:"대부분 무료", closed:[], closedNote:"매년 날짜가 바뀌어요(음력 기준)",
     tip:"단오장 난장의 감자전·수리취떡이 별미예요. 밤엔 공연이 많아요.", who:{친구:3,연인:3,가족:3,혼자:3}, tags:["축제","여름","전통"] },
   // ── 사진 명소 (2026-11 추가, 지도·기사로 위치와 특징 확인) ──
+  { id:"songjiho-sky", region:"sokcho", name:"송지호 바다하늘길 (고성)", cat:"바다", area:"고성 죽왕", lat:38.3319, lng:128.5294,
+    sig:"바다 위 631m 해상 보행로로 무인도 죽도까지, 투명 유리 바닥", hours:"09~18시 (11~3월 ~17시, 입장 마감 1시간 전)", fee:"성인 5,000원 · 7~18세 3,000원", closed:[1],
+    tip:"2026년 9월 정식 개장. 주말엔 9시 전후부터 붐비고, 보행로 안엔 화장실이 없어요. 강풍·폭우 땐 통제돼요. 서낭바위와 걸어서 이어져요.", who:{친구:3,연인:3,가족:2,혼자:2}, tags:["포토존","바다뷰","셀카명소","커플사진"] },
+  { id:"seonangbawi", region:"sokcho", name:"서낭바위 (고성 오호리)", cat:"바다", area:"고성 죽왕", lat:38.3276, lng:128.5301,
+    sig:"바위 위 소나무 한 그루가 선 기암, 국가지질공원", hours:"상시 개방", fee:"무료", closed:[],
+    tip:"해 뜰 때 바위와 바다가 함께 담겨요. 계단을 내려가야 해요. 송지호 해변에서 걸어갈 수 있어요.", who:{친구:2,연인:3,가족:2,혼자:3}, tags:["일출","포토존","바다뷰"] },
+  { id:"wanggok", region:"sokcho", name:"고성 왕곡마을", cat:"역사", area:"고성 죽왕", lat:38.3401, lng:128.5,
+    sig:"옛 북방식 한옥이 모여 있는 전통 마을", hours:"상시 개방 (주민 거주)", fee:"무료", closed:[],
+    tip:"사람이 사는 마을이라 조용히 둘러보세요. 한 바퀴 30분 정도. 한옥 숙박·한과 체험도 있어요.", who:{친구:2,연인:3,가족:3,혼자:2}, tags:["한옥","역사","포토존","산책"] },
+  { id:"hani-lavender", region:"sokcho", name:"하늬라벤더팜 (고성)", cat:"자연", area:"고성 간성", lat:38.3486, lng:128.4149,
+    sig:"보랏빛 라벤더 밭과 정원", hours:"방문 전 확인", fee:"계절별 (라벤더철 유료)", closed:[],
+    tip:"라벤더는 6월이 한창이에요. 철이 지나도 다른 꽃이 피어 있어요. 라벤더 아이스크림이 유명해요.", who:{친구:3,연인:3,가족:2,혼자:2}, tags:["꽃","여름","포토존","커플사진","웨딩스냅"] },
+  { id:"samcheok-sky", region:"donghae", name:"삼척 해상 스카이워크 (소망의탑)", cat:"바다", area:"삼척 교동", lat:37.4502, lng:129.1891,
+    sig:"해수면 77m 절벽 끝에서 바다 쪽으로 100m 뻗은 유리 바닥 보행로", hours:"09~18시", fee:"방문 전 확인", closed:[],
+    tip:"2026년 3월 준공. 맑은 날 오전이 햇살과 수평선이 가장 예뻐요. 소망의탑 맞은편 무료 주차장.", who:{친구:3,연인:3,가족:2,혼자:2}, tags:["포토존","일출","바다뷰","셀카명소"] },
+  { id:"mureungbyeol", region:"donghae", name:"무릉별유천지 (동해)", cat:"체험", area:"동해 삼화", lat:37.4698, lng:129.032,
+    sig:"옛 석회석 채석장을 바꾼 에메랄드빛 호수 공원, 6월 라벤더", hours:"09:30~17:30", fee:"성인 4,000원 (체험 시설 별도)", closed:[1],
+    tip:"주차장에서 셔틀을 타고 올라가요. 그늘이 적어 여름엔 모자 필수. 두미르전망대가 사진 자리예요.", who:{친구:2,연인:3,가족:3,혼자:2}, tags:["포토존","꽃","액티비티","아이와"] },
+  { id:"hanseom", region:"donghae", name:"한섬해변 감성바닷길 (동해)", cat:"바다", area:"동해 천곡", lat:37.5214, lng:129.122,
+    sig:"빛의 터널과 해안 데크길, 한적한 해변", hours:"상시 개방", fee:"무료", closed:[],
+    tip:"터널 안쪽에 카메라를 두고 바다와 하늘을 배경으로 찍어요. 감추사 앞 주차장에서 걸어가요. 망상보다 한적해요.", who:{친구:2,연인:3,가족:2,혼자:3}, tags:["포토존","산책","바다뷰","일출"] },
+  { id:"surobuin", region:"donghae", name:"수로부인헌화공원 (삼척)", cat:"바다", area:"삼척 임원", lat:37.2319, lng:129.3488,
+    sig:"바다 절벽 위 공원, 엘리베이터로 오르는 동해 전망", hours:"09~18시", fee:"3,000원", closed:[],
+    tip:"엘리베이터에서 내려도 계단이 조금 있어요. 맑은 날엔 울릉도까지 보인다고 해요. 월요일 운영 여부는 미리 확인하세요.", who:{친구:2,연인:3,가족:3,혼자:2}, tags:["포토존","바다뷰"] },
+  { id:"samtan", region:"jeongseon", name:"삼탄아트마인 (정선)", cat:"체험", area:"정선 고한", lat:37.1854, lng:128.882,
+    sig:"옛 탄광 시설을 바꾼 예술 공간, 산업 유산과 현대미술", hours:"09~18시", fee:"유료", closed:[1, 2],
+    tip:"월·화요일 휴무. 탄광 기계와 작품이 섞인 공간이 사진 배경으로 독특해요.", who:{친구:2,연인:3,가족:2,혼자:3}, tags:["미술","실내","포토존","역사"] },
+  { id:"seondol", region:"jeongseon", name:"영월 선돌", cat:"자연", area:"영월 방절리", lat:37.205, lng:128.4327,
+    sig:"강 위로 칼로 자른 듯 갈라진 70m 바위 절벽", hours:"상시 개방", fee:"무료", closed:[],
+    tip:"주차장에서 100m만 걸으면 돼요. 해 질 녘 풍경이 특히 좋아요. 전망대 공사 중일 때가 있어요.", who:{친구:2,연인:3,가족:2,혼자:3}, tags:["노을","포토존","산책"] },
+  { id:"jadegarden", region:"chuncheon", name:"제이드가든 (춘천)", cat:"자연", area:"춘천 남산", lat:37.833, lng:127.5416,
+    sig:"유럽 정원처럼 꾸민 숲속 수목원", hours:"09~18시", fee:"유료 (성인 약 1만 원)", closed:[],
+    tip:"오후 늦게 가면 해 질 녘 빛이 예뻐요. 여름엔 꽃보다 초록이 많아요. 주차 무료.", who:{친구:3,연인:3,가족:2,혼자:2}, tags:["포토존","꽃","커플사진","웨딩스냅","산책"] },
+  { id:"yongsomak", region:"wonju", name:"용소막성당 (원주)", cat:"역사", area:"원주 신림", lat:37.2124, lng:128.0878,
+    sig:"120년 넘은 붉은 벽돌 성당, 강원 세 번째 성당", hours:"방문 전 확인 (미사 시간 피하기)", fee:"무료", closed:[],
+    tip:"가을 단풍 때 사진이 특히 예뻐요. 신자들이 기도하는 곳이니 조용히 둘러보세요.", who:{친구:2,연인:3,가족:2,혼자:3}, tags:["역사","포토존","가을","웨딩스냅"] },
+  { id:"alpaca", region:"hongcheon", name:"홍천 알파카월드", cat:"체험", area:"홍천 화촌", lat:37.8254, lng:127.8837,
+    sig:"숲속에서 알파카에게 먹이 주고 함께 산책", hours:"10~18시", fee:"1인 18,000원", closed:[],
+    tip:"산비탈이라 편한 운동화. 오전 10시 15분 알파카가 달려오는 공연이 사진 명소예요.", who:{친구:2,연인:3,가족:3,혼자:1}, tags:["아이와","포토존","체험"] },
+  { id:"sutasa", region:"hongcheon", name:"수타사 산소길 (홍천)", cat:"자연", area:"홍천 영귀미", lat:37.6983, lng:127.9586,
+    sig:"수타사 옆 계곡을 따라 걷는 평탄한 숲길(약 3.5km)", hours:"상시 개방", fee:"무료 (주차 무료)", closed:[],
+    tip:"1시간~1시간 30분. 10월 하순 단풍 때 수타사 일대가 예뻐요.", who:{친구:2,연인:3,가족:3,혼자:2}, tags:["산책","숲","계곡","가을"] },
+  { id:"mugunghwa", region:"hongcheon", name:"홍천 무궁화수목원", cat:"자연", area:"홍천 북방", lat:37.7217, lng:127.8354,
+    sig:"무궁화를 주제로 한 수목원, 데크 산책로", hours:"방문 전 확인", fee:"무료 (주차 무료)", closed:[],
+    tip:"데크길이라 유모차·휠체어도 다닐 수 있어요. 한여름 무궁화 필 때가 좋아요. 그늘이 적어요.", who:{친구:1,연인:2,가족:3,혼자:3}, tags:["꽃","산책","아이와"] },
   { id:"hapyeong", region:"gangneung", name:"하평해변", cat:"바다", area:"사천", lat:37.8460, lng:128.8701,
     sig:"철길과 바다가 나란히 있는 한적한 해변, 잔잔한 파도", hours:"상시 개방", fee:"무료", closed:[],
     tip:"전용 주차장이 없어요. 사천진해변까지 걸어서 이어져요. 아침 바다가 고요해 사진이 잘 나오고, 파도가 잔잔해 서핑 초보에게 맞아요.", who:{친구:2,연인:3,가족:2,혼자:3}, tags:["바다뷰","서핑","포토존","산책"] },
@@ -2301,6 +2346,7 @@ const seasonPick = p => { const ss = SEASONS[seasonOf(tripDay().getMonth()+1)]; 
 const CATS = ["전체","바다","맛집","카페","소품샵","체험","역사","자연"];
 // o/c: 여는·닫는 시각(시, null=상시), stay: 권장 체류(분), cost: 1인 예상 지출(원). 모두 대략값.
 const META = {
+  "songjiho-sky":{o:9,c:18,stay:60,cost:5000}, "seonangbawi":{o:null,c:null,stay:30,cost:0}, "wanggok":{o:null,c:null,stay:40,cost:0}, "hani-lavender":{o:null,c:null,stay:60,cost:0}, "samcheok-sky":{o:9,c:18,stay:40,cost:0}, "mureungbyeol":{o:9,c:17,stay:90,cost:4000}, "hanseom":{o:null,c:null,stay:40,cost:0}, "surobuin":{o:9,c:18,stay:50,cost:3000}, "samtan":{o:9,c:18,stay:90,cost:0}, "seondol":{o:null,c:null,stay:30,cost:0}, "jadegarden":{o:9,c:18,stay:90,cost:9500}, "yongsomak":{o:null,c:null,stay:30,cost:0}, "alpaca":{o:10,c:18,stay:120,cost:18000}, "sutasa":{o:null,c:null,stay:90,cost:0}, "mugunghwa":{o:null,c:null,stay:60,cost:0},
   "hapyeong":{o:null,c:null,stay:40,cost:0},
   "sageunjin":{o:null,c:null,stay:40,cost:0}, "solbaram":{o:null,c:null,stay:30,cost:0}, "adeulbawi":{o:null,c:null,stay:40,cost:0}, "jumunjin-lh":{o:null,c:null,stay:30,cost:0}, "gasiyeon":{o:null,c:null,stay:40,cost:0}, "baekseom":{o:null,c:null,stay:30,cost:0}, "neungpadae":{o:null,c:null,stay:30,cost:0}, "hyuhyuam":{o:null,c:null,stay:40,cost:0}, "namae-sky":{o:null,c:null,stay:30,cost:0}, "chogok":{o:9,c:18,stay:60,cost:0}, "deokbong":{o:null,c:null,stay:40,cost:0}, "jukseoru":{o:9,c:18,stay:40,cost:0}, "isabu":{o:9,c:18,stay:60,cost:6000}, "yukbaek":{o:null,c:null,stay:60,cost:0}, "byeolmaro":{o:14,c:22,stay:90,cost:7000}, "ypark":{o:10,c:18,stay:90,cost:0}, "bangye":{o:null,c:null,stay:30,cost:0}, "hongcheon-ginkgo":{o:10,c:17,stay:60,cost:0},
   "cheongchosu":{o:null,c:null,stay:60,cost:22000}, "dancheon":{o:8,c:19,stay:50,cost:13000}, "sokcho88":{o:8,c:20,stay:60,cost:19000}, "hamheung":{o:10,c:20,stay:40,cost:12000}, "seonchang":{o:12,c:21,stay:70,cost:30000}, "naembibap":{o:9,c:21,stay:50,cost:10000}, "siloam":{o:10,c:19,stay:50,cost:15000}, "memilkkot":{o:10,c:20,stay:45,cost:11000}, "farmers":{o:11,c:18,stay:40,cost:12000}, "donghaemak":{o:null,c:null,stay:45,cost:12000}, "daewoo-kal":{o:null,c:null,stay:40,cost:9000}, "ottogi-kal":{o:null,c:null,stay:40,cost:8000}, "mukho-gimbap":{o:10,c:19,stay:20,cost:5000}, "wonhee":{o:11,c:21,stay:60,cost:13000}, "toseong":{o:11,c:19,stay:45,cost:10000}, "sindari":{o:11,c:18,stay:30,cost:9000}, "hyundae-mak":{o:null,c:null,stay:50,cost:12000}, "migayeon":{o:null,c:null,stay:50,cost:15000}, "buil":{o:null,c:null,stay:50,cost:15000}, "gamjane":{o:null,c:null,stay:70,cost:20000}, "donggwang":{o:9,c:21,stay:50,cost:15000}, "hoedong":{o:9,c:18,stay:40,cost:8000}, "sanneungi":{o:10,c:20,stay:60,cost:16000}, "beonyoung":{o:11,c:18,stay:40,cost:7000}, "ilmi":{o:9,c:20,stay:20,cost:14000}, "mitan":{o:8,c:18,stay:30,cost:8000}, "jucheon-muk":{o:10,c:18,stay:40,cost:8000}, "wonjo-sutbul":{o:10,c:21,stay:60,cost:15000}, "nongga":{o:11,c:20,stay:60,cost:16000}, "yupori":{o:null,c:null,stay:45,cost:11000}, "saembat":{o:null,c:null,stay:45,cost:11000}, "gamjabat":{o:null,c:null,stay:40,cost:8000}, "bamgol":{o:10,c:21,stay:50,cost:18000}, "kkachi":{o:11,c:22,stay:50,cost:15000}, "kkulkkul":{o:11,c:20,stay:40,cost:10000}, "ddoddo":{o:16,c:23,stay:80,cost:15000}, "yongbawi":{o:8,c:18,stay:50,cost:15000}, "jajak":{o:8,c:20,stay:60,cost:22000}, "aung":{o:11,c:20,stay:40,cost:10000}, "yangjimal":{o:null,c:null,stay:80,cost:25000}, "jangwon":{o:null,c:null,stay:45,cost:11000}, "bisugumi":{o:null,c:null,stay:60,cost:15000}, "hwacheon-eojuk":{o:null,c:null,stay:45,cost:12000},
