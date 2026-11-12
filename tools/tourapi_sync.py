@@ -36,11 +36,13 @@ def items(b):
     return it if isinstance(it, list) else ([it] if it else [])
 
 def list_all(key, sg, ct):
-    out, page = [], 1
+    """(목록, 끝까지 받았는지). 한도 초과 등으로 중간에 끊기면 False 로 알려 준다."""
+    out, page, total = [], 1, 0
     while True:
         b = call(key, "areaBasedList2", areaCode=32, sigunguCode=sg, contentTypeId=ct, numOfRows=300, pageNo=page, arrange="C")
-        out += items(b)
-        if len(out) >= b["totalCount"] or not items(b): return out
+        out += items(b); total = int(b.get("totalCount") or 0)
+        if len(out) >= total: return out, True
+        if not items(b): return out, False
         page += 1
 
 def detail(key, it):
@@ -68,14 +70,39 @@ def fill_images(key, snap):
     print(f"추가 이미지로 사진 {n}곳 채움 (대상 {len(need)}곳)", file=sys.stderr)
     return n
 
+def merge_old(old, snap, kp, complete):
+    """새로 받은 자료를 기존 kto.json 에 합친다. 기존 사진 기록(구글·포토코리아)과 시도 기록은 그대로 둔다.
+    - 목록이 중간에 끊겼거나(한도 초과 등) 기존보다 20% 넘게 줄면 기존 장소를 지우지 않고 새 자료를 덮어쓰기만 한다.
+    - 새 자료에서 비어 있는 값(사진·시간 등)은 기존 값을 지키고, 새 값이 있으면 새 값으로 바꾼다."""
+    old_items = {x["contentid"]: x for x in old.get("items", [])}
+    shrink = old_items and len(snap) < 0.8 * len(old_items)
+    safe = complete and not shrink
+    merged = {}
+    for x in snap:
+        prev = old_items.get(x["contentid"], {})
+        row = dict(prev); row.update({k: v for k, v in x.items() if v not in ("", None)})
+        for k in x:  # 새 자료가 비어 있고 기존에도 없던 칸은 빈 값으로 둔다
+            row.setdefault(k, x[k])
+        merged[x["contentid"]] = row
+    if not safe:
+        for cid, x in old_items.items(): merged.setdefault(cid, x)
+    photos = dict(old.get("photos", {}))
+    for k, v in kp.items():
+        if k not in photos or photos[k].get("src") == "google": photos[k] = v
+    out = {k: v for k, v in old.items() if k not in ("items", "photos", "rev")}
+    out["items"] = list(merged.values()); out["photos"] = photos
+    note = (f"합친 결과: 장소 {len(out['items'])}곳(새로 받은 {len(snap)}곳, 기존 {len(old_items)}곳), 사진 {len(photos)}곳. "
+            + ("목록을 끝까지 받아 기존 장소도 새 목록 기준으로 정리" if safe else "목록이 일부만 와서 기존 장소를 모두 보존"))
+    return out, note
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--key", required=True); ap.add_argument("--html", default=None)
     ap.add_argument("--json", default=None, help="앱이 받아 쓰는 kto.json 경로"); ap.add_argument("--ver", default=None, help="kto_ver.txt 경로")
     a = ap.parse_args(); key = a.key
     jobs = [(sg, ct) for sg in SG for ct in CT]
-    raw = []
+    raw, complete = [], True
     with cf.ThreadPoolExecutor(8) as ex:
-        for r in ex.map(lambda j: list_all(key, *j), jobs): raw += r
+        for r, ok in ex.map(lambda j: list_all(key, *j), jobs): raw += r; complete = complete and ok
     seen, uniq = set(), []
     for it in raw:
         if it["contentid"] not in seen: seen.add(it["contentid"]); uniq.append(it)
@@ -108,7 +135,12 @@ def main():
     if a.json:
         import time
         rev = int(time.time() * 1000)
-        pathlib.Path(a.json).write_text(json.dumps({"rev": rev, "items": snap, "photos": kp}, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
+        try: old = json.loads(pathlib.Path(a.json).read_text(encoding="utf-8"))
+        except Exception: old = {}
+        out, note = merge_old(old, snap, kp, complete)
+        out["rev"] = rev; print(note, file=sys.stderr); snap = out["items"]
+        pathlib.Path(a.json).write_text(json.dumps(out, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
         if a.ver: pathlib.Path(a.ver).write_text(str(rev), encoding="utf-8")
     print(("JSON " if a.json else "") + f"스냅샷 {len(snap)}건, 사진 {sum(1 for x in snap if x['firstimage'])}장, 기존 장소 사진 보강 {len(kp)}곳")
-main()
+if __name__ == "__main__":
+    main()
