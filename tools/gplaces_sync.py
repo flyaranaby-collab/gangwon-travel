@@ -78,7 +78,7 @@ def targets(kto, html):
     wiki = set(json.loads(s[s.index("/*PHOTOS*/")+10 : s.index("/*END_PHOTOS*/")]))
     a = s.index("const PLACES = ["); b = s.index("const REG = ")
     out = []
-    for pid, name in re.findall(r'\{\s*id:"([^"]+)",\s*name:"([^"]+)"', s[a:b]):
+    for pid, name in re.findall(r'\{\s*id:"([^"]+)"[^{}]*?name:"([^"]+)"', s[a:b]):
         if pid not in wiki and pid not in have:
             # city 추출 시도
             city_m = re.search(r'id:"' + re.escape(pid) + r'"[^}]*area:"([^"]+)"', s[a:b])

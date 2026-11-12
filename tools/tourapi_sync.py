@@ -121,7 +121,7 @@ def main():
     norm = lambda v: re.sub(r"[\s·()（）]", "", v or "")
     byname = {norm(x["title"]): x for x in snap if x["firstimage"]}
     start = s.index("const PLACES = ["); end = s.index("const REG = ")
-    mine = re.findall(r'\{\s*id:"([^"]+)",\s*name:"([^"]+)"', s[start:end])
+    mine = re.findall(r'\{\s*id:"([^"]+)"[^{}]*?name:"([^"]+)"', s[start:end])
     photos_blob = s[s.index("/*PHOTOS*/")+10 : s.index("/*END_PHOTOS*/")]
     have = set(json.loads(photos_blob))
     kp = {}

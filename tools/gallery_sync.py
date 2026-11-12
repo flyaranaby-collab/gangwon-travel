@@ -50,7 +50,7 @@ def targets(kto, html):
     s = pathlib.Path(html).read_text(encoding="utf-8")
     wiki = set(json.loads(s[s.index("/*PHOTOS*/")+10 : s.index("/*END_PHOTOS*/")]))
     a = s.index("const PLACES = ["); b = s.index("const REG = ")
-    out = [{ "id":pid, "name":name, "city":"" } for pid, name in re.findall(r'\{\s*id:"([^"]+)",\s*name:"([^"]+)"', s[a:b]) if pid not in wiki and pid not in have]
+    out = [{ "id":pid, "name":name, "city":"" } for pid, name in re.findall(r'\{\s*id:"([^"]+)"[^{}]*?name:"([^"]+)"', s[a:b]) if pid not in wiki and pid not in have]
     for x in kto["items"]:
         pid = "kto-" + x["contentid"]
         if x.get("firstimage") or pid in have: continue
