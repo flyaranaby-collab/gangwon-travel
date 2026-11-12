@@ -1,0 +1,37 @@
+name: 구글 지도 인기 장소 수집
+# 지역×검색어 조합으로 평점·리뷰 수가 높은 장소를 골라 web/gmap.json 에 저장한다.
+# 저장소 비밀값 GOOGLE_PLACES_KEY 를 쓴다. 구글 약관(좌표 30일 보관)에 맞춰 매달 두 번 새로 받는다.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 19 1,15 * *'   # 매달 2일·16일 새벽(한국 시간)
+permissions:
+  contents: write
+concurrency:
+  group: gmap
+  cancel-in-progress: false
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: 구글 지도에서 장소 고르기
+        env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
+        run: |
+          if [ -z "$GOOGLE_PLACES_KEY" ]; then echo "::error::GOOGLE_PLACES_KEY 가 없습니다"; exit 1; fi
+          python3 tools/gmap_discover.py --key "$GOOGLE_PLACES_KEY" --out web/gmap.json
+      - name: 저장소에 올리기
+        run: |
+          git config user.name "gangwon-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add web/gmap.json
+          git diff --cached --quiet && echo "바뀐 내용 없음" && exit 0
+          git commit -m "구글 지도 인기 장소 업데이트 (자동)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase -q origin main && git push && exit 0
+            echo "올리기 재시도 $i"; sleep $((i*10))
+          done
+          exit 1
