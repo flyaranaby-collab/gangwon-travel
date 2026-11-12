@@ -7,6 +7,7 @@
 import argparse, json, re, urllib.parse, urllib.request, concurrent.futures as cf, time, pathlib, sys
 
 PLACES_BASE = "https://places.googleapis.com/v1"
+GW_ADDR = re.compile(r"강원|Gangwon|강릉|Gangneung|속초|Sokcho|양양|Yangyang|고성|Goseong|동해|Donghae|삼척|Samcheo?k|평창|Pyeongchang|정선|Jeongseon|영월|Yeongw[eo]?ol|춘천|Chuncheon|원주|W[eo]?onju|인제|Inje|홍천|Hongcheon|화천|Hwacheon|태백|Taebaek",re.I)
 
 def search_place(api_key, name, city=""):
     """Google Places Text Search로 장소 검색, place_id 반환"""
@@ -31,7 +32,8 @@ def search_place(api_key, name, city=""):
         for p in places:
             addr = p.get("formattedAddress", "")
             # 강원도 주소인지 확인
-            if "강원" not in addr:
+            # 강원도 주소인지 확인 (영어 주소는 "Gangwon" 이나 시·군 이름만 오기도 한다)
+            if not GW_ADDR.search(addr):
                 continue
             photos = p.get("photos", [])
             if photos:
