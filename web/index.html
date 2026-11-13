@@ -664,7 +664,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611122357";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611131347";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1279,6 +1279,7 @@ body.compact .pagebar { display: flex; align-items: center; gap: 10px; position:
   <div class="inner">
     <nav class="tabs" role="tablist">
       <button role="tab" data-tab="places">가볼 곳</button>
+      <button role="tab" data-tab="transit">교통</button>
       <button role="tab" data-tab="season">계절&amp;행사</button>
       <button role="tab" data-tab="deals">할인 방법</button>
       <button role="tab" data-tab="pack">준비물</button>
@@ -1291,6 +1292,7 @@ body.compact .pagebar { display: flex; align-items: center; gap: 10px; position:
 
 <main class="inner">
   <section class="panel" id="tab-places"></section>
+  <section class="panel" id="tab-transit" hidden></section>
   <section class="panel" id="tab-season" hidden></section>
   <section class="panel" id="tab-course" hidden></section>
   <section class="panel" id="tab-deals" hidden></section>
@@ -3601,7 +3603,7 @@ function renderTop(){
   const cc = document.getElementById("courseCount"); if (cc) cc.hidden = !state.course.length;
   document.getElementById("courseCount").textContent = state.course.length;
   document.getElementById("stampCount").textContent = Object.keys(state.stamps).length;
-  ["places","season","course","deals","pack","souv","journal","ops","favs","coupons","my","more"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==state.tab);
+  ["places","transit","season","course","deals","pack","souv","journal","ops","favs","coupons","my","more"].forEach(t=>document.getElementById("tab-"+t).hidden = t!==state.tab);
   if (state.tab==="course") setTimeout(upgradeCourseMap, 0);
   // 하단 메뉴 화면(일정·찜·쿠폰북·마이·더보기와 그 하위)은 상단 그림·탭 없이 그 메뉴만 보여 준다
   const compact = COMPACT_TABS.has(state.tab);
@@ -3670,7 +3672,7 @@ function renderPlaces(){
       <div class="strip">${hotList(10).map((p,i)=>stripItem(p, "No."+(i+1))).join("")}</div>${hotEditor(hot)}</div>
     ${renderSponsors()}
     <div class="sec-title"><h2>${state.region==="all"?"강원 모든 장소":REG[state.region].name+" 모든 장소"}</h2><span class="en">${regionPlaces().length} places${KTO_ADDED?` · 관광공사 ${PLACES.filter(p=>p.source==="kto"&&inRegion(p)).length}`:""}</span></div>
-    <div class="filters" role="group" aria-label="분류">${[...CATS, ...(PLACES.some(p=>p.cat==="자연")?["자연"]:[]), ...(PLACES.some(p=>p.cat==="관광지")?["관광지"]:[]), "숙소", "교통"].map(c=>`<button class="chipbtn" data-cat="${c}" aria-pressed="${c===state.cat}">${c}</button>`).join("")}<span class="sep"></span><button class="chipbtn" id="trendBtn" aria-pressed="${state.trend}">요즘 뜨는 곳</button><button class="chipbtn" id="photoBtn" aria-pressed="${state.photo}">📸 사진 명소</button><button class="chipbtn" id="summerBtn" aria-pressed="${state.summer}">🏖️ 여름 피서</button><button class="chipbtn" id="reviewBtn" aria-pressed="${state.review}">⭐ 리뷰 많은 곳</button><button class="chipbtn" id="localBtn" aria-pressed="${state.local}">현지인 맛집</button><button class="chipbtn" id="dealBtn" aria-pressed="${state.dealOnly}">할인 있는 곳</button><button class="chipbtn" id="rainBtn" aria-pressed="${state.rain}">비 오는 날</button></div>
+    <div class="filters" role="group" aria-label="분류">${[...CATS, ...(PLACES.some(p=>p.cat==="자연")?["자연"]:[]), ...(PLACES.some(p=>p.cat==="관광지")?["관광지"]:[]), "숙소"].map(c=>`<button class="chipbtn" data-cat="${c}" aria-pressed="${c===state.cat}">${c}</button>`).join("")}<span class="sep"></span><button class="chipbtn" id="trendBtn" aria-pressed="${state.trend}">요즘 뜨는 곳</button><button class="chipbtn" id="photoBtn" aria-pressed="${state.photo}">📸 사진 명소</button><button class="chipbtn" id="summerBtn" aria-pressed="${state.summer}">🏖️ 여름 피서</button><button class="chipbtn" id="reviewBtn" aria-pressed="${state.review}">⭐ 리뷰 많은 곳</button><button class="chipbtn" id="localBtn" aria-pressed="${state.local}">현지인 맛집</button><button class="chipbtn" id="dealBtn" aria-pressed="${state.dealOnly}">할인 있는 곳</button><button class="chipbtn" id="rainBtn" aria-pressed="${state.rain}">비 오는 날</button></div>
     <input type="search" id="q" class="search" placeholder="장소·메뉴·태그 검색 (예: 물회, 일출, 아이와)" value="${esc(state.q)}" aria-label="검색">
     <div id="stayExtra"></div>
     <div class="grid" id="placeGrid"></div>
@@ -3680,7 +3682,7 @@ function renderPlaces(){
 function renderGrid(){
   const q = state.q.trim().toLowerCase();
   if (state.cat==="숙소"){ renderStays(q); return; }
-  if (state.cat==="교통"){ renderTransport(q); return; }
+  if (state.cat==="교통"){ state.cat="전체"; }
   document.getElementById("stayExtra").innerHTML = document.getElementById("stayAfter").innerHTML = "";
   const ad = new Set(SPONSORED.map(x=>x.id));
   const list = PLACES.filter(p=>inRegion(p) && (state.cat==="전체"||p.cat===state.cat)
@@ -4167,20 +4169,39 @@ const TRANSIT = [
   { id:"t-ij-bus", region:"inje", type:"버스", name:"인제 시외버스터미널", line:"동서울·춘천·속초 등", lat:38.0690, lng:128.1690, tip:"백담사는 원통·용대리에서 셔틀버스로 가요." },
   { id:"t-wt-bus", region:"inje", type:"버스", name:"원통 버스터미널", line:"동서울·속초 등", lat:38.1300, lng:128.2050, tip:"" },
   { id:"t-hc-bus", region:"hongcheon", type:"버스", name:"홍천 종합버스터미널", line:"서울·춘천·원주 등", lat:37.6930, lng:127.8880, tip:"" },
+  { id:"t-jmj-bus", region:"gangneung", type:"버스", name:"주문진 시외버스터미널", line:"동서울·속초·양양 등 시외 노선", lat:37.8955, lng:128.8250, tip:"주문진수산시장·BTS 버스정류장과 가까워요." },
+  { id:"t-yy-air", region:"yangyang", type:"공항", name:"양양국제공항", line:"국내선(제주 등)·일부 국제선", lat:38.0613, lng:128.6692, tip:"운항 노선이 자주 바뀌어요. 공항에서 양양·속초 시내까지는 택시가 편해요." },
+  { id:"t-gs-bus", region:"sokcho", type:"버스", name:"간성 시외버스터미널 (고성)", line:"동서울·속초 등", lat:38.3787, lng:128.4674, tip:"통일전망대·화진포 방면 출발점이에요." },
+  { id:"t-wj-air", region:"wonju", type:"공항", name:"원주공항", line:"국내선(제주)", lat:37.4381, lng:127.9604, tip:"횡성에 있어요. 운항 편수가 적어 미리 확인하세요." },
+  { id:"t-mds-train", region:"jeongseon", type:"기차", name:"민둥산역", line:"일반열차 (태백선)", lat:37.2470, lng:128.8200, tip:"가을 민둥산 억새 산행 출발점이에요." },
+  { id:"t-pc-bus", region:"pyeongchang", type:"버스", name:"평창 시외버스터미널", line:"동서울·원주 등", lat:37.3707, lng:128.3922, tip:"평창읍(평창강·바위공원) 방면이에요." },
   { id:"t-hw-bus", region:"hwacheon", type:"버스", name:"화천 시외버스터미널", line:"동서울·춘천 등", lat:38.1060, lng:127.7070, tip:"산천어축제 기간엔 증편·임시노선이 생겨요." },
 ];
 const BOOK = {
   기차: [["코레일 예매","https://www.letskorail.com"]],
   버스: [["고속버스 예매","https://www.kobus.co.kr"],["시외버스 예매","https://www.bustago.or.kr"]],
+  공항: [["항공 운항 정보","https://www.airport.co.kr"]],
 };
 const kmapTo = t => `https://map.kakao.com/link/to/${encodeURIComponent(t.name)},${t.lat},${t.lng}`;
 const nmap = q => "https://map.naver.com/p/search/" + encodeURIComponent(q);
-function renderTransport(q){
-  const list = TRANSIT.filter(t=>(state.region==="all"||t.region===state.region) && (!q || [t.name,t.line,t.type,REG[t.region].name].join(" ").toLowerCase().includes(q)));
+const TR = { q:"", type:"전체" };
+const TR_ICON = { 기차:"🚆 기차역", 버스:"🚌 버스터미널", 공항:"✈️ 공항" };
+function transitList(){
+  const q = TR.q.trim().toLowerCase();
+  return TRANSIT.filter(t=>(state.region==="all"||t.region===state.region) && (TR.type==="전체"||t.type===TR.type)
+    && (!q || [t.name,t.line,t.type,REG[t.region].name].join(" ").toLowerCase().includes(q)));
+}
+function renderTransitTab(){
+  const el = document.getElementById("tab-transit"); if (!el) return;
   const town = state.region==="all" ? "강원" : REG[state.region].q;
-  document.getElementById("stayExtra").innerHTML = `
+  const here = TRANSIT.filter(t=>state.region==="all"||t.region===state.region);
+  const types = ["전체", ...["기차","버스","공항"].filter(k=>here.some(t=>t.type===k))];
+  if (!types.includes(TR.type)) TR.type = "전체";
+  el.innerHTML = `
+    <div class="sec-title"><h2>${regionLabel()} 교통</h2><span class="en">Getting around</span></div>
+    <p class="meta" style="margin:-4px 0 14px">위에서 지역을 고르면 그 지역의 기차역·버스터미널·택시 호출이 보여요.</p>
     <section class="taxi">
-      <div><div class="eyebrow">TAXI</div><h3>택시 부르기</h3>
+      <div><div class="eyebrow">TAXI</div><h3>${esc(town)} 택시 부르기</h3>
         <p>카카오T 앱으로 지금 있는 곳에서 바로 부를 수 있어요. 앱이 없거나 시골 지역이면 그 지역 콜택시가 더 빨리 와요.</p></div>
       <div class="taxi-actions">
         <a class="btn" href="kakaot://taxi" data-rev="taxi:kakaot" onclick="setTimeout(()=>{ if(!document.hidden) location.href='https://www.kakaomobility.com/'; },1500)">카카오T로 택시 호출</a>
@@ -4188,16 +4209,32 @@ function renderTransport(q){
       </div>
       <p class="meta">카카오T 버튼은 휴대폰에 앱이 깔려 있으면 앱이 열리고, 없으면 안내 페이지로 이동해요.</p>
     </section>
-    <div class="sec-title"><h2>${regionLabel()} 기차역 · 버스터미널</h2><span class="en">${list.length} stops</span></div>
-    <p class="notice">열차·버스 시간표와 요금은 자주 바뀌어요. 아래 예매 버튼으로 최신 시간을 확인하세요.</p>`;
-  document.getElementById("placeGrid").innerHTML = list.length ? list.map(t=>`
+    <section class="taxi" style="background:var(--surface);border:1px solid var(--line)">
+      <div><div class="eyebrow">CITY BUS</div><h3>${esc(town)} 시내·농어촌버스</h3>
+        <p>역·터미널에서 관광지까지는 시내버스로 갈 수 있어요. 지도 앱에서 출발지와 도착지를 넣으면 버스 번호와 도착 시간이 나와요.</p></div>
+      <div class="taxi-actions">
+        <a class="btn ghost" href="${naver(town+" 시내버스 노선 시간표")}" target="_blank" rel="noopener">${esc(town)} 버스 노선·시간표</a>
+        <a class="btn ghost" href="${nmap(town+" 버스정류장")}" target="_blank" rel="noopener">가까운 정류장 (네이버지도)</a>
+      </div>
+    </section>
+    <div class="sec-title"><h2>${regionLabel()} 기차역 · 버스터미널${here.some(t=>t.type==="공항")?" · 공항":""}</h2><span class="en" id="trCount"></span></div>
+    <div class="filters" role="group" aria-label="교통 종류">${types.map(k=>`<button class="chipbtn" data-trtype="${k}" aria-pressed="${k===TR.type}">${k==="전체"?"전체":TR_ICON[k]}</button>`).join("")}</div>
+    <input type="search" id="trq" class="search" placeholder="역·터미널·노선 검색 (예: KTX, 동서울)" value="${esc(TR.q)}" aria-label="교통 검색">
+    <p class="notice">열차·버스 시간표와 요금은 자주 바뀌어요. 아래 예매 버튼으로 최신 시간을 확인하세요.</p>
+    <div class="grid" id="transitGrid"></div>`;
+  renderTransitList();
+}
+function renderTransitList(){
+  const g = document.getElementById("transitGrid"); if (!g) return;
+  const list = transitList();
+  const c = document.getElementById("trCount"); if (c) c.textContent = list.length + " stops";
+  g.innerHTML = list.length ? list.map(t=>`
     <article class="card transit">
-      <div class="head"><div><div class="eyebrow">${t.type==="기차"?"🚆 기차역":"🚌 버스터미널"} · ${esc(REG[t.region].name)}</div><h3>${esc(t.name)}</h3></div></div>
+      <div class="head"><div><div class="eyebrow">${TR_ICON[t.type]} · ${esc(REG[t.region].name)}</div><h3>${esc(t.name)}</h3></div></div>
       <dl class="kv"><dt>노선</dt><dd>${esc(t.line)}</dd>${t.tip?`<dt>팁</dt><dd>${esc(t.tip)}</dd>`:""}</dl>
-      <div class="links">${BOOK[t.type].map(([n,u])=>`<a class="primary" href="${u}" target="_blank" rel="noopener" data-rev="book:${t.type}">${n} <span>↗</span></a>`).join("")}
+      <div class="links">${(BOOK[t.type]||[]).map(([n,u])=>`<a class="primary" href="${u}" target="_blank" rel="noopener" data-rev="book:${t.type}">${n} <span>↗</span></a>`).join("")}
         <a href="${kmapTo(t)}" target="_blank" rel="noopener">카카오맵 길찾기 <span>↗</span></a><a href="${nmap(t.name)}" target="_blank" rel="noopener">네이버지도 <span>↗</span></a></div>
-    </article>`).join("") : `<div class="empty">${regionLabel()}엔 등록된 역·터미널이 없어요. 지역을 '강원 전체'로 바꿔 보세요.</div>`;
-  document.getElementById("stayAfter").innerHTML = "";
+    </article>`).join("") : `<div class="empty">${regionLabel()}엔 조건에 맞는 역·터미널이 없어요. 검색어를 지우거나 지역을 '강원 전체'로 바꿔 보세요.</div>`;
 }
 function renderStays(q){
   const stops = state.course.map(byId).filter(Boolean);
@@ -4441,7 +4478,7 @@ function renderOps(){
 }
 
 function renderSouvTab(){ const el = document.getElementById("tab-souv"); if (!el) return; const a = souvAll(); el.innerHTML = `<div class="sec-title"><h2>${a.title}</h2><span class="en">Local gifts</span></div><p class="meta" style="margin:-4px 0 12px">누르면 어디서 살 수 있는지 보여 드려요.</p>${a.html}`; }
-function render(){ renderTop(); renderPlaces(); renderSeasonTab(); renderSouvTab(); renderCourse(); renderDeals(); renderOps(); renderPack(); renderJournal(); renderFavs(); renderCouponBook(); renderMy(); renderMore(); refreshDetail(); }
+function render(){ renderTop(); renderPlaces(); renderTransitTab(); renderSeasonTab(); renderSouvTab(); renderCourse(); renderDeals(); renderOps(); renderPack(); renderJournal(); renderFavs(); renderCouponBook(); renderMy(); renderMore(); refreshDetail(); }
 
 // ───────── 이벤트 ─────────
 document.addEventListener("click", e=>{
@@ -4510,6 +4547,7 @@ document.addEventListener("click", e=>{
   if (t.dataset.stay){ state.start = t.dataset.stay; save(); render(); return; }
   if (t.dataset.who){ state.who=t.dataset.who; save(); render(); return; }
   if (t.dataset.cat){ state.cat=t.dataset.cat; renderPlaces(); return; }
+  if (t.dataset.trtype){ TR.type=t.dataset.trtype; renderTransitTab(); return; }
   if (t.dataset.wxrain){ state.rain=!state.rain; renderPlaces(); const g = document.getElementById("placeGrid"); if (state.rain && g) g.scrollIntoView({ behavior:"smooth", block:"start" }); return; }
   if (t.id==="rainBtn"){ state.rain=!state.rain; renderPlaces(); return; }
   if (t.id==="dealBtn"){ state.dealOnly=!state.dealOnly; renderPlaces(); return; }
@@ -4570,6 +4608,7 @@ document.addEventListener("change", e=>{
 });
 document.addEventListener("input", e=>{
   if (e.target.id==="q"){ state.q=e.target.value; renderGrid(); }
+  if (e.target.id==="trq"){ TR.q=e.target.value; renderTransitList(); }
 });
 document.addEventListener("submit", e=>{
   if (e.target.id==="aiForm"){
@@ -4736,7 +4775,7 @@ function renderMore(){
       <button class="mrow" data-tab="souv"><span class="mico">🎁</span><span class="mtx"><b>특산품·기념 선물</b><small>지역별 특산품과 살 수 있는 곳</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-near="4"><span class="mico">📍</span><span class="mtx"><b>내 주변</b><small>1km·4km·10km 맛집·가볼 곳·추천지</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-openmed="1"><span class="mico">🌙</span><span class="mtx"><b>야간 병원·약국</b><small>지금 문 연 약국·병원 · 응급실 · 상비약 편의점</small></span><span class="mgo">›</span></button>
-      <button class="mrow" data-gocat="교통"><span class="mico">🚄</span><span class="mtx"><b>교통</b><small>KTX·버스터미널·택시</small></span><span class="mgo">›</span></button>
+      <button class="mrow" data-tab="transit"><span class="mico">🚄</span><span class="mtx"><b>교통</b><small>KTX·버스터미널·택시</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-tab="deals"><span class="mico">🏷️</span><span class="mtx"><b>할인 방법</b><small>강원 여행 할인 제도</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-opensearch="1"><span class="mico">🔍</span><span class="mtx"><b>검색</b><small>장소·음식·동네로 찾기</small></span><span class="mgo">›</span></button>
       ${state.isOps ? `<button class="mrow" data-tab="ops"><span class="mico">🛠️</span><span class="mtx"><b>운영</b><small>장소·사진·수익 설정</small></span><span class="mgo">›</span></button>` : ""}
@@ -5413,12 +5452,12 @@ window.addEventListener("popstate", e=>{
     else openDetail(st.k, st.id, false);
     return; }
   closeSearch(); closeSub();
-  const tab = st.tab || (["places","season","course","deals","pack","souv","journal","ops","favs","coupons","my","more"].includes(hh) ? hh : "places");
+  const tab = st.tab || (["places","transit","season","course","deals","pack","souv","journal","ops","favs","coupons","my","more"].includes(hh) ? hh : "places");
   if (tab==="ops" && !state.isOps) state.tab = "places"; else state.tab = tab;
   if (state.tab==="ops") renderOps(); renderTop(); keepTabPos();
 });
 const h = location.hash.replace("#","");
-if (["places","season","course","deals","pack","souv","journal","ops","favs","coupons","my","more"].includes(h)) state.tab = h;
+if (["places","transit","season","course","deals","pack","souv","journal","ops","favs","coupons","my","more"].includes(h)) state.tab = h;
 if (h==="stay"){ state.tab = "places"; state.cat = "숙소"; }
 if (window.APK_BUILD) document.body.classList.add("apk");
 render();
