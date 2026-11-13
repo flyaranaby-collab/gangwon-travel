@@ -1,0 +1,375 @@
+<title>지역 여행 수첩 제작 매뉴얼</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 넓은 화면은 왼쪽 목차 + 본문 한 단, 휴대폰은 목차를 위로 접어 한 단 */
+:root {
+  --bg: #f4f6f5; --surface: #ffffff; --ink: #18211f; --muted: #5b6b67; --line: #d6dfdc;
+  --accent: #1f6f78; --accent-soft: #e2f0f0; --pine: #2f5d3a; --warn: #9a5b12; --warn-soft: #fbf0df;
+  --code-bg: #eef2f1;
+  --f-head: "IBM Plex Sans KR", "Noto Sans KR", system-ui, sans-serif;
+  --f-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111816; --surface: #18211f; --ink: #e5ece9; --muted: #9db0ab; --line: #2c3a37;
+  --accent: #6cc3cb; --accent-soft: #19302f; --pine: #8cc79a; --warn: #f0b768; --warn-soft: #2f2618; --code-bg: #1e2a28; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #111816; --surface: #18211f; --ink: #e5ece9; --muted: #9db0ab; --line: #2c3a37;
+  --accent: #6cc3cb; --accent-soft: #19302f; --pine: #8cc79a; --warn: #f0b768; --warn-soft: #2f2618; --code-bg: #1e2a28; color-scheme: dark }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15.5px/1.75 var(--f-body); margin: 0; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; }
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 20px; } }
+h1, h2, h3 { font-family: var(--f-head); text-wrap: balance; line-height: 1.3; }
+h1 { font-size: clamp(26px, 4vw, 34px); margin: 0 0 8px; }
+h2 { font-size: 22px; margin: 0 0 12px; padding-top: 8px; }
+h3 { font-size: 17px; margin: 22px 0 8px; }
+p { margin: 0 0 12px; max-width: 70ch; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lede { color: var(--muted); font-size: 16.5px; max-width: 62ch; }
+.meta { color: var(--muted); font-size: 13px; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; font-size: 14px; }
+nav.toc b { display: block; font-family: var(--f-head); font-size: 12px; letter-spacing: .08em; color: var(--muted); margin-bottom: 8px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: t; }
+nav.toc li { counter-increment: t; }
+nav.toc a { display: block; padding: 4px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; }
+nav.toc a::before { content: counter(t) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+nav.toc a:hover { background: var(--accent-soft); }
+@media (max-width: 860px) { nav.toc { position: static; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  nav.toc ol { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }
+main { min-width: 0; display: grid; gap: 40px; }
+section { min-width: 0; scroll-margin-top: 16px; }
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 16px 0; }
+.flow div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+.flow div b { display: block; font-family: var(--f-head); color: var(--accent); font-size: 13px; }
+ol.steps { padding-left: 1.3em; margin: 0 0 12px; display: grid; gap: 6px; }
+ul { padding-left: 1.2em; margin: 0 0 12px; }
+li { max-width: 70ch; }
+.tbl { overflow-x: auto; margin: 8px 0 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 620px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--f-head); font-weight: 600; font-size: 13px; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+code, .mono { font-family: var(--f-mono); font-size: .9em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.note { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; max-width: 72ch; }
+.note b { color: var(--warn); }
+.prompt { display: flex; gap: 10px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 6px 0; }
+.prompt span { flex: 1; min-width: 0; }
+.prompt button { font: 500 13px var(--f-body); border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; white-space: nowrap; }
+.check li { list-style: none; position: relative; padding-left: 4px; }
+.check li::before { content: "☐"; position: absolute; left: -1.2em; color: var(--muted); }
+.tag { display: inline-block; font-size: 12px; padding: 0 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="목차">
+  <b>목차</b>
+  <ol>
+    <li><a href="#overview">전체 구조</a></li>
+    <li><a href="#history">만든 순서</a></li>
+    <li><a href="#accounts">준비할 계정</a></li>
+    <li><a href="#apis">공공데이터 신청</a></li>
+    <li><a href="#other-keys">구글·카카오 키</a></li>
+    <li><a href="#repo">저장소와 비밀값</a></li>
+    <li><a href="#jobs">자동 작업</a></li>
+    <li><a href="#web">웹 수첩 고치기</a></li>
+    <li><a href="#apk">앱 설치·업데이트</a></li>
+    <li><a href="#site">홈페이지·검색 등록</a></li>
+    <li><a href="#data">장소 자료 원칙</a></li>
+    <li><a href="#port">다른 지역으로 옮기기</a></li>
+    <li><a href="#trouble">문제 해결</a></li>
+    <li><a href="#cost">비용·약관</a></li>
+    <li><a href="#prompts">Claude에게 부탁하는 말</a></li>
+  </ol>
+</nav>
+
+<main>
+<header>
+  <h1>지역 여행 수첩 제작 매뉴얼</h1>
+  <p class="lede">강원 여행 수첩을 처음부터 만든 과정, 신청한 사이트, 설치·업데이트 방법을 정리했습니다. 다른 지역 관광 지도를 만들 때 이 순서대로 따라 하면 됩니다.</p>
+  <p class="meta">2026년 11월 13일 기준 · 저장소 <a href="https://github.com/flyaranaby-collab/gangwon-travel">flyaranaby-collab/gangwon-travel</a></p>
+</header>
+
+<section id="overview">
+  <h2>1. 전체 구조</h2>
+  <p>하나의 수첩 파일을 세 곳(웹 수첩, 안드로이드 앱, 홈페이지)에 함께 씁니다. 장소·날씨·열차 같은 자료는 GitHub가 정해진 시간에 공공 API에서 받아 저장소에 올리고, 앱은 켤 때마다 그 자료를 새로 읽습니다.</p>
+  <div class="flow" aria-label="자료 흐름">
+    <div><b>원본</b>수첩 파일 하나 (<code>source/index.html</code>)</div>
+    <div><b>웹 수첩</b>claude.ai 아티팩트로 게시</div>
+    <div><b>저장소</b>앱용 사본 <code>web/index.html</code> + 자료 파일</div>
+    <div><b>자동 작업</b>GitHub Actions가 API에서 자료 받기</div>
+    <div><b>앱·홈페이지</b>APK 자동 빌드, GitHub Pages 게시</div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>결과물</th><th>주소</th><th>누가 보나</th></tr></thead>
+    <tbody>
+      <tr><td>웹 수첩 (원본, 운영 기능 포함)</td><td><a href="https://claude.ai/artifact/NKNww6MzdXt8bdzPA19FUu">claude.ai 아티팩트</a></td><td>운영자, 링크를 받은 사람</td></tr>
+      <tr><td>안드로이드 앱 (APK)</td><td><a href="https://github.com/flyaranaby-collab/gangwon-travel/releases/latest/download/gangwon-travel.apk">최신 APK 받기</a></td><td>관광객</td></tr>
+      <tr><td>홈페이지 + 장소별 페이지</td><td><a href="https://flyaranaby-collab.github.io/gangwon-travel/">flyaranaby-collab.github.io/gangwon-travel</a></td><td>검색으로 들어오는 사람</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="history">
+  <h2>2. 만든 순서</h2>
+  <p>실제로 만든 순서입니다. 다른 지역도 이 순서가 무리가 없습니다.</p>
+  <ol class="steps">
+    <li><b>웹 수첩 시작</b>: Claude 대화에서 지역·장소·코스·준비물을 담은 한 페이지 수첩을 아티팩트로 만들었습니다.</li>
+    <li><b>장소 직접 정리</b>: 강릉·속초 등 대표 장소를 직접 조사해 이름, 좌표, 운영 시간, 팁, 태그를 넣었습니다(현재 약 250곳).</li>
+    <li><b>GitHub 저장소와 앱</b>: 저장소를 만들고, 수첩을 그대로 띄우는 안드로이드 앱(WebView)을 붙였습니다. 저장소에 올리면 APK가 자동으로 만들어집니다.</li>
+    <li><b>관광공사 자료 연결</b>: 공공데이터포털 키로 관광공사 장소·숙소를 받아 1,200여 곳을 더했습니다.</li>
+    <li><b>사진</b>: 위키백과(자유 이용) → 관광공사 → 관광사진(포토코리아) → 구글 지도 순서로 빈 사진을 채웁니다.</li>
+    <li><b>다국어</b>: 한국어·영어·중국어·일본어 번역 사전을 따로 두고 빌드합니다.</li>
+    <li><b>운영 페이지</b>: 장소 추가·수정·사진 등록을 앱 안에서 하고, 저장하면 저장소의 <code>owner.json</code>에 반영됩니다.</li>
+    <li><b>생활 정보</b>: 날씨(노르웨이 기상청), 야간 병원·약국·응급실(국립중앙의료원), 캘린더 내보내기를 넣었습니다.</li>
+    <li><b>홈페이지</b>: GitHub Pages로 고정 주소를 만들고 장소마다 검색용 페이지를 자동 생성했습니다.</li>
+    <li><b>분류 확장</b>: 산·계곡·호수·강·숲·꽃·고원 분류, 사진 명소·여름 피서·리뷰 많은 곳 필터를 넣었습니다.</li>
+    <li><b>구글 지도 인기 장소</b>: 지역×검색어 조합으로 평점·리뷰가 많은 맛집·카페·자연 명소 400여 곳을 더했습니다.</li>
+    <li><b>열차 시간표</b>: 국토교통부 열차정보로 7일치 시간표·요금을 받아 교통 탭에 넣고, 네이버·코레일 예매로 연결했습니다.</li>
+  </ol>
+</section>
+
+<section id="accounts">
+  <h2>3. 준비할 계정</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>사이트</th><th>무엇에 쓰나</th><th>비용</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://github.com">GitHub</a></td><td>저장소, 자동 작업, APK 배포, 홈페이지</td><td>무료 (공개 저장소)</td></tr>
+      <tr><td><a href="https://www.data.go.kr">공공데이터포털</a></td><td>관광공사·열차·의료 API 인증키 (키 하나로 여러 API)</td><td>무료</td></tr>
+      <tr><td><a href="https://console.cloud.google.com">Google Cloud</a></td><td>구글 지도 사진·인기 장소 (Places API New)</td><td>무료 사용량 안에서 0원, 결제 계정 연결 필요</td></tr>
+      <tr><td><a href="https://developers.kakao.com">카카오 개발자</a></td><td>코스 지도의 카카오맵</td><td>무료 쿼터 안에서 0원</td></tr>
+      <tr><td><a href="https://claude.ai">Claude</a></td><td>수첩 제작·수정, 웹 수첩 게시</td><td>Pro 구독</td></tr>
+      <tr><td><a href="https://searchadvisor.naver.com">네이버 서치어드바이저</a>, <a href="https://search.google.com/search-console">구글 서치 콘솔</a></td><td>홈페이지를 검색에 등록</td><td>무료</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>키는 한 곳에만 적어 두세요.</b> 공공데이터 인증키, 구글 키, 앱 서명 키 비밀번호는 GitHub의 비밀값(Secrets)에만 넣고, 단톡방·게시판에는 올리지 않습니다. 서명 키 파일은 잃어버리면 앱 덮어쓰기 업데이트가 영영 불가능하니 USB 등에 따로 보관합니다.</div>
+</section>
+
+<section id="apis">
+  <h2>4. 공공데이터 신청</h2>
+  <p>공공데이터포털은 <b>계정당 인증키가 하나</b>이고, API마다 <b>활용신청</b>을 따로 해야 그 키로 쓸 수 있습니다. 신청하지 않은 API를 부르면 "등록되지 않은 서비스키(코드 30)"가 납니다.</p>
+  <h3>신청 순서</h3>
+  <ol class="steps">
+    <li><a href="https://www.data.go.kr">data.go.kr</a>에 로그인합니다.</li>
+    <li>검색창에 아래 표의 이름을 입력하고, 유형이 <b>오픈API</b>인 항목을 엽니다. 비슷한 이름의 파일 데이터는 고르지 않습니다.</li>
+    <li><b>활용신청</b> → 활용목적 "앱 개발(웹·모바일) — ○○ 여행 앱"을 적고 신청합니다.</li>
+    <li>마이페이지 → 데이터 활용 → Open API → 활용신청 현황에서 "승인"을 확인합니다. 승인 직후 30분~1시간은 오류가 날 수 있습니다.</li>
+  </ol>
+  <div class="tbl"><table>
+    <thead><tr><th>신청할 API (검색할 이름)</th><th>앱에서 쓰는 곳</th><th>작업 파일</th></tr></thead>
+    <tbody>
+      <tr><td>한국관광공사_국문 관광정보 서비스_GW</td><td>관광지·맛집·숙소 목록 (지역 코드로 받음)</td><td><code>tourapi_sync.py</code></td></tr>
+      <tr><td>한국관광공사_관광사진 정보_GW</td><td>사진 없는 장소 채우기</td><td><code>gallery_sync.py</code></td></tr>
+      <tr><td><a href="https://www.data.go.kr/data/15098552/openapi.do">국토교통부_(TAGO)_열차정보</a></td><td>열차 시간표·요금 7일치</td><td><code>train_sync.py</code></td></tr>
+      <tr><td>국립중앙의료원_전국 약국 정보 조회 서비스</td><td>야간·주말 약국</td><td rowspan="3"><code>med_sync.py</code></td></tr>
+      <tr><td>국립중앙의료원_전국 병·의원 찾기 서비스</td><td>야간·주말 병원</td></tr>
+      <tr><td>국립중앙의료원_전국 응급의료기관 정보 조회 서비스</td><td>응급실·가용 병상</td></tr>
+      <tr><td>소상공인시장진흥공단_상가(상권)정보 <span class="tag">예정</span></td><td>맛집·가게 실존 확인</td><td>아직 없음</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>한도:</b> 관광공사 API는 개발 계정 기준 하루 호출 수가 정해져 있어(약 1,000회) 한 번에 다 못 받을 수 있습니다. 갱신 코드는 목록이 중간에 끊기면 기존 자료를 지우지 않고 보존하도록 만들어 두었습니다. 한도가 모자라면 포털에서 "운영 계정" 전환(활용사례 등록)을 신청합니다.</div>
+  <p>날씨는 노르웨이 기상청(MET Norway) 예보를 씁니다. 키가 필요 없고, 앱 이름과 연락처를 User-Agent로 밝히고 출처(CC BY 4.0)를 표시하면 됩니다.</p>
+</section>
+
+<section id="other-keys">
+  <h2>5. 구글·카카오 키</h2>
+  <h3>구글 Places API (New)</h3>
+  <ol class="steps">
+    <li><a href="https://console.cloud.google.com">Google Cloud 콘솔</a>에서 프로젝트를 만들고 결제 계정을 연결합니다.</li>
+    <li><a href="https://console.cloud.google.com/apis/library/places.googleapis.com">Places API (New)</a>를 엽니다. "사용" 버튼을 누르고, 이미 켜져 있으면 "관리" 버튼이 보입니다. 이름에 <b>(New)</b>가 붙은 것이어야 합니다.</li>
+    <li><a href="https://console.cloud.google.com/apis/credentials">사용자 인증 정보</a>에서 API 키를 만듭니다.</li>
+    <li>키 제한: <b>애플리케이션 제한사항 = 없음</b>(GitHub 서버 IP가 매번 바뀜), <b>API 제한사항 = Places API (New)</b>만 체크.</li>
+    <li>GitHub 비밀값 <code>GOOGLE_PLACES_KEY</code>에 넣습니다.</li>
+  </ol>
+  <h3>카카오맵 (코스 지도)</h3>
+  <ol class="steps">
+    <li><a href="https://developers.kakao.com/console/app">내 애플리케이션</a>에서 앱을 만듭니다.</li>
+    <li><b>카카오맵 → 사용 설정</b>을 ON으로 바꿉니다.</li>
+    <li><b>앱 설정 → 플랫폼 → Web</b>의 사이트 도메인에 두 주소를 줄을 바꿔 적습니다. 끝에 <code>/</code>를 붙이지 않습니다.<br><code>https://appassets.androidplatform.net</code> (앱)<br><code>https://flyaranaby-collab.github.io</code> (홈페이지)</li>
+    <li><b>앱 키 → JavaScript 키</b>를 <code>tools/app_copy.py</code>의 <code>KAKAO_JS_KEY</code>와 수첩 원본의 <code>KMAP_KEY</code>에 넣습니다. JavaScript 키는 공개용이라 코드에 들어가도 되고, 등록한 도메인에서만 작동합니다.</li>
+  </ol>
+</section>
+
+<section id="repo">
+  <h2>6. 저장소와 비밀값</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>폴더·파일</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr><td><code>source/index.html</code></td><td>수첩 원본 (웹 수첩과 같은 파일, 운영 기능 포함)</td></tr>
+      <tr><td><code>source/i18n/</code>, <code>source/build_i18n.py</code></td><td>번역 사전 원본(영·중·일)과 사전을 수첩에 넣는 스크립트</td></tr>
+      <tr><td><code>web/index.html</code>, <code>web/version.txt</code></td><td>앱·홈페이지용 사본 (원본에서 <code>app_copy.py</code>로 만듦)</td></tr>
+      <tr><td><code>web/*.json</code></td><td>자동으로 받는 자료: <code>kto</code> 관광공사, <code>gmap</code> 구글 인기 장소, <code>weather</code>, <code>train</code>, <code>med</code>·<code>er</code> 의료, <code>owner</code> 운영자 수정</td></tr>
+      <tr><td><code>web/photos/</code></td><td>앱에 넣는 사진 (위키백과 등)</td></tr>
+      <tr><td><code>tools/</code></td><td>자료 받기·홈페이지 만들기 스크립트</td></tr>
+      <tr><td><code>app/</code>, <code>pc/</code></td><td>안드로이드 앱 코드, PC로 휴대폰에 설치하는 도구</td></tr>
+      <tr><td><code>.github/workflows/</code></td><td>자동 작업 설정</td></tr>
+    </tbody>
+  </table></div>
+  <h3>비밀값 넣는 곳</h3>
+  <p>저장소 → <a href="https://github.com/flyaranaby-collab/gangwon-travel/settings/secrets/actions">Settings → Secrets and variables → Actions</a> → <b>New repository secret</b>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>이름</th><th>값</th></tr></thead>
+    <tbody>
+      <tr><td><code>KTO_KEY</code></td><td>공공데이터포털 일반 인증키 (관광공사·열차·의료 공용)</td></tr>
+      <tr><td><code>GOOGLE_PLACES_KEY</code></td><td>구글 API 키</td></tr>
+      <tr><td><code>GANGWON_KEYSTORE</code></td><td>앱 서명 키 파일을 base64로 바꾼 값</td></tr>
+      <tr><td><code>GANGWON_KEY_PASS</code></td><td>서명 키 비밀번호</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="jobs">
+  <h2>7. 자동 작업</h2>
+  <p>저장소의 <b>Actions</b> 탭에서 작업을 고르고 <b>Run workflow</b>를 누르면 바로 실행됩니다. 실패하면 빨간 표시가 뜨고, 눌러 보면 이유가 한국어로 적혀 있습니다.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>작업 이름</th><th>언제</th><th>하는 일</th><th>쓰는 비밀값</th></tr></thead>
+    <tbody>
+      <tr><td>관광공사 장소 업데이트</td><td>수동 (운영 페이지 버튼)</td><td>관광공사 장소 → 관광사진 → 구글 사진 순서로 받기</td><td>KTO_KEY, GOOGLE_PLACES_KEY</td></tr>
+      <tr><td>구글 지도 인기 장소 수집</td><td>매달 2일·16일 새벽</td><td>지역×검색어 약 200회 검색, 평점·리뷰 기준으로 고르기</td><td>GOOGLE_PLACES_KEY</td></tr>
+      <tr><td>열차 시간표 업데이트</td><td>매일 03:41</td><td>주요 역 7일치 시간표·요금</td><td>KTO_KEY</td></tr>
+      <tr><td>날씨 예보 업데이트</td><td>3시간마다</td><td>지역별 9일 예보</td><td>없음</td></tr>
+      <tr><td>야간 병원·약국 정보 업데이트</td><td>매일 03:17, 응급실은 매시</td><td>약국·병의원·응급실 병상</td><td>KTO_KEY</td></tr>
+      <tr><td>홈페이지 올리기</td><td><code>web/</code>가 바뀔 때, 위 두 수집이 끝난 뒤</td><td>홈페이지와 장소별 페이지 만들어 게시</td><td>없음</td></tr>
+      <tr><td>APK 만들기</td><td>코드가 바뀔 때 (자료 파일만 바뀌면 건너뜀)</td><td>서명된 APK를 Releases에 올리기</td><td>GANGWON_KEYSTORE, GANGWON_KEY_PASS</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="web">
+  <h2>8. 웹 수첩 고치기</h2>
+  <p>수첩 수정은 Claude에게 말로 부탁하면 됩니다. Claude가 하는 순서는 다음과 같습니다. 직접 할 일은 없지만, 새 대화에서 이어서 작업할 때 이 순서를 알려 주면 빠릅니다.</p>
+  <ol class="steps">
+    <li>저장소의 <code>source/index.html</code>을 고칩니다. 새 문구가 생기면 <code>source/i18n/</code>에 번역을 더하고 <code>build_i18n.py</code>를 실행합니다.</li>
+    <li>화면을 휴대폰 크기로 띄워 오류가 없는지 시험합니다.</li>
+    <li>웹 수첩(아티팩트)에 같은 파일을 다시 게시합니다. 주소는 그대로 유지됩니다.</li>
+    <li><code>python3 tools/app_copy.py source/index.html web/index.html</code>로 앱용 사본을 만들고 저장소에 올립니다. 앱은 다음에 켤 때 자동으로 새 내용을 받습니다.</li>
+  </ol>
+  <div class="note"><b>여러 대화에서 동시에 고칠 때:</b> 다른 대화가 웹 수첩을 먼저 바꿔 두면 게시가 거절됩니다. 이때는 최신 게시본을 기준으로 내 변경을 합쳐야 합니다. 같은 날 두 대화에서 수첩을 고치지 않는 편이 안전합니다.</div>
+</section>
+
+<section id="apk">
+  <h2>9. 앱 설치·업데이트</h2>
+  <h3>휴대폰에 처음 설치</h3>
+  <ol class="steps">
+    <li>휴대폰에서 <a href="https://github.com/flyaranaby-collab/gangwon-travel/releases/latest/download/gangwon-travel.apk">최신 APK 받기</a>를 누릅니다. 항상 가장 최신 파일로 연결됩니다.</li>
+    <li>받은 파일을 열고 "출처를 알 수 없는 앱 설치"를 허용합니다.</li>
+    <li>설치 후 앱을 엽니다.</li>
+  </ol>
+  <h3>업데이트는 두 종류</h3>
+  <ul>
+    <li><b>수첩 내용</b>(장소·문구·번역·자료): 앱을 켤 때 자동으로 받습니다. 다시 설치할 필요가 없습니다. 안 바뀌면 앱을 최근 앱 화면에서 밀어 완전히 껐다 켭니다.</li>
+    <li><b>앱 자체</b>: 새 APK를 위 링크로 다시 받아 기존 앱 위에 설치합니다. 같은 서명 키로 만들어서 덮어쓰기가 됩니다. PC에 연결해 <code>pc/업데이트.bat</code>을 실행해도 됩니다(USB 디버깅 필요, <code>pc/사용법.txt</code> 참고).</li>
+  </ul>
+</section>
+
+<section id="site">
+  <h2>10. 홈페이지·검색 등록</h2>
+  <ol class="steps">
+    <li>저장소 <a href="https://github.com/flyaranaby-collab/gangwon-travel/settings/pages">Settings → Pages</a>에서 <b>Source</b>를 <b>GitHub Actions</b>로 바꿉니다(처음 한 번).</li>
+    <li>Actions의 "홈페이지 올리기"가 수첩 사본과 장소별 페이지(<code>/place/장소id/</code>), 지역 목록(<code>/region/지역/</code>), <code>sitemap.xml</code>을 만들어 올립니다.</li>
+    <li><a href="https://searchadvisor.naver.com">네이버 서치어드바이저</a>와 <a href="https://search.google.com/search-console">구글 서치 콘솔</a>에 홈페이지 주소를 등록하고 소유 확인을 한 뒤, <code>…/sitemap.xml</code>을 제출합니다. 검색에 나오기까지 며칠~몇 주 걸립니다.</li>
+    <li>카카오 개발자 사이트의 Web 도메인에 홈페이지 도메인을 추가해야 홈페이지에서도 카카오 지도가 뜹니다.</li>
+  </ol>
+</section>
+
+<section id="data">
+  <h2>11. 장소 자료 원칙</h2>
+  <p>이 프로젝트에서 가장 많이 배운 부분입니다. 확인 안 된 장소를 한꺼번에 넣었다가 38곳을 지운 적이 있습니다.</p>
+  <ul>
+    <li><b>넣기 전에 두 번 확인</b>: 지도 검색으로 위치·영업 여부를 보고, 기사·블로그·관광공사 같은 출처를 하나 이상 확인한 곳만 넣습니다.</li>
+    <li><b>모르는 값은 비워 두기</b>: 운영 시간·요금을 확인하지 못하면 지어내지 않고 "방문 전 확인"으로 적습니다.</li>
+    <li><b>폐쇄·통제 확인</b>: 산은 산불조심기간 통제(가을 11.15~12.15, 봄), 계곡은 휴식년제, 다리·산책로는 안전등급 통제를 따로 검색합니다.</li>
+    <li><b>세 층으로 쌓기</b>: 직접 확인한 큐레이션(가장 정확) → 관광공사(공식, 많음) → 구글 인기 장소(리뷰 기준, 설명은 얇음). 같은 곳이 겹치면 큐레이션 정보가 우선입니다.</li>
+    <li><b>사진 우선순위</b>: 운영자 등록 → 위키백과(자유 이용) → 관광공사(공공누리 1유형) → 구글 지도. 사진마다 출처를 표시합니다.</li>
+    <li><b>경계 지역</b>: 두 지역에 걸친 산(예: 선자령·노인봉)은 <code>also</code> 칸에 다른 지역을 적어 양쪽에서 보이게 합니다.</li>
+  </ul>
+</section>
+
+<section id="port">
+  <h2>12. 다른 지역으로 옮기기</h2>
+  <p>저장소를 통째로 복사한 뒤 아래 항목을 바꾸면 새 지역 수첩이 됩니다. 처음엔 Claude에게 "강원 여행 수첩 저장소를 ○○ 지역용으로 바꿔줘"라고 하고, 이 목록을 함께 보여 주면 빠뜨림이 줄어듭니다.</p>
+  <h3>새로 만들 것</h3>
+  <ul class="check">
+    <li>새 GitHub 저장소 (기존 저장소에서 "Use this template" 또는 복사)</li>
+    <li>새 앱 서명 키와 비밀값 2개 (기존 키를 쓰면 기존 앱 위에 덮어써지니 반드시 새로)</li>
+    <li>카카오 앱(또는 기존 앱에 도메인 추가), 공공데이터 활용신청은 같은 계정이면 그대로 사용</li>
+  </ul>
+  <h3>수첩 원본(<code>source/index.html</code>)에서 바꿀 것</h3>
+  <ul class="check">
+    <li><code>REGIONS</code>: 지역 목록(id, 이름, 중심 좌표, 검색어)</li>
+    <li><code>PLACES</code>, <code>META</code>, <code>LODGING</code>, <code>TRANSIT</code>: 장소·숙소·역 자료</li>
+    <li><code>KTO_SIGUNGU</code>: 관광공사 시군구 코드 ↔ 지역 대응</li>
+    <li><code>inGangwon</code>: 지역 좌표 범위(잘못된 좌표 거르기)</li>
+    <li><code>GH</code>(저장소 이름), <code>SITE_URL</code>(홈페이지 주소), <code>KMAP_KEY</code>(카카오 키)</li>
+    <li><code>TR_DEFAULT_ST</code>, <code>TR_TO</code>: 열차 역 목록과 지역별 기본 도착역</li>
+    <li>앱 이름·문구의 "강원" 표현, 계절 행사·특산품·할인 정보</li>
+  </ul>
+  <h3>스크립트·설정에서 바꿀 것</h3>
+  <ul class="check">
+    <li><code>tools/tourapi_sync.py</code>: <code>areaCode=32</code>(강원)를 새 지역 코드로, 시군구 목록</li>
+    <li><code>tools/med_sync.py</code>: <code>SIDO</code> 시도 이름</li>
+    <li><code>tools/gmap_discover.py</code>: <code>CITY</code> 시·군 목록과 바다 여부</li>
+    <li><code>tools/train_sync.py</code>: <code>HUBS</code>(서울 쪽 출발역), <code>GW</code>(지역 역 이름), 시도 이름 필터</li>
+    <li><code>tools/app_copy.py</code>: <code>KAKAO_JS_KEY</code></li>
+    <li><code>tools/site_build.py</code>, <code>tools/place_pages.js</code>: 지역 링크 목록, 기본 홈페이지 주소, 제목 문구</li>
+    <li><code>app/build.gradle</code>의 <code>applicationId</code>(예: kr.jeju.travelnote), <code>strings.xml</code>의 앱 이름, 아이콘</li>
+    <li>워크플로 파일의 비밀값 이름(<code>GANGWON_KEYSTORE</code> 등)과 APK 파일 이름</li>
+  </ul>
+</section>
+
+<section id="trouble">
+  <h2>13. 문제 해결</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>증상</th><th>원인</th><th>해결</th></tr></thead>
+    <tbody>
+      <tr><td>작업 로그에 "등록되지 않은 서비스키(30)"</td><td>그 API 활용신청을 안 했거나 승인 전</td><td>공공데이터포털에서 활용신청, 승인 후 30분~1시간 뒤 다시 실행</td></tr>
+      <tr><td>관광공사 장소 수가 갑자기 줄어듦</td><td>하루 호출 한도 초과로 목록이 끊김</td><td>지금은 기존 자료를 보존하도록 고쳐 둠. 다음 날 다시 실행</td></tr>
+      <tr><td>구글 사진·인기 장소가 HTTP 403</td><td>Places API (New) 꺼짐, 또는 키 제한</td><td>API 사용 설정, 애플리케이션 제한 "없음", API 제한에 (New) 체크</td></tr>
+      <tr><td>코스 지도가 약도로만 나옴</td><td>카카오맵 사용 OFF, 도메인 미등록, 키 불일치</td><td>지도 아래 설명 글의 이유를 보고 카카오 설정 확인</td></tr>
+      <tr><td>앱에 새 내용이 안 보임</td><td>앱이 켜져 있는 동안은 예전 파일 사용</td><td>앱을 완전히 종료 후 다시 열기</td></tr>
+      <tr><td>새 APK를 설치하려니 "앱이 설치되지 않았습니다"</td><td>서명 키가 다름</td><td>같은 서명 키로 만든 APK인지 확인. 키를 잃었으면 기존 앱 삭제 후 설치</td></tr>
+      <tr><td>웹 수첩 게시가 거절됨</td><td>다른 대화가 먼저 새 버전을 올림</td><td>최신 게시본에 내 변경을 합쳐 다시 게시</td></tr>
+      <tr><td>저장소에 올리기(push) 거절</td><td>자동 작업이 그 사이 자료를 올림</td><td>먼저 받고(pull) 다시 올리기</td></tr>
+      <tr><td>네이버 예매에 날짜·인원이 안 채워짐</td><td>네이버가 외부 앱의 날짜·인원 입력을 받지 않음</td><td>출발·도착역만 자동 입력되는 것이 정상. 날짜·인원은 네이버 화면에서 선택</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="cost">
+  <h2>14. 비용·약관</h2>
+  <ul>
+    <li><b>GitHub</b>: 공개 저장소의 Actions·Pages·Releases는 무료입니다.</li>
+    <li><b>공공데이터</b>: 무료. 하루 호출 한도만 지키면 됩니다.</li>
+    <li><b>구글 지도</b>: 결제 계정이 연결돼 있어 무료 사용량을 넘으면 요금이 나옵니다. 가격 정책이 바뀌기도 하니 <a href="https://console.cloud.google.com/billing">결제 화면</a>에서 매달 사용량을 확인하고, 예산 알림을 걸어 두세요. 약관상 평점·리뷰 같은 장소 정보를 오래 저장할 수 없어서 평점은 고를 때만 쓰고, 좌표는 한 달에 두 번 새로 받습니다.</li>
+    <li><b>카카오맵</b>: 계정에서 처음 켠 앱 하나에 무료 쿼터가 적용됩니다. 비즈월렛을 연결하지 않으면 요금이 나오지 않고, 한도를 넘으면 지도가 막힙니다.</li>
+    <li><b>사진</b>: 위키백과는 작가·라이선스, 관광공사는 "공공누리 제1유형(출처 표시)", 구글은 "사진: Google Maps"를 표시합니다.</li>
+    <li><b>열차 예매</b>: 결제·발권은 코레일 또는 제휴사(네이버)에서만 합니다. 앱이 예매를 대신 처리하지 않습니다.</li>
+  </ul>
+</section>
+
+<section id="prompts">
+  <h2>15. Claude에게 부탁하는 말</h2>
+  <p>새 대화에서 이어서 작업할 때 그대로 복사해 쓰면 됩니다.</p>
+  <div class="prompt"><span>강원 여행 수첩 저장소(flyaranaby-collab/gangwon-travel)를 불러와서, docs/manual.html 매뉴얼을 읽고 이어서 작업해줘.</span><button type="button" data-copy>복사</button></div>
+  <div class="prompt"><span>source/index.html 을 고쳐서 웹 수첩(아티팩트)과 앱용 사본(web/index.html)에 모두 반영해줘. 번역도 같이 넣고 전체 점검까지 해줘.</span><button type="button" data-copy>복사</button></div>
+  <div class="prompt"><span>새 장소를 넣을 때는 지도 검색과 기사로 위치·운영 여부를 확인한 곳만 넣고, 모르는 값은 "방문 전 확인"으로 적어줘.</span><button type="button" data-copy>복사</button></div>
+  <div class="prompt"><span>이 저장소를 복사해서 ○○ 지역 여행 수첩을 만들 거야. 매뉴얼 12장 체크리스트대로 바꿀 곳을 정리하고 하나씩 진행해줘.</span><button type="button" data-copy>복사</button></div>
+  <div class="prompt"><span>Actions 작업이 실패했어. 로그를 보고 원인과 고치는 방법을 알려줘.</span><button type="button" data-copy>복사</button></div>
+</section>
+</main>
+</div>
+
+<script>
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-copy]"); if (!b) return;
+  const text = b.previousElementSibling.textContent.trim();
+  try { await navigator.clipboard.writeText(text); b.textContent = "복사됨"; }
+  catch (_) { const r = document.createRange(); r.selectNodeContents(b.previousElementSibling); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "선택됨"; }
+  setTimeout(() => { b.textContent = "복사"; }, 1800);
+});
+</script>
