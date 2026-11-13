@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611132121";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611132154";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4416,8 +4416,8 @@ function wxRefresh(){
 }
 // ───────── 열차 시간표·요금 (국토교통부 TAGO 열차정보, train.json 을 매일 새로 받음) ─────────
 // 예매·결제는 코레일 또는 코레일과 제휴한 네이버에서만 할 수 있다. 앱은 열차를 고르게 해 주고 그 화면으로 넘긴다.
-const TR_DEFAULT_ST = ["서울","청량리","강릉","정동진","묵호","동해","진부(오대산)","평창","둔내","횡성","만종","원주","서원주","춘천","남춘천","영월"];
-const TR_TO = { gangneung:"강릉", donghae:"동해", pyeongchang:"진부(오대산)", wonju:"원주", chuncheon:"춘천", jeongseon:"영월", hongcheon:"춘천", inje:"춘천", hwacheon:"춘천", sokcho:"강릉", yangyang:"강릉" };
+const TR_DEFAULT_ST = ["서울","청량리","강릉","정동진","묵호","동해","진부","평창","둔내","횡성","만종","원주","서원주","춘천","남춘천","영월"];
+const TR_TO = { gangneung:"강릉", donghae:"동해", pyeongchang:"진부", wonju:"원주", chuncheon:"춘천", jeongseon:"영월", hongcheon:"춘천", inje:"춘천", hwacheon:"춘천", sokcho:"강릉", yangyang:"강릉" };
 const TRN = { data: store.get("train") || null, from:"서울", to:"", day:0, hour:-1, pick:null, loading:false, at:0, adult:1, child:0, senior:0, ...(store.get("trpax") || {}) };
 async function trLoad(force){
   if (TRN.loading || (!force && Date.now() - TRN.at < 10*60*1000)) return; TRN.loading = true; TRN.at = Date.now();
@@ -4450,7 +4450,7 @@ function trQuery(d, dep){
 }
 function trBookLinks(d, row){
   const q = trQuery(d, row ? row[0] : "");
-  const info = `${trDayLabel(d, -1)} ${row ? trT(row[0])+" " : (TRN.hour>=0 ? TRN.hour+"시 이후 " : "")}${TRN.from}→${TRN.to}${row ? " "+row[2]+" "+row[3] : ""} · ${trPaxText()}`;
+  const info = `${trDayLabel(d, -1)} ${row ? trT(row[0])+" " : (TRN.hour>=0 ? TRN.hour+"시 이후 " : "")}${TRN.from}→${TRN.to}${row ? " "+row[2]+" "+String(row[3]).replace(/^0+(?=\d)/,"") : ""} · ${trPaxText()}`;
   return `<a class="btn" href="https://m.search.naver.com/search.naver?query=${encodeURIComponent(q)}" target="_blank" rel="noopener" data-rev="book:train-naver">네이버에서 예매</a>
     <a class="btn ghost" href="https://www.letskorail.com" target="_blank" rel="noopener" data-rev="book:train-korail">코레일에서 예매</a>
     <button type="button" class="btn ghost" data-trcopy="${esc(info)}">예매 정보 복사</button>`;
@@ -4477,7 +4477,7 @@ function trainBox(){
   else if (!route) body = `<p class="notice">${esc(TRN.from)} → ${esc(TRN.to)}는 직행 열차가 없거나 시간표가 없는 구간이에요. 다른 역을 골라 보세요.</p>`;
   else if (!all.length) body = `<p class="notice">이 날은 운행하는 열차가 없어요.</p>`;
   else if (!rows.length) body = `<p class="notice">${TRN.hour}시 이후엔 열차가 없어요. 시간을 앞당겨 보세요.</p>`;
-  else body = `<ol class="trlist">${rows.map(r=>{ const [dep,arr,grade,no,fare] = r; let dur = trMin(arr)-trMin(dep); if (dur<0) dur += 1440;
+  else body = `<ol class="trlist">${rows.map(r=>{ const [dep,arr,grade,no0,fare] = r, no = String(no0).replace(/^0+(?=\d)/,""); let dur = trMin(arr)-trMin(dep); if (dur<0) dur += 1440;
       const id = dep + no, gone = isToday && trMin(dep) < nowMin, picked = TRN.pick===id;
       return `<li class="trrow${gone?" gone":""}${picked?" on":""}"><button type="button" class="trpick" data-trpick="${esc(id)}" ${gone?"disabled":""}>
         <span class="trtime"><b>${trT(dep)}</b> → ${trT(arr)}</span><span class="trdur">${Math.floor(dur/60)?Math.floor(dur/60)+"시간 ":""}${dur%60}분</span>
