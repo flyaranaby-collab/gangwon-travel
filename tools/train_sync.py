@@ -4,9 +4,11 @@
 - 호출 수를 줄이려고 첫날 열차가 없는 구간은 나머지 날짜를 건너뛴다(하루 약 200~300회).
 - 좌석 잔여 여부는 이 API에 없다. 앱은 시간표·요금을 보여 주고, 예매는 네이버·코레일 화면으로 넘긴다.
 """
-import argparse, json, sys, time, datetime as dt, pathlib, urllib.parse, urllib.request
+import argparse, json, sys, time, datetime as dt, pathlib, urllib.parse, urllib.request, urllib.error
 
-BASE = "https://apis.data.go.kr/1613000/TrainInfo/"
+# 2026-03 에 주소가 바뀌었다. 새 주소가 안 되면 예전 주소(TrainInfoService, 소문자 작업 이름)로 한 번 더 시도한다.
+BASES = [("https://apis.data.go.kr/1613000/TrainInfo/", lambda op: op), ("https://apis.data.go.kr/1613000/TrainInfoService/", lambda op: op[0].lower() + op[1:])]
+BASE, OPN = BASES[0]
 KST = dt.timezone(dt.timedelta(hours=9))
 HUBS = ["서울", "청량리"]
 GW = ["강릉", "정동진", "묵호", "동해", "진부(오대산)", "평창", "둔내", "횡성", "만종", "원주", "서원주", "춘천", "남춘천", "영월", "태백", "삼척"]
@@ -20,7 +22,7 @@ class ApiError(Exception):
 
 def call(key, op, **params):
     q = {"serviceKey": key, "_type": "json", "numOfRows": 300, "pageNo": 1, **params}
-    url = BASE + op + "?" + urllib.parse.urlencode(q, safe="%")
+    url = BASE + OPN(op) + "?" + urllib.parse.urlencode(q, safe="%")
     last = None
     for i in range(3):
         try:
@@ -40,6 +42,9 @@ def call(key, op, **params):
             return it if isinstance(it, list) else [it]
         except ApiError:
             raise
+        except urllib.error.HTTPError as e:
+            body = e.read().decode("utf-8", "replace")[:300].replace("\n", " ")
+            raise ApiError(f"HTTP {e.code} {body}")
         except Exception as e:
             last = e; time.sleep(2 * (i + 1))
     raise ApiError(f"연결 실패 {last}")
@@ -54,8 +59,16 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--key", required=True); ap.add_argument("--out", required=True)
     a = ap.parse_args()
     key = urllib.parse.unquote(a.key)  # 인코딩된 키가 와도 한 번 풀어서 쓴다
+    global BASE, OPN
+    cities, errs = None, []
+    for base, opn in BASES:
+        BASE, OPN = base, opn
+        try:
+            cities = call(key, "GetCtyCodeList"); print("사용 주소:", base, file=sys.stderr); break
+        except ApiError as e:
+            errs.append(f"{base} → {e}")
     try:
-        cities = call(key, "GetCtyCodeList")
+        if cities is None: raise ApiError(" / ".join(errs))
     except ApiError as e:
         print(f"열차정보 API를 쓸 수 없어요: {e}\n공공데이터포털에서 '국토교통부_(TAGO)_열차정보' 활용신청을 했는지 확인하세요.", file=sys.stderr)
         sys.exit(1)
