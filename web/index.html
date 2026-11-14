@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611132223";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611141025";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -598,6 +598,34 @@ body.compact .pagebar { display: flex; align-items: center; gap: 10px; position:
 .pmsave { position: sticky; bottom: env(safe-area-inset-bottom, 0px); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 0; background: color-mix(in srgb, var(--brass-soft) 80%, var(--surface)); }
 #pmExport { width: 100%; min-height: 80px; font-size: 12px; }
 @media (max-width: 640px) { .pmlist li { grid-template-columns: 24px minmax(0,1fr); } .pmctl { grid-column: 2; justify-content: start; } }
+/* ① 날짜 옆 현재 날씨 */
+.tdh { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.wxchip { border: 1px solid var(--line, rgba(0,0,0,.12)); background: rgba(255,255,255,.7); color: inherit; border-radius: 999px; padding: 2px 9px; font: 600 12.5px/1.5 var(--font-body, sans-serif); cursor: pointer; white-space: nowrap; }
+.wxchip small { font-weight: 400; opacity: .7; margin-left: 2px; }
+/* ② 오른쪽 슬라이드 메뉴(내 주변 · 야간 병원·약국) */
+.sidedock { position: fixed; right: 0; top: 46%; z-index: 38; display: flex; align-items: center; transform: translateX(calc(100% - 34px)); transition: transform .28s ease; touch-action: none; }
+.sidedock.open { transform: translateX(0); }
+.sdhandle { width: 34px; padding: 10px 0; border: 0; border-radius: 12px 0 0 12px; background: #1d3150; color: #fff; font: 600 11px/1.25 var(--font-body, sans-serif); display: grid; justify-items: center; gap: 3px; box-shadow: -2px 2px 10px rgba(0,0,0,.18); cursor: grab; }
+.sdhandle i { font-style: normal; font-size: 15px; }
+.sdhandle .sdgrip { width: 14px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.5); }
+.sdpanel { background: var(--surface, #fff); border: 1px solid var(--line, rgba(0,0,0,.1)); border-right: 0; border-radius: 14px 0 0 14px; padding: 10px; display: grid; gap: 6px; min-width: 196px; box-shadow: -4px 4px 18px rgba(0,0,0,.16); }
+.sdpanel b { font-size: 13px; }
+.sdpanel .sdrow { display: flex; gap: 5px; }
+.sdpanel .chipbtn { flex: 1; justify-content: center; white-space: nowrap; padding: 6px 8px; font-size: 13px; }
+body.compact .sidedock { display: none; }
+/* ③ 맛집 세부 분류 */
+.subfilters { display: flex; gap: 6px; flex-wrap: wrap; margin: -4px 0 12px; padding: 8px 10px; border-radius: 12px; background: color-mix(in srgb, var(--surface, #fff) 70%, #f3e9dc); }
+.subfilters .chipbtn { font-size: 13px; padding: 5px 10px; }
+.subfilters .chipbtn small { opacity: .6; margin-left: 3px; }
+/* ④ 지역 버튼 간격 */
+.days.regions { gap: 4px 3px; }
+.days.regions button { padding: 4px 9px; font-size: 13.5px; gap: 4px; }
+@media (max-width: 640px) { .days.regions { gap: 3px 2px; } }
+/* ⑤ 화면 위치 번호 */
+body.showpos [data-pos] { position: relative; outline: 1px dashed rgba(225,29,72,.55); outline-offset: -1px; }
+body.showpos [data-pos]::before { content: attr(data-pos); position: absolute; top: 0; left: 0; z-index: 70; background: #e11d48; color: #fff; font: 700 10px/1.5 system-ui, sans-serif; padding: 0 4px; border-radius: 0 0 5px 0; pointer-events: none; letter-spacing: 0; }
+body.showpos .sidedock[data-pos], body.showpos .bnav[data-pos] { position: fixed; }
+body.showpos .tabbar[data-pos] { position: sticky; }
 </style>
 
 <header class="hero">
@@ -605,54 +633,54 @@ body.compact .pagebar { display: flex; align-items: center; gap: 10px; position:
     <svg class="hero-plane" viewBox="0 0 64 26" aria-hidden="true"><path d="M2 14 C6 9 44 8 56 11 C62 12 62 15 56 16 C44 19 6 19 2 14Z" fill="#fff" stroke="#9fb6cc"/><path d="M26 12 L16 1 L22 1 L36 12Z M26 16 L16 25 L22 25 L36 16Z" fill="#e9eef4" stroke="#9fb6cc" stroke-width=".8"/><path d="M5 13 L1 5 L5 5 L11 12Z" fill="#ff6b5a"/><g fill="#2e6fae"><circle cx="44" cy="13" r="1.4"/><circle cx="38" cy="13" r="1.4"/><circle cx="32" cy="13" r="1.4"/></g></svg>
   </div>
   <div class="inner">
-    <div class="langbar seg" id="langSeg" role="group" aria-label="Language" data-noi18n><button data-lang="ko">한국어</button><button data-lang="en">EN</button><button data-lang="zh">中文</button><button data-lang="ja">日本語</button></div>
-    <div>
+    <div class="langbar seg" id="langSeg" data-pos="A1" role="group" aria-label="Language" data-noi18n><button data-lang="ko">한국어</button><button data-lang="en">EN</button><button data-lang="zh">中文</button><button data-lang="ja">日本語</button></div>
+    <div data-pos="A2">
       <div class="kicker">Gangwon-do, mountains &amp; the East Sea</div>
       <h1>강원 여행 수첩</h1>
       <p class="lede">강릉·속초·양양부터 평창·정선·춘천까지. 가볼 곳과 가성비 숙소, 휴무일, 할인 방법, 동선과 준비물을 지역과 날짜, 동행에 맞춰 보여 드려요.</p>
     </div>
     <div class="hero-row">
       <div class="cond">
-        <div class="field datefield"><span class="lbl">WHEN · 가는 날 ~ 오는 날</span>
+        <div class="field datefield" data-pos="A3"><span class="lbl">WHEN · 가는 날 ~ 오는 날</span>
           <div class="daterange"><input type="date" id="tripDate" aria-label="가는 날"><span class="dsep" aria-hidden="true">~</span><input type="date" id="tripDateEnd" aria-label="오는 날"></div></div>
-        <div class="field"><span class="lbl">WITH · 누구와</span>
+        <div class="field" data-pos="A4"><span class="lbl">WITH · 누구와</span>
           <span class="seg" id="whoSeg" role="group" aria-label="동행 선택">
             <button data-who="친구">친구</button><button data-who="연인">연인</button><button data-who="가족">가족</button><button data-who="혼자">혼자</button>
           </span>
         </div>
       </div>
-      <div class="today" id="todayBox"></div>
+      <div class="today" id="todayBox" data-pos="A5"></div>
     </div>
-    <div id="heroPhotos" style="display:grid;gap:6px"></div>
-    <div class="field"><span class="lbl">WHERE · 지역</span><div class="days regions" id="regionChips" role="group" aria-label="지역 선택"></div></div>
-    <div class="days" id="dayChips" role="group" aria-label="일차 선택"></div>
+    <div id="heroPhotos" data-pos="A6" style="display:grid;gap:6px"></div>
+    <div class="field" data-pos="A7"><span class="lbl">WHERE · 지역</span><div class="days regions" id="regionChips" role="group" aria-label="지역 선택"></div></div>
+    <div class="days" id="dayChips" data-pos="A8" role="group" aria-label="일차 선택"></div>
   </div>
 </header>
 
 <div class="pagebar" id="pageBar"><button class="pbhome" data-tab="places" aria-label="가볼 곳으로">‹ 홈</button><b id="pageTitle"></b></div>
-<div class="tabbar">
+<div class="tabbar" data-pos="B">
   <div class="inner">
     <nav class="tabs" role="tablist">
-      <button role="tab" data-tab="places">가볼 곳</button>
-      <button role="tab" data-tab="transit">교통</button>
-      <button role="tab" data-tab="season">계절&amp;행사</button>
-      <button role="tab" data-tab="deals">할인 방법</button>
-      <button role="tab" data-tab="pack">준비물</button>
-      <button role="tab" data-tab="souv">특산품·선물</button>
+      <button role="tab" data-tab="places" data-pos="B1">가볼 곳</button>
+      <button role="tab" data-tab="transit" data-pos="B2">교통</button>
+      <button role="tab" data-tab="season" data-pos="B3">계절&amp;행사</button>
+      <button role="tab" data-tab="deals" data-pos="B4">할인 방법</button>
+      <button role="tab" data-tab="pack" data-pos="B5">준비물</button>
+      <button role="tab" data-tab="souv" data-pos="B6">특산품·선물</button>
       <button role="tab" data-tab="ops" id="opsTab" hidden>운영</button>
     </nav>
-    <button class="searchbtn" id="searchBtn" type="button" aria-label="장소 검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="stxt">검색</span></button>
+    <button class="searchbtn" id="searchBtn" data-pos="B7" type="button" aria-label="장소 검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="stxt">검색</span></button>
   </div>
 </div>
 
 <main class="inner">
   <section class="panel" id="tab-places"></section>
-  <section class="panel" id="tab-transit" hidden></section>
-  <section class="panel" id="tab-season" hidden></section>
+  <section class="panel" id="tab-transit" data-pos="D" hidden></section>
+  <section class="panel" id="tab-season" data-pos="H" hidden></section>
   <section class="panel" id="tab-course" hidden></section>
-  <section class="panel" id="tab-deals" hidden></section>
-  <section class="panel" id="tab-pack" hidden></section>
-  <section class="panel" id="tab-souv" hidden></section>
+  <section class="panel" id="tab-deals" data-pos="I" hidden></section>
+  <section class="panel" id="tab-pack" data-pos="J" hidden></section>
+  <section class="panel" id="tab-souv" data-pos="K" hidden></section>
   <section class="panel" id="tab-journal" hidden></section>
   <section class="panel ops" id="tab-ops" hidden></section>
   <section class="panel" id="tab-favs" hidden></section>
@@ -661,13 +689,22 @@ body.compact .pagebar { display: flex; align-items: center; gap: 10px; position:
   <section class="panel" id="tab-more" hidden></section>
   <div class="apkentry" id="apkEntry" hidden></div>
 </main>
-<nav class="bnav" aria-label="하단 메뉴">
-  <button data-tab="course"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>일정</span><em class="bcount" id="courseCount">0</em></button>
-  <button data-tab="favs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>찜</span><em class="bcount" id="favCount">0</em></button>
-  <button data-tab="coupons"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8a2 2 0 0 0 0 4v0a2 2 0 0 1 0 4v1h18v-1a2 2 0 0 1 0-4 2 2 0 0 0 0-4V7H3z"/><path d="M14 7v10" stroke-dasharray="2 2"/></svg><span>쿠폰북</span></button>
-  <button data-tab="my"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4.2-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span>마이페이지</span><em class="bcount" id="stampCount" hidden>0</em></button>
-  <button data-tab="more"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>더보기</span></button>
+<nav class="bnav" aria-label="하단 메뉴" data-pos="E">
+  <button data-tab="course" data-pos="E1"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>일정</span><em class="bcount" id="courseCount">0</em></button>
+  <button data-tab="favs" data-pos="E2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>찜</span><em class="bcount" id="favCount">0</em></button>
+  <button data-tab="coupons" data-pos="E3"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8a2 2 0 0 0 0 4v0a2 2 0 0 1 0 4v1h18v-1a2 2 0 0 1 0-4 2 2 0 0 0 0-4V7H3z"/><path d="M14 7v10" stroke-dasharray="2 2"/></svg><span>쿠폰북</span></button>
+  <button data-tab="my" data-pos="E4"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4.2-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span>마이페이지</span><em class="bcount" id="stampCount" hidden>0</em></button>
+  <button data-tab="more" data-pos="E5"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>더보기</span></button>
 </nav>
+<div class="sidedock" id="sideDock" data-pos="F1" aria-label="빠른 메뉴">
+  <button class="sdhandle" id="sdHandle" type="button" aria-expanded="false" aria-label="내 주변·야간 병원 메뉴 열기"><span class="sdgrip"></span><i>📍</i>주변<i>🌙</i>병원<span class="sdgrip"></span></button>
+  <div class="sdpanel">
+    <b>📍 내 주변</b>
+    <div class="sdrow"><button class="chipbtn" data-near="1">1km</button><button class="chipbtn" data-near="4">4km</button><button class="chipbtn" data-near="10">10km</button></div>
+    <button class="chipbtn medchip" data-openmed="1">🌙 야간 병원·약국</button>
+    <button class="chipbtn" data-detail="wx:1">🌤️ 주간 날씨</button>
+  </div>
+</div>
 <div class="subpage" id="subPage" hidden role="dialog" aria-modal="true" aria-labelledby="subTitle">
   <div class="subbar"><button class="sback" id="subBack" type="button" aria-label="뒤로">‹</button><b id="subTitle"></b></div>
   <div class="subbody inner" id="subBody"></div>
@@ -1779,6 +1816,27 @@ const FESTIVALS = [
 const seasonOf = m =>Object.keys(SEASONS).find(k=>SEASONS[k].months.includes(m)) || "겨울";
 const seasonPick = p => { const ss = SEASONS[seasonOf(tripDay().getMonth()+1)]; const x = ss.picks.find(r=>r[0]===p.id); return x ? x : null; };
 // 자연은 바다·산·계곡·호수·강·숲·꽃·고원으로 나눈다 (예전 분류 "자연"은 쓰는 장소가 있을 때만 버튼이 보인다)
+// 맛집 세부 분류(이름·대표 메뉴·태그 낱말로 나눈다). 위에서부터 먼저 맞는 것으로 정해진다
+const FOOD_RULES = [
+  ["카페·디저트", /카페|커피|cafe|coffee|베이커리|빵|제과|디저트|젤라또|아이스크림|빙수|케이크|케익|라떼|아메리카노|에스프레소|휘낭시에|피스타치오|에이드|마카롱|도넛|와플|크로플|스콘|찻집|다방|스타벅스|테라로사|인절미|피지오|티룸|tea/i],
+  ["한식", /순두부|막국수|옹심이|칼국수|순대국|닭볶음탕|오일장|전통시장|아리랑시장|냉삼/],
+  ["분식·치킨", /김밥|떡볶이/],
+  ["중식", /중식|중국|중화|짜장|짬뽕|탕수육|마라|양꼬치|딤섬|반점|객잔|차이나|홍콩|china/i],
+  ["일식", /스시|초밥|오마카세|라멘|우동|소바|돈부리|규동|카츠|돈가스|돈까스|이자카야|텐동|오코노미|타코야끼|야키토리|일본식|사케/i],
+  ["양식", /양식|파스타|피자|pizza|pasta|스테이크|steak|버거|burger|리조또|샐러드|비스트로|bistro|레스토랑|그릴|펍|pub|와인|타코|멕시칸|이탈리|프렌치|잠봉|샌드위치|풍기|화덕|올리오|브런치|롯데리아|맘스터치|맥도날드|버거킹|KFC/i],
+  ["분식·치킨", /분식|김밥|떡볶이|순대|어묵|오뎅|호떡|닭강정|핫도그|꽈배기|토스트|라면|치킨|통닭|바베큐|전병|부침|만두/i],
+  ["해산물·회", /물회|막회|활어|횟집|회센터|회코스|모둠회|회덮밥|회세트|회포장|송어회|광어회|회비빔|(^|[\s,·])회($|[\s,·])|대게|홍게|킹크랩|조개|전복|문어|오징어|생선|해물|해산물|수산|섭국|장치|곰치|도치|가자미|광어|우럭|복어|아구|아귀|굴|성게|멍게|새우|게장|매운탕|코다리|명태|도루묵|생태|꼬막|어시장|조림/],
+  ["한식", /한식|두부|냉면|국밥|해장국|감자탕|백숙|닭갈비|갈비|불고기|삼겹|한우|소고기|고기|구이|화로|오리|정식|쌈밥|곤드레|비빔밥|찌개|전골|탕|국수|수제비|메밀|보리밥|청국장|된장|시래기|황태|더덕|산채|나물|족발|보쌈|불백|돼지|닭|제육|육개장|설렁탕|곰탕|추어|백반|반찬|한상|면옥|가든|식당|시장|감자전|김치찜|모듬전|모둠전|치마살|샤브|철판/],
+];
+const FOOD_SUBS = ["한식","해산물·회","중식","일식","양식","분식·치킨","카페·디저트","기타"];
+function foodSub(p){
+  if (p._fs) return p._fs;
+  const t = [p.name, p.sig, ...(p.tags||[])].join(" ").replace("대표 메뉴는 현장 확인","");
+  for (const [k, re] of FOOD_RULES) if (re.test(t)) return (p._fs = k);
+  return (p._fs = "기타");
+}
+
+let FSUB = "전체";
 const CATS = ["전체","바다","산","계곡","호수·강","숲·꽃","고원","맛집","카페","소품샵","체험","역사"];
 // o/c: 여는·닫는 시각(시, null=상시), stay: 권장 체류(분), cost: 1인 예상 지출(원). 모두 대략값.
 const META = {
@@ -2949,7 +3007,7 @@ function renderTop(){
   const d = tripDay();
   const closedCount = state.course.map(byId).filter(p=>p && status(p).cls==="closed").length;
   document.getElementById("todayBox").innerHTML =
-    `<b>${tripDays().length>1?`${state.day+1}일차 · `:""}${d.getMonth()+1}월 ${d.getDate()}일 ${WD[d.getDay()]}요일</b><br>${sunAt().name} 일출 ${fmt(sunTimes(d,sunAt()).rise)} · 일몰 ${fmt(sunTimes(d,sunAt()).set)}<br>코스 ${state.course.length}곳${closedCount?` · <span style="color:var(--bad)">휴무 ${closedCount}곳</span>`:""}${wxLine(d)}`;
+    `<div class="tdh"><b>${tripDays().length>1?`${state.day+1}일차 · `:""}${d.getMonth()+1}월 ${d.getDate()}일 ${WD[d.getDay()]}요일</b>${wxChip()}</div>${sunAt().name} 일출 ${fmt(sunTimes(d,sunAt()).rise)} · 일몰 ${fmt(sunTimes(d,sunAt()).set)}<br>코스 ${state.course.length}곳${closedCount?` · <span style="color:var(--bad)">휴무 ${closedCount}곳</span>`:""}`;
   document.getElementById("tripDate").value = state.date;
   document.getElementById("tripDateEnd").value = state.dateEnd;
   document.getElementById("tripDateEnd").min = state.date;
@@ -3027,19 +3085,19 @@ document.addEventListener("click", e=>{
 function renderPlaces(){
   const hot = hotList();
   document.getElementById("tab-places").innerHTML = `
-    ${promoHtml()}
-    ${nearBar()}
-    ${wxBar()}
+    <div data-pos="C1">${promoHtml()}</div>
     ${state.isOps ? `<div class="addplacebar"><button class="btn" data-addplace>＋ 장소 추가하기</button><span class="meta">이름·분류·주소·사진을 적어 직접 추가해요</span></div>` : ""}
-    <p class="notice">운영시간·요금·휴무는 대략적인 정보예요. 공휴일·명절·기상 상황에 따라 바뀔 수 있으니 출발 전 한 번 더 확인하세요.</p>
-    <div class="hot"><div class="sec-title"><h2>${regionLabel()}, ${({친구:"친구와",연인:"연인과",가족:"가족과",혼자:"혼자"})[state.who]} 가기 좋은 곳</h2><span class="en">Curated</span></div>
+    <p class="notice" data-pos="C2">운영시간·요금·휴무는 대략적인 정보예요. 공휴일·명절·기상 상황에 따라 바뀔 수 있으니 출발 전 한 번 더 확인하세요.</p>
+    <div class="hot" data-pos="C3"><div class="sec-title"><h2>${regionLabel()}, ${({친구:"친구와",연인:"연인과",가족:"가족과",혼자:"혼자"})[state.who]} 가기 좋은 곳</h2><span class="en">Curated</span></div>
       <div class="strip">${hotList(10).map((p,i)=>stripItem(p, "No."+(i+1))).join("")}</div>${hotEditor(hot)}</div>
-    ${renderSponsors()}
-    <div class="sec-title"><h2>${state.region==="all"?"강원 모든 장소":REG[state.region].name+" 모든 장소"}</h2><span class="en">${regionPlaces().length} places${KTO_ADDED?` · 관광공사 ${PLACES.filter(p=>p.source==="kto"&&inRegion(p)).length}`:""}</span></div>
-    <div class="filters" role="group" aria-label="분류">${[...CATS, ...(PLACES.some(p=>p.cat==="자연")?["자연"]:[]), ...(PLACES.some(p=>p.cat==="관광지")?["관광지"]:[]), "숙소"].map(c=>`<button class="chipbtn" data-cat="${c}" aria-pressed="${c===state.cat}">${c}</button>`).join("")}<span class="sep"></span><button class="chipbtn" id="trendBtn" aria-pressed="${state.trend}">요즘 뜨는 곳</button><button class="chipbtn" id="photoBtn" aria-pressed="${state.photo}">📸 사진 명소</button><button class="chipbtn" id="summerBtn" aria-pressed="${state.summer}">🏖️ 여름 피서</button><button class="chipbtn" id="reviewBtn" aria-pressed="${state.review}">⭐ 리뷰 많은 곳</button><button class="chipbtn" id="localBtn" aria-pressed="${state.local}">현지인 맛집</button><button class="chipbtn" id="dealBtn" aria-pressed="${state.dealOnly}">할인 있는 곳</button><button class="chipbtn" id="rainBtn" aria-pressed="${state.rain}">비 오는 날</button></div>
-    <input type="search" id="q" class="search" placeholder="장소·메뉴·태그 검색 (예: 물회, 일출, 아이와)" value="${esc(state.q)}" aria-label="검색">
+    <div data-pos="C4">${renderSponsors()}</div>
+    <div class="sec-title" data-pos="C5"><h2>${state.region==="all"?"강원 모든 장소":REG[state.region].name+" 모든 장소"}</h2><span class="en">${regionPlaces().length} places${KTO_ADDED?` · 관광공사 ${PLACES.filter(p=>p.source==="kto"&&inRegion(p)).length}`:""}</span></div>
+    <div class="filters" role="group" aria-label="분류" data-pos="C6">${[...CATS, ...(PLACES.some(p=>p.cat==="자연")?["자연"]:[]), ...(PLACES.some(p=>p.cat==="관광지")?["관광지"]:[]), "숙소"].map(c=>`<button class="chipbtn" data-cat="${c}" aria-pressed="${c===state.cat}">${c}</button>`).join("")}<span class="sep"></span><button class="chipbtn" id="trendBtn" aria-pressed="${state.trend}">요즘 뜨는 곳</button><button class="chipbtn" id="photoBtn" aria-pressed="${state.photo}">📸 사진 명소</button><button class="chipbtn" id="summerBtn" aria-pressed="${state.summer}">🏖️ 여름 피서</button><button class="chipbtn" id="reviewBtn" aria-pressed="${state.review}">⭐ 리뷰 많은 곳</button><button class="chipbtn" id="localBtn" aria-pressed="${state.local}">현지인 맛집</button><button class="chipbtn" id="dealBtn" aria-pressed="${state.dealOnly}">할인 있는 곳</button><button class="chipbtn" id="rainBtn" aria-pressed="${state.rain}">비 오는 날</button></div>
+    ${state.cat==="맛집" ? (()=>{ const fp = PLACES.filter(p=>p.cat==="맛집" && inRegion(p)); const n = k => fp.filter(p=>foodSub(p)===k).length;
+      return `<div class="subfilters" role="group" aria-label="맛집 종류" data-pos="C7"><button class="chipbtn" data-fsub="전체" aria-pressed="${FSUB==="전체"}">전체<small>${fp.length}</small></button>${FOOD_SUBS.filter(k=>n(k)).map(k=>`<button class="chipbtn" data-fsub="${k}" aria-pressed="${k===FSUB}">${k}<small>${n(k)}</small></button>`).join("")}</div>`; })() : ""}
+    <input type="search" id="q" data-pos="C8" class="search" placeholder="장소·메뉴·태그 검색 (예: 물회, 일출, 아이와)" value="${esc(state.q)}" aria-label="검색">
     <div id="stayExtra"></div>
-    <div class="grid" id="placeGrid"></div>
+    <div class="grid" id="placeGrid" data-pos="C9"></div>
     <div id="stayAfter" style="margin-top:22px"></div>`;
   renderGrid();
 }
@@ -3050,6 +3108,7 @@ function renderGrid(){
   document.getElementById("stayExtra").innerHTML = document.getElementById("stayAfter").innerHTML = "";
   const ad = new Set(SPONSORED.map(x=>x.id));
   const list = PLACES.filter(p=>inRegion(p) && (state.cat==="전체"||p.cat===state.cat)
+      && (state.cat!=="맛집" || FSUB==="전체" || foodSub(p)===FSUB)
       && (!state.rain || p.tags.includes("실내") || p.cat==="카페" || p.cat==="맛집")
       && (!state.dealOnly || (DEALMAP[p.id] && DEALMAP[p.id].deal))
       && (!state.trend || p.tags.includes("요즘핫플"))
@@ -3565,7 +3624,7 @@ function renderTransitTab(){
     <div class="sec-title"><h2>${regionLabel()} 교통</h2><span class="en">Getting around</span></div>
     <p class="meta" style="margin:-4px 0 14px">위에서 지역을 고르면 그 지역의 기차역·버스터미널·택시 호출이 보여요.</p>
     <section class="trainbox" id="trainBox">${trainBox()}</section>
-    <section class="taxi">
+    <section class="taxi" data-pos="D1">
       <div><div class="eyebrow">TAXI</div><h3>${esc(town)} 택시 부르기</h3>
         <p>카카오T 앱으로 지금 있는 곳에서 바로 부를 수 있어요. 앱이 없거나 시골 지역이면 그 지역 콜택시가 더 빨리 와요.</p></div>
       <div class="taxi-actions">
@@ -3574,7 +3633,7 @@ function renderTransitTab(){
       </div>
       <p class="meta">카카오T 버튼은 휴대폰에 앱이 깔려 있으면 앱이 열리고, 없으면 안내 페이지로 이동해요.</p>
     </section>
-    <section class="taxi" style="background:var(--surface);border:1px solid var(--line)">
+    <section class="taxi" data-pos="D2" style="background:var(--surface);border:1px solid var(--line)">
       <div><div class="eyebrow">CITY BUS</div><h3>${esc(town)} 시내·농어촌버스</h3>
         <p>역·터미널에서 관광지까지는 시내버스로 갈 수 있어요. 지도 앱에서 출발지와 도착지를 넣으면 버스 번호와 도착 시간이 나와요.</p></div>
       <div class="taxi-actions">
@@ -3586,7 +3645,7 @@ function renderTransitTab(){
     <div class="filters" role="group" aria-label="교통 종류">${types.map(k=>`<button class="chipbtn" data-trtype="${k}" aria-pressed="${k===TR.type}">${k==="전체"?"전체":TR_ICON[k]}</button>`).join("")}</div>
     <input type="search" id="trq" class="search" placeholder="역·터미널·노선 검색 (예: KTX, 동서울)" value="${esc(TR.q)}" aria-label="교통 검색">
     <p class="notice">열차·버스 시간표와 요금은 자주 바뀌어요. 아래 예매 버튼으로 최신 시간을 확인하세요.</p>
-    <div class="grid" id="transitGrid"></div>`;
+    <div class="grid" id="transitGrid" data-pos="D3"></div>`;
   renderTransitList();
   if (state.tab==="transit") trLoad();
 }
@@ -3912,7 +3971,8 @@ document.addEventListener("click", e=>{
   if (t.dataset.region){ state.region=t.dataset.region; const s0=STARTS.find(s=>s.region===state.region); if (s0 && startPt().region!==state.region && !state.course.length) state.start=s0.id; save(); render(); return; }
   if (t.dataset.stay){ state.start = t.dataset.stay; save(); render(); return; }
   if (t.dataset.who){ state.who=t.dataset.who; save(); render(); return; }
-  if (t.dataset.cat){ state.cat=t.dataset.cat; renderPlaces(); return; }
+  if (t.dataset.cat){ if (t.dataset.cat!==state.cat) FSUB="전체"; state.cat=t.dataset.cat; renderPlaces(); return; }
+  if (t.dataset.fsub){ FSUB=t.dataset.fsub; const y = window.scrollY; renderPlaces(); window.scrollTo({ top:y, behavior:"instant" }); return; }
   if (t.dataset.trtype){ TR.type=t.dataset.trtype; renderTransitTab(); return; }
   if (t.dataset.wxrain){ state.rain=!state.rain; renderPlaces(); const g = document.getElementById("placeGrid"); if (state.rain && g) g.scrollIntoView({ behavior:"smooth", block:"start" }); return; }
   if (t.id==="rainBtn"){ state.rain=!state.rain; renderPlaces(); return; }
@@ -4141,9 +4201,11 @@ function renderMore(){
       <button class="mrow" data-tab="souv"><span class="mico">🎁</span><span class="mtx"><b>특산품·기념 선물</b><small>지역별 특산품과 살 수 있는 곳</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-near="4"><span class="mico">📍</span><span class="mtx"><b>내 주변</b><small>1km·4km·10km 맛집·가볼 곳·추천지</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-openmed="1"><span class="mico">🌙</span><span class="mtx"><b>야간 병원·약국</b><small>지금 문 연 약국·병원 · 응급실 · 상비약 편의점</small></span><span class="mgo">›</span></button>
+      <button class="mrow" data-detail="wx:1"><span class="mico">🌤️</span><span class="mtx"><b>주간 날씨</b><small>WHERE 에서 고른 지역의 7일 날씨</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-tab="transit"><span class="mico">🚄</span><span class="mtx"><b>교통</b><small>KTX·버스터미널·택시</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-tab="deals"><span class="mico">🏷️</span><span class="mtx"><b>할인 방법</b><small>강원 여행 할인 제도</small></span><span class="mgo">›</span></button>
       <button class="mrow" data-opensearch="1"><span class="mico">🔍</span><span class="mtx"><b>검색</b><small>장소·음식·동네로 찾기</small></span><span class="mgo">›</span></button>
+      <button class="mrow" data-showpos="1"><span class="mico">🔢</span><span class="mtx"><b>화면 위치 번호 ${document.body.classList.contains("showpos")?"끄기":"보기"}</b><small>수정 요청할 때 A1·C6 같은 번호로 위치를 말할 수 있어요</small></span><span class="mgo">›</span></button>
       ${state.isOps ? `<button class="mrow" data-tab="ops"><span class="mico">🛠️</span><span class="mtx"><b>운영</b><small>장소·사진·수익 설정</small></span><span class="mgo">›</span></button>` : ""}
     </div>
     <section id="expBox" class="wallet" style="margin-top:22px">
@@ -4408,10 +4470,20 @@ function wxBar(){
     ${windy ? `<p class="wxnote">💨 ${T.windy}</p>` : ""}
     <small class="wxsrc">${T.src}</small></div>`;
 }
+// 상단 날짜 오른쪽에 붙는 작은 현재 날씨(WHERE 에서 고른 지역). 누르면 주간 날씨 화면(G1)
+function wxChip(){
+  const r = wxRegion(); if (!r) return `<span id="wxChip"></span>`;
+  const fresh = (Date.now() - (+WX.data.rev||0)) < 6*36e5, now = fresh && r.now && r.now.t != null ? r.now : null;
+  const today = (r.days||[]).find(x=>x.d===isoLocal(new Date()));
+  if (!now && !today) return `<span id="wxChip"></span>`;
+  const name = LANG==="ko" ? sunAt().name : trStr(sunAt().name);
+  const ico = now ? (/_night/.test(now.s||"") && /clearsky|fair/.test(now.s) ? "🌙" : wxSym(now.s)[0]) : wxSym(today.s)[0];
+  const t = now ? wxDeg(now.t) : `${wxDeg(today.lo)}/${wxDeg(today.hi)}`;
+  return `<button type="button" class="wxchip" id="wxChip" data-detail="wx:1" data-noi18n aria-label="${esc(name)} 주간 날씨 보기">${ico} ${t}<small>${esc(name)} ›</small></button>`;
+}
 function wxRefresh(){
-  const slot = document.getElementById("wxSlot"); if (slot) slot.outerHTML = wxBar();
-  const ln = document.getElementById("wxLine"), tb = document.getElementById("todayBox");
-  if (tb){ if (ln){ const br = ln.previousSibling; if (br && br.nodeName==="BR") br.remove(); ln.remove(); } tb.insertAdjacentHTML("beforeend", wxLine(tripDay())); }
+  const c = document.getElementById("wxChip"); if (c) c.outerHTML = wxChip();
+  if (SUB.k==="wx") refreshDetail();
 }
 // ───────── 열차 시간표·요금 (국토교통부 TAGO 열차정보, train.json 을 매일 새로 받음) ─────────
 // 예매·결제는 코레일 또는 코레일과 제휴한 네이버에서만 할 수 있다. 앱은 열차를 고르게 해 주고 그 화면으로 넘긴다.
@@ -4500,6 +4572,24 @@ document.addEventListener("click", async e=>{
   trRefresh();
 });
 
+// ② 오른쪽 슬라이드 메뉴(F1): 손잡이를 누르면 열고 닫힘, 위아래로 끌면 높이를 옮김(위치 기억)
+(function sideDock(){
+  const dock = document.getElementById("sideDock"), h = document.getElementById("sdHandle"); if (!dock || !h) return;
+  try { const y = +localStorage.getItem("gw_sdY"); if (y > 8 && y < 92) dock.style.top = y + "%"; } catch(_) {}
+  let sy = 0, st = 0, moved = false, down = false;
+  h.addEventListener("pointerdown", e=>{ down = true; moved = false; sy = e.clientY; st = dock.getBoundingClientRect().top; try { h.setPointerCapture(e.pointerId); } catch(_) {} });
+  h.addEventListener("pointermove", e=>{ if (!down) return; const dy = e.clientY - sy; if (Math.abs(dy) > 6) moved = true;
+    if (moved){ const top = Math.min(window.innerHeight - 120, Math.max(60, st + dy)); dock.style.top = (top / window.innerHeight * 100) + "%"; } });
+  h.addEventListener("pointerup", ()=>{ if (!down) return; down = false;
+    if (moved){ try { localStorage.setItem("gw_sdY", parseFloat(dock.style.top)); } catch(_) {} return; }
+    const o = !dock.classList.contains("open"); dock.classList.toggle("open", o); h.setAttribute("aria-expanded", o); });
+  document.addEventListener("click", e=>{ if (!dock.classList.contains("open")) return;
+    if (!dock.contains(e.target) || e.target.closest("[data-near],[data-openmed],[data-detail]")) { dock.classList.remove("open"); h.setAttribute("aria-expanded", false); } });
+})();
+// ⑤ 화면 위치 번호 보기
+try { if (localStorage.getItem("gw_showpos")==="1") document.body.classList.add("showpos"); } catch(_) {}
+document.addEventListener("click", e=>{ if (!e.target.closest("[data-showpos]")) return;
+  const on = document.body.classList.toggle("showpos"); try { localStorage.setItem("gw_showpos", on ? "1" : "0"); } catch(_) {} renderMore(); });
 async function wxLoad(){
   if (WX.loading) return; WX.loading = true;
   try { const r = await fetch(GH.raw + "weather.json?t=" + Date.now(), { cache:"no-store" });
@@ -4702,8 +4792,9 @@ function detailHtml(k, id){
   if (k==='pk') return pickDetail(id);
   if (k==='s') return souvDetail(id);
   if (k==='slist') return souvAll();
-  if (k==='near') return nearDetail();
-  if (k==='med') return medDetail();
+  if (k==='near'){ const d = nearDetail(); return { title:d.title, html:`<div data-pos="G2">${d.html}</div>` }; }
+  if (k==='wx'){ const name = sunAt().name, bar = wxBar(); return { title:`${name} 주간 날씨`, html: /wxbar/.test(bar) ? `<div data-pos="G1">${bar}</div><p class="meta">위 WHERE 에서 지역을 바꾸면 그 지역 날씨가 나와요.</p>` : `<div class="empty">날씨 자료를 아직 받지 못했어요. 인터넷에 연결된 상태로 잠시 뒤 다시 열어 보세요.</div>` }; }
+  if (k==='med'){ const d = medDetail(); return d && { title:d.title, html:`<div data-pos="G3">${d.html}</div>` }; }
   if (k==="p"){ const p = byId(id); if (!p) return null;
     const ph = photoFor(p), fs = FESTIVALS.filter(f=>f.place===p.id);
     const near = PLACES.filter(x=>x.id!==p.id && x.region===p.region).map(x=>[km(p,x),x]).sort((a,b)=>a[0]-b[0]).slice(0,10).map(x=>x[1]);
