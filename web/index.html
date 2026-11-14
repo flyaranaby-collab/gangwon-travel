@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611141025";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611141033";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -626,6 +626,19 @@ body.showpos [data-pos] { position: relative; outline: 1px dashed rgba(225,29,72
 body.showpos [data-pos]::before { content: attr(data-pos); position: absolute; top: 0; left: 0; z-index: 70; background: #e11d48; color: #fff; font: 700 10px/1.5 system-ui, sans-serif; padding: 0 4px; border-radius: 0 0 5px 0; pointer-events: none; letter-spacing: 0; }
 body.showpos .sidedock[data-pos], body.showpos .bnav[data-pos] { position: fixed; }
 body.showpos .tabbar[data-pos] { position: sticky; }
+/* A5·A7·A8·B·C1 사이 간격 좁게 */
+.hero .inner { gap: 10px; padding-bottom: 14px; }
+.hero .field { gap: 4px; }
+#todayBox { line-height: 1.45; }
+nav.tabs button { padding: 9px 11px 7px; }
+main.inner { padding-top: 12px; }
+section.panel { gap: 16px; }
+[data-pos="C1"]:empty, #heroPhotos:empty { display: none; }
+.promo { margin-bottom: 0; }
+@media (max-width: 640px) {
+  .hero .inner { padding-block: 24px 12px; gap: 10px; }
+  nav.tabs button { padding: 7px 9px 5px; }
+}
 </style>
 
 <header class="hero">
