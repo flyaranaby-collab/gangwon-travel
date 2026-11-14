@@ -406,3 +406,11 @@ WHEN · 가는 날 ~ 오는 날	WHEN · Departure ~ Return	WHEN · 出发 ~ 返�
 나중에	Later	稍后	あとで
 📴 인터넷이 끊겼어요. 저장된 수첩은 그대로 볼 수 있고, 지도·예매·날씨 같은 바깥 연결은 다시 연결되면 돼요.	📴 You're offline. Your saved notebook still works; maps, booking and weather will work again once you reconnect.	📴 网络已断开。已保存的手册仍可查看，地图、预订、天气等外部连接需重新联网后使用。	📴 インターネットが切れました。保存済みの手帳はそのまま見られます。地図・予約・天気などは再接続後に使えます。
 이 화면에서는 문의를 바로 보낼 수 없어요. 웹 수첩(claude.ai)에 로그인해서 열면 보낼 수 있어요.	Inquiries can't be sent from this screen. Open the web notebook (claude.ai) while signed in to send one.	此页面无法直接发送咨询。请登录后打开网页版手册(claude.ai)发送。	この画面からは問い合わせを送れません。ウェブ版手帳(claude.ai)にログインして開くと送れます。
+코스 담기	Add to plan	加入行程	コースに追加
+담김	Added	已加入	追加済み
+찜함	Saved	已收藏	保存済み
+방문 완료	Visited	已到访	訪問済み
+내 후기	My review	我的评价	マイレビュー
+카카오맵에서 보기	Open in Kakao Map	在Kakao地图查看	カカオマップで見る
+네이버지도에서 보기	Open in Naver Map	在Naver地图查看	NAVERマップで見る
+구글 평점·영업시간에서 보기	Open in Google Maps	在谷歌地图查看	Googleマップで見る
