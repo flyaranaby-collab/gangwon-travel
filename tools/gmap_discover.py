@@ -142,6 +142,7 @@ def main():
             hit = next((p for p in places if p.get("businessStatus") in (None, "OPERATIONAL") and "강원" in p.get("formattedAddress", "")
                         and re.search(k["city"] + r"(시|군)", p.get("formattedAddress", "")) and (p.get("location") or {}).get("latitude")), None)
             if not reg or not hit: miss.append(k["name"]); continue
+            print(f"  고른 곳 {k['name']} → {hit['displayName']['text']} · {hit['formattedAddress']}", file=sys.stderr)
             addr = hit["formattedAddress"]; parts = addr.replace("대한민국", "").split()
             area = next((x for x in parts if re.search(r"(읍|면|동|리)$", x)), k["city"])
             row = idx.get(hit["id"]) or {"id": hit["id"], "tags": []}
