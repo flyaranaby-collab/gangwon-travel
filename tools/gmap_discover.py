@@ -86,6 +86,23 @@ def passes(cat, p):
     return any(n >= a and r >= b for a, b in RULE[cat][0])
 
 
+GENERIC = {"키즈카페", "키즈", "카페", "무인키즈카페", "체험농장", "농장", "목장", "식당", "본점", "커피", "중국집"}
+
+
+def same_name(k, disp):
+    """검색 1등이 엉뚱한 근처 가게일 때가 있다: 고른 이름의 핵심 낱말(또는 alias)이 구글 이름에 들어 있어야 같은 곳으로 본다."""
+    nz = lambda x: re.sub(r"[\s()·&\-_.,']", "", str(x)).lower()
+    d = nz(disp)
+    if any(nz(a) in d for a in k.get("alias", [])): return True
+    if nz(k["name"]) in d or d in nz(k["name"]): return True
+    cities = set(CITY)
+    for tok in re.split(r"[\s()·]+", k["name"]):
+        t = nz(tok)
+        if len(t) < 2 or t in GENERIC or t in cities or any(t == c + "점" or t.startswith(c) and t.endswith("점") for c in cities): continue
+        if t in d: return True
+    return False
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--key", required=True); ap.add_argument("--out", required=True)
     a = ap.parse_args()
@@ -139,7 +156,7 @@ def main():
         idx = {x["id"]: x for x in out}; miss = []
         for k, places in zip(picks, found):
             reg = CITY.get(k["city"], (None,))[0]
-            hit = next((p for p in places if p.get("businessStatus") in (None, "OPERATIONAL") and "강원" in p.get("formattedAddress", "")
+            hit = next((p for p in places if same_name(k, p["displayName"]["text"]) and p.get("businessStatus") in (None, "OPERATIONAL") and "강원" in p.get("formattedAddress", "")
                         and re.search(k["city"] + r"(시|군)", p.get("formattedAddress", "")) and (p.get("location") or {}).get("latitude")), None)
             if not reg or not hit: miss.append(k["name"]); continue
             print(f"  고른 곳 {k['name']} → {hit['displayName']['text']} · {hit['formattedAddress']}", file=sys.stderr)
