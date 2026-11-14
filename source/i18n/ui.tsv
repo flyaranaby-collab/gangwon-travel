@@ -401,3 +401,8 @@ WHEN · 가는 날 ~ 오는 날	WHEN · Departure ~ Return	WHEN · 出发 ~ 返�
 버스터미널 · 공항	Bus terminals · Airport	客运站 · 机场	バスターミナル · 空港
 터미널·노선 검색 (예: 동서울, 고속버스)	Search terminals or routes (e.g. Dong Seoul, express bus)	搜索客运站·线路（例：东首尔、高速巴士）	ターミナル・路線を検索（例：東ソウル、高速バス）
 버스 시간표와 요금은 자주 바뀌어요. 아래 예매 버튼으로 최신 시간을 확인하세요.	Bus timetables and fares change often. Use the booking buttons below for the latest times.	巴士时刻表和票价经常变动，请通过下方预订按钮确认最新时间。	バスの時刻表と運賃はよく変わります。下の予約ボタンで最新の時刻をご確認ください。
+새 장소 정보가 도착했어요.	New place info has arrived.	新的地点信息已到达。	新しいスポット情報が届きました。
+지금 반영	Update now	立即更新	今すぐ反映
+나중에	Later	稍后	あとで
+📴 인터넷이 끊겼어요. 저장된 수첩은 그대로 볼 수 있고, 지도·예매·날씨 같은 바깥 연결은 다시 연결되면 돼요.	📴 You're offline. Your saved notebook still works; maps, booking and weather will work again once you reconnect.	📴 网络已断开。已保存的手册仍可查看，地图、预订、天气等外部连接需重新联网后使用。	📴 インターネットが切れました。保存済みの手帳はそのまま見られます。地図・予約・天気などは再接続後に使えます。
+이 화면에서는 문의를 바로 보낼 수 없어요. 웹 수첩(claude.ai)에 로그인해서 열면 보낼 수 있어요.	Inquiries can't be sent from this screen. Open the web notebook (claude.ai) while signed in to send one.	此页面无法直接发送咨询。请登录后打开网页版手册(claude.ai)发送。	この画面からは問い合わせを送れません。ウェブ版手帳(claude.ai)にログインして開くと送れます。

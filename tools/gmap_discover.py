@@ -33,6 +33,11 @@ NAT_KEY = {"산": r"(산|봉|령|재|고개)($|\s)|등산|전망대|탐방", "�
            "호수·강": r"호|강|저수지|댐|습지|유원지|천$", "숲·꽃": r"수목원|숲|휴양림|정원|식물원|공원|꽃"}
 
 
+
+def safe(v):
+    """구글 지도 이름·주소는 누구나 바꿀 수 있으니 태그·따옴표를 없앤다(앱 화면에서 스크립트 실행 차단)."""
+    return re.sub(r"[<>`\"\x00-\x1f]", "", str(v or "")).strip()
+
 def search(key, q):
     body = json.dumps({"textQuery": q, "languageCode": "ko", "regionCode": "KR", "pageSize": 20}).encode()
     hd = {"Content-Type": "application/json", "X-Goog-Api-Key": key, "X-Goog-FieldMask": MASK}
@@ -92,8 +97,8 @@ def main():
             parts = addr.replace("대한민국", "").split()
             area = next((x for x in parts if re.search(r"(읍|면|동|리)$", x)), city)
             tags = (["리뷰많은곳"] if n >= (1000 if cat in ("맛집", "카페", "관광지") else 300) else []) + (["평점높은곳"] if r >= 4.5 else [])
-            best[pid] = {"id": pid, "name": p["displayName"]["text"].strip(), "cat": cat, "region": reg, "city": city, "area": re.sub(r"\d+가?$", "", area),
-                         "addr": re.sub(r"^대한민국\s*", "", addr).strip(), "lat": round(loc["latitude"], 5), "lng": round(loc["longitude"], 5),
+            best[pid] = {"id": pid, "name": safe(p["displayName"]["text"]), "cat": cat, "region": reg, "city": city, "area": re.sub(r"\d+가?$", "", area),
+                         "addr": safe(re.sub(r"^대한민국\s*", "", addr)), "lat": round(loc["latitude"], 5), "lng": round(loc["longitude"], 5),
                          "type": (p.get("primaryTypeDisplayName") or {}).get("text", ""), "tags": tags, "_n": n, "_r": r}
     # 지역(시·군)·분류별 상한: 리뷰 수 많은 순
     out, cnt = [], {}

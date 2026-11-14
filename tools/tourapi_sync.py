@@ -129,8 +129,8 @@ def main():
         if pid in have: continue
         hit = byname.get(norm(name))
         if hit: kp[pid] = {"url": hit["firstimage"]}
-    s = re.sub(r"/\*KTO_DATA\*/.*?/\*END_KTO_DATA\*/", lambda m: "/*KTO_DATA*/" + json.dumps(snap, ensure_ascii=False, separators=(",",":")) + "/*END_KTO_DATA*/", s, count=1, flags=re.S)
-    s = re.sub(r"/\*KTO_PHOTOS\*/.*?/\*END_KTO_PHOTOS\*/", lambda m: "/*KTO_PHOTOS*/" + json.dumps(kp, ensure_ascii=False, separators=(",",":")) + "/*END_KTO_PHOTOS*/", s, count=1, flags=re.S)
+    s = re.sub(r"/\*KTO_DATA\*/.*?/\*END_KTO_DATA\*/", lambda m: "/*KTO_DATA*/" + json.dumps(snap, ensure_ascii=False, separators=(",",":")).replace("</", "<\\/") + "/*END_KTO_DATA*/", s, count=1, flags=re.S)
+    s = re.sub(r"/\*KTO_PHOTOS\*/.*?/\*END_KTO_PHOTOS\*/", lambda m: "/*KTO_PHOTOS*/" + json.dumps(kp, ensure_ascii=False, separators=(",",":")).replace("</", "<\\/") + "/*END_KTO_PHOTOS*/", s, count=1, flags=re.S)
     if a.html: p.write_text(s, encoding="utf-8")
     if a.json:
         import time

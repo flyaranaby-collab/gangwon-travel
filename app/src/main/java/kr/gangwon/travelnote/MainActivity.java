@@ -83,7 +83,9 @@ public class MainActivity extends Activity {
         s.setSafeBrowsingEnabled(true);         // 구글 세이프 브라우징으로 위험한 주소 차단
         s.setGeolocationEnabled(true);          // '내 주변 1·4·10km'에서만 사용(수첩 화면이 요청할 때)
         s.setSupportMultipleWindows(false);
-        s.setTextZoom(100);
+        // 휴대폰 '글자 크기' 설정을 따른다(어르신·저시력 사용자). 화면이 깨지지 않게 85~150% 사이로 맞춘다.
+        int zoom = Math.round(getResources().getConfiguration().fontScale * 100);
+        s.setTextZoom(Math.max(85, Math.min(150, zoom)));
         web.setWebViewClient(new WebViewClient() {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest req) {
