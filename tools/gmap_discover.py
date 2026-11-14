@@ -26,8 +26,8 @@ PICKS = pathlib.Path(__file__).with_name("gmap_picks.json")
 # 키즈카페는 따로 넉넉히 찾는다(시·군별 검색어). 동물농장과 몫을 나누지 않게 "키즈" 몫으로 센다.
 KIDS_Q = {"강릉": ["키즈카페", "실내 놀이터 키즈카페", "키즈풀 키즈카페", "무인 키즈카페", "교동 키즈카페", "유천동 키즈카페", "포남동 키즈카페", "주문진 키즈카페", "어린이 실내 놀이터", "키즈 펜션 놀이방"]}
 KIDS_RULE = ([(1, 3.5)], 30)   # 키즈카페는 구글 리뷰가 적다(네이버를 주로 씀): 리뷰 1개 이상·3.5점 이상
-KIDS_NAME = re.compile(r"키즈|플레이|놀이|kids|KIDS|Kids|트램폴린|트램펄린|바운스|점핑|볼풀|무인")
-KIDS_BAD = re.compile(r"어린이집|유치원|학원|교습|병원|의원|소아|치과|안과|펜션|호텔|리조트")
+KIDS_NAME = re.compile(r"키즈|플레이(?!스)|놀이터|놀이방|놀이공간|kids|트램폴린|트램펄린|바운스|점핑|볼풀", re.I)
+KIDS_BAD = re.compile(r"어린이집|유치원|학원|교습|병원|의원|소아|치과|안과|펜션|호텔|리조트|풀빌라|뮤지엄|박물관|미술관|스테이")
 KID_T = {"zoo", "aquarium", "amusement_park", "amusement_center", "playground", "farm", "tourist_attraction", "childrens_camp", "park", "wildlife_park"}
 CHINESE = re.compile(r"반점|짬뽕|중화|중국|홍콩|마라|양꼬치|차이나")
 # 분류별 (리뷰 수 하한, 평점 하한) 조건들 중 하나라도 맞으면 통과 / 지역당 최대 개수
@@ -69,7 +69,10 @@ def ok_type(cat, p):
     if cat == "맛집": return bool(t & FOOD_T) and not (t & {"lodging", "cafe", "coffee_shop"} and not t & {"restaurant"})
     if cat == "카페": return bool(t & CAFE_T)
     if cat == "소품샵": return bool(t & SHOP_T) and not (t & BAD_SHOP) and not (t & FOOD_T)
-    if cat == "키즈": return not (t & {"lodging", "hotel", "motel", "school", "hospital", "doctor"}) and (bool(KIDS_NAME.search(name)) or bool(t & {"playground", "amusement_center"})) and not KIDS_BAD.search(name)
+    if cat == "키즈":
+        if t & {"lodging", "hotel", "motel", "school", "hospital", "doctor", "museum", "art_gallery"} or KIDS_BAD.search(name): return False
+        if t & {"cafe", "coffee_shop", "restaurant", "food"} and not re.search(r"키즈|kids|놀이", name, re.I): return False   # 일반 카페·식당은 빼기
+        return bool(KIDS_NAME.search(name)) or bool(t & {"playground", "amusement_center"})
     if cat == "체험": return not (t & (FOOD_T | CAFE_T | {"lodging", "hotel", "motel"})) and (bool(t & KID_T) or bool(re.search(r"키즈|놀이|플레이|동물|농장|목장|아쿠아|체험", name)))
     if cat == "관광지": return not (t & NOT_NATURE) and bool(t & {"tourist_attraction", "museum", "park", "historical_landmark", "amusement_park", "observation_deck", "cultural_landmark", "art_gallery", "zoo", "aquarium"})
     return not (t & NOT_NATURE) and bool(re.search(NAT_KEY[cat], name))
@@ -77,7 +80,9 @@ def ok_type(cat, p):
 
 def passes(cat, p):
     n, r = p.get("userRatingCount") or 0, p.get("rating") or 0
-    if cat == "키즈": return any(n >= a and r >= b for a, b in KIDS_RULE[0])
+    if cat == "키즈":
+        if n == 0: return "playground" in p.get("types", []) and bool(re.search(r"키즈카페|키즈룸|놀이터", p["displayName"]["text"]))   # 새로 생겨 리뷰가 없는 키즈카페
+        return any(n >= a and r >= b for a, b in KIDS_RULE[0])
     return any(n >= a and r >= b for a, b in RULE[cat][0])
 
 
