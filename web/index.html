@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611141538";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611142353";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3202,14 +3202,19 @@ function renderSeasonTab(){
   const rows = ss.picks.map(([id,when,why])=>({ p:byId(id), when, why })).filter(x=>x.p && !HIDDEN.has(x.p.id));
   const here = rows.filter(x=>inRegion(x.p)), list = here.length ? here : rows;
   const fAll = FESTIVALS.filter(f=>f.months.some(m=>ss.months.includes(m)));
-  const fHere = fAll.filter(f=>state.region==="all" || f.region===state.region), fList = fHere.length ? fHere : fAll;
+  const isAll = state.region==="all";
+  // 지역을 고르면 그 지역 축제만 보여 준다. 이 계절에 없으면 그 지역의 다른 계절 축제를 보여 준다(다른 지역으로 채우지 않음).
+  const fHere = fAll.filter(f=>isAll || f.region===state.region);
+  const fOther = isAll || fHere.length ? [] : FESTIVALS.filter(f=>f.region===state.region);
+  const fList = fHere.length ? fHere : fOther;
   const order = m => ss.months.indexOf(m);
-  fList.sort((x,y)=>Math.min(...x.months.filter(m=>ss.months.includes(m)).map(order)) - Math.min(...y.months.filter(m=>ss.months.includes(m)).map(order)));
+  if (fOther.length) fList.sort((x,y)=>Math.min(...x.months) - Math.min(...y.months));
+  else fList.sort((x,y)=>Math.min(...x.months.filter(m=>ss.months.includes(m)).map(order)) - Math.min(...y.months.filter(m=>ss.months.includes(m)).map(order)));
   const courseBtn = id => { const inC = state.course.includes(id); return `<button class="btn ${inC?"added":""}" data-toggle="${id}">${inC?"코스에 담김 ✓":"코스에 담기"}</button>`; };
   document.getElementById("tab-season").innerHTML = `
     ${festStrip()}
     <p class="notice">계절별 추천 시기와 축제 일정은 해마다 조금씩 달라져요. 축제는 출발 전 '일정 확인'으로 올해 날짜를 꼭 확인하세요.</p>
-    <div class="season-head">
+    ${isAll ? `<div class="season-head">
       <div><div class="sec-title" style="margin:0"><h2>${key}의 강원</h2><span class="en">${ss.en}</span></div>
         <p class="lede">${ss.lede}${key===tripSeason?` · 여행 날짜(${tripDay().getMonth()+1}월) 기준`:""}</p></div>
       <span class="seg" role="group" aria-label="계절 선택">${Object.keys(SEASONS).map(k=>`<button data-season="${k}" aria-pressed="${k===key}">${k}</button>`).join("")}</span>
@@ -3222,15 +3227,16 @@ function renderSeasonTab(){
         return `<div class="stile"><button class="sthb" data-detail="pk:${key}|${p.id}"><span class="sth">${ph?`<img src="${esc(ph.url)}" alt="" loading="lazy" onerror="this.remove()">`:""}<i>${catEmoji(p.cat)}</i></span>
           <span class="stx"><em>${esc(when)}</em><b>${esc(shortName(p))}</b></span></button>
           <button class="sadd${inC?" on":""}" data-toggle="${p.id}" aria-label="${inC?"코스에서 빼기":"코스에 담기"}">${inC?"✓":"＋"}</button></div>`; }).join("")}</div>
-    </section>
+    </section>` : ""}
     <section aria-label="행사와 축제">
-      <div class="sec-title"><h2>${key} 행사 · 축제</h2><span class="en">Festivals</span></div>
-      ${!fHere.length&&state.region!=="all"?`<p class="lede">${regionLabel()}엔 ${key} 축제 정보가 없어 강원 전체에서 보여 드려요.</p>`:""}
+      <div class="sec-title"><h2>${isAll ? "" : esc(regionLabel())+" "}${key} 행사 · 축제</h2><span class="en">Festivals</span></div>
+      ${isAll ? "" : `<span class="seg" role="group" aria-label="계절 선택" style="margin:0 0 12px">${Object.keys(SEASONS).map(k=>`<button data-season="${k}" aria-pressed="${k===key}">${k}</button>`).join("")}</span>`}
+      ${fOther.length ? `<p class="lede">${esc(regionLabel())}엔 ${key} 축제가 없어요. 다른 계절에 열리는 ${esc(regionLabel())} 축제예요.</p>` : ""}
       ${fList.length ? `<div class="fests">${fList.map(f=>{ const pl = f.place && byId(f.place);
         return `<article class="fest"><div class="fwhen">${esc(f.when)}</div>
           <div class="fbd"><b>${esc(f.name)}</b><span class="meta">${esc(REG[f.region].name)}</span><p>${esc(f.desc)}</p>
             <div class="factions"><a class="btn ghost" href="${naver(f.name+" 일정")}" target="_blank" rel="noopener">일정 확인</a>${pl?courseBtn(pl.id):""}</div></div></article>`; }).join("")}</div>`
-        : `<div class="empty">이 계절엔 등록된 축제가 없어요.</div>`}
+        : `<div class="empty">${isAll ? "이 계절엔" : esc(regionLabel())+"엔"} 등록된 축제가 없어요.</div>`}
     </section>`;
 }
 function renderSponsors(){
@@ -4470,8 +4476,7 @@ function festIcon(f){ const n = f.name; return /해맞이|일출/.test(n) ? "�
 function festList(){
   const m = tripDay().getMonth()+1, nm = m%12+1;
   const pick = arr => arr.filter(f=>f.months.includes(m) || f.months.includes(nm)).sort((a,b)=>(a.months.includes(m)?0:1)-(b.months.includes(m)?0:1));
-  const here = pick(FESTIVALS.filter(f=>state.region==="all" || f.region===state.region));
-  return here.length ? here : pick(FESTIVALS);
+  return pick(FESTIVALS.filter(f=>state.region==="all" || f.region===state.region));   // 지역을 고르면 그 지역 축제만
 }
 function festStrip(){
   const L = festList(); if (!L.length) return "";
