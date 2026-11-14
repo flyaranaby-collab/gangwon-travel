@@ -25,7 +25,7 @@ EXTRA = [("맛집", "중국집 중식", ["중식"]), ("체험", "키즈카페", 
 PICKS = pathlib.Path(__file__).with_name("gmap_picks.json")
 # 키즈카페는 따로 넉넉히 찾는다(시·군별 검색어). 동물농장과 몫을 나누지 않게 "키즈" 몫으로 센다.
 KIDS_Q = {"강릉": ["키즈카페", "실내 놀이터 키즈카페", "키즈풀 키즈카페", "무인 키즈카페", "교동 키즈카페", "유천동 키즈카페", "포남동 키즈카페", "주문진 키즈카페", "어린이 실내 놀이터", "키즈 펜션 놀이방"]}
-KIDS_RULE = ([(10, 4.0), (5, 4.6)], 30)
+KIDS_RULE = ([(1, 3.5)], 30)   # 키즈카페는 구글 리뷰가 적다(네이버를 주로 씀): 리뷰 1개 이상·3.5점 이상
 KIDS_NAME = re.compile(r"키즈|플레이|놀이|kids|KIDS|Kids|트램폴린|트램펄린|바운스|점핑|볼풀|무인")
 KIDS_BAD = re.compile(r"어린이집|유치원|학원|교습|병원|의원|소아|치과|안과|펜션|호텔|리조트")
 KID_T = {"zoo", "aquarium", "amusement_park", "amusement_center", "playground", "farm", "tourist_attraction", "childrens_camp", "park", "wildlife_park"}
@@ -69,7 +69,7 @@ def ok_type(cat, p):
     if cat == "맛집": return bool(t & FOOD_T) and not (t & {"lodging", "cafe", "coffee_shop"} and not t & {"restaurant"})
     if cat == "카페": return bool(t & CAFE_T)
     if cat == "소품샵": return bool(t & SHOP_T) and not (t & BAD_SHOP) and not (t & FOOD_T)
-    if cat == "키즈": return not (t & (FOOD_T | {"lodging", "hotel", "motel"})) and bool(KIDS_NAME.search(name)) and not KIDS_BAD.search(name)
+    if cat == "키즈": return not (t & {"lodging", "hotel", "motel", "school", "hospital", "doctor"}) and (bool(KIDS_NAME.search(name)) or bool(t & {"playground", "amusement_center"})) and not KIDS_BAD.search(name)
     if cat == "체험": return not (t & (FOOD_T | CAFE_T | {"lodging", "hotel", "motel"})) and (bool(t & KID_T) or bool(re.search(r"키즈|놀이|플레이|동물|농장|목장|아쿠아|체험", name)))
     if cat == "관광지": return not (t & NOT_NATURE) and bool(t & {"tourist_attraction", "museum", "park", "historical_landmark", "amusement_park", "observation_deck", "cultural_landmark", "art_gallery", "zoo", "aquarium"})
     return not (t & NOT_NATURE) and bool(re.search(NAT_KEY[cat], name))
@@ -103,7 +103,9 @@ def main():
             addr = p.get("formattedAddress", "")
             if p.get("businessStatus") not in (None, "OPERATIONAL"): continue
             if "강원" not in addr or not re.search(city + r"(시|군)", addr): continue
-            if not ok_type(cat, p) or not passes(cat, p): continue
+            if not ok_type(cat, p) or not passes(cat, p):
+                if cat == "키즈" and city == "강릉": print(f"  키즈 제외: {p['displayName']['text']} · 리뷰{p.get('userRatingCount') or 0} · {p.get('rating')} · {','.join(p.get('types', [])[:4])}", file=sys.stderr)
+                continue
             loc = p.get("location") or {}
             if not loc.get("latitude"): continue
             pid = p["id"]; n, r = p.get("userRatingCount") or 0, p.get("rating") or 0
