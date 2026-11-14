@@ -3216,9 +3216,9 @@ function renderPlaces(){
       const cat = c => `<button class="chipbtn" data-cat="${c}" aria-pressed="${c===state.cat}">${ic(IC[c])}${c}</button>`;
       const tg = (id, on, label, e) => `<button class="chipbtn" id="${id}" aria-pressed="${on}">${ic(e)}${label}</button>`;
       const has = c => PLACES.some(p=>p.cat===c);
-      const top = [cat("전체"), cat("맛집"), cat("숙소"), tg("localBtn", state.local, "현지인 맛집", "🧑‍🍳"), cat("소품샵"), cat("카페"), tg("photoBtn", state.photo, "사진 명소", "📸"), tg("dealBtn", state.dealOnly, "할인 있는 곳", "🏷️")];
+      const top = [cat("전체"), cat("맛집"), cat("숙소"), tg("localBtn", state.local, "현지인 맛집", "🧑‍🍳"), cat("소품샵"), cat("카페"), tg("photoBtn", state.photo, "포토존", "📸")];
       const rest = ["바다","산","계곡","호수·강","숲·꽃","고원","자연","체험","역사","관광지"].filter(c=>CATS.includes(c) || has(c)).map(cat);
-      const more = [tg("trendBtn", state.trend, "요즘 뜨는 곳", "🔥"), tg("reviewBtn", state.review, "리뷰 많은 곳", "⭐"), tg("summerBtn", state.summer, "여름 피서", "🏖️"), tg("rainBtn", state.rain, "비 오는 날", "☔")];
+      const more = [tg("trendBtn", state.trend, "요즘 뜨는 곳", "🔥"), tg("reviewBtn", state.review, "리뷰 많은 곳", "⭐"), tg("dealBtn", state.dealOnly, "할인 있는 곳", "🏷️"), tg("summerBtn", state.summer, "여름 피서", "🏖️"), tg("rainBtn", state.rain, "비 오는 날", "☔")];
       return top.join("") + `<span class="sep"></span>` + rest.join("") + `<span class="sep"></span>` + more.join("");
     })()}</div>
     ${state.cat==="맛집" ? (()=>{ const fp = PLACES.filter(p=>p.cat==="맛집" && inRegion(p)); const n = k => fp.filter(p=>foodSub(p)===k).length;

@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611150127";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611150137";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3217,9 +3217,9 @@ function renderPlaces(){
       const cat = c => `<button class="chipbtn" data-cat="${c}" aria-pressed="${c===state.cat}">${ic(IC[c])}${c}</button>`;
       const tg = (id, on, label, e) => `<button class="chipbtn" id="${id}" aria-pressed="${on}">${ic(e)}${label}</button>`;
       const has = c => PLACES.some(p=>p.cat===c);
-      const top = [cat("전체"), cat("맛집"), cat("숙소"), tg("localBtn", state.local, "현지인 맛집", "🧑‍🍳"), cat("소품샵"), cat("카페"), tg("photoBtn", state.photo, "사진 명소", "📸"), tg("dealBtn", state.dealOnly, "할인 있는 곳", "🏷️")];
+      const top = [cat("전체"), cat("맛집"), cat("숙소"), tg("localBtn", state.local, "현지인 맛집", "🧑‍🍳"), cat("소품샵"), cat("카페"), tg("photoBtn", state.photo, "포토존", "📸")];
       const rest = ["바다","산","계곡","호수·강","숲·꽃","고원","자연","체험","역사","관광지"].filter(c=>CATS.includes(c) || has(c)).map(cat);
-      const more = [tg("trendBtn", state.trend, "요즘 뜨는 곳", "🔥"), tg("reviewBtn", state.review, "리뷰 많은 곳", "⭐"), tg("summerBtn", state.summer, "여름 피서", "🏖️"), tg("rainBtn", state.rain, "비 오는 날", "☔")];
+      const more = [tg("trendBtn", state.trend, "요즘 뜨는 곳", "🔥"), tg("reviewBtn", state.review, "리뷰 많은 곳", "⭐"), tg("dealBtn", state.dealOnly, "할인 있는 곳", "🏷️"), tg("summerBtn", state.summer, "여름 피서", "🏖️"), tg("rainBtn", state.rain, "비 오는 날", "☔")];
       return top.join("") + `<span class="sep"></span>` + rest.join("") + `<span class="sep"></span>` + more.join("");
     })()}</div>
     ${state.cat==="맛집" ? (()=>{ const fp = PLACES.filter(p=>p.cat==="맛집" && inRegion(p)); const n = k => fp.filter(p=>foodSub(p)===k).length;
