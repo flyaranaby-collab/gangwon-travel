@@ -130,6 +130,8 @@ section.panel { display: grid; gap: 24px; }
 .filters .sep { width: 1px; height: 20px; background: var(--line); margin: 0 4px; }
 [data-pos="C6"] .cic { font-size: 15px; margin-right: 4px; line-height: 1; }
 [data-pos="C6"] .chipbtn { padding-left: 11px; padding-right: 11px; }
+.subfilters .chipbtn.zero { opacity: .5; }
+.subfilters .chipbtn.zero[aria-pressed="true"] { opacity: 1; }
 [data-pos="C6"] .cic { margin-right: 3px; }
 [data-pos="C6"] .sep { flex-basis: 100%; width: auto; height: 0; margin: 2px 0; background: none; }
 #dealBtn[aria-pressed=true] { background: var(--brass); border-color: var(--brass); color: var(--surface); }
@@ -3231,8 +3233,10 @@ function renderPlaces(){
       const more = [tg("trendBtn", state.trend, "요즘 뜨는 곳", "🔥"), tg("reviewBtn", state.review, "리뷰 많은 곳", "⭐"), tg("kidsBtn", state.kids, "아이와 함께", "👶"), tg("dealBtn", state.dealOnly, "할인 있는 곳", "🏷️"), tg("summerBtn", state.summer, "여름 피서", "🏖️"), tg("rainBtn", state.rain, "비 오는 날", "☔")];
       return top.join("") + `<span class="sep"></span>` + rest.join("") + `<span class="sep"></span>` + more.join("");
     })()}</div>
-    ${state.cat==="맛집" ? (()=>{ const fp = PLACES.filter(p=>p.cat==="맛집" && inRegion(p) && passToggles(p)); const n = k => fp.filter(p=>foodSub(p)===k).length; if (FSUB!=="전체" && !n(FSUB)) FSUB = "전체";
-      return `<div class="subfilters" role="group" aria-label="맛집 종류" data-pos="C7"><button class="chipbtn" data-fsub="전체" aria-pressed="${FSUB==="전체"}">전체<small>${fp.length}</small></button>${FOOD_SUBS.filter(k=>n(k)).map(k=>`<button class="chipbtn" data-fsub="${k}" aria-pressed="${k===FSUB}">${k}<small>${n(k)}</small></button>`).join("")}</div>`; })() : ""}
+    ${state.cat==="맛집" ? (()=>{ const all = PLACES.filter(p=>p.cat==="맛집" && inRegion(p)), fp = all.filter(passToggles); const n = k => fp.filter(p=>foodSub(p)===k).length;
+      // 종류 버튼은 그 지역에 있는 종류를 늘 보여 주고(현지인 맛집 등을 켜도 사라지지 않게), 숫자만 켜 둔 조건에 맞춘다. 0곳이면 흐리게.
+      const has = new Set(all.map(foodSub));
+      return `<div class="subfilters" role="group" aria-label="맛집 종류" data-pos="C7"><button class="chipbtn" data-fsub="전체" aria-pressed="${FSUB==="전체"}">전체<small>${fp.length}</small></button>${FOOD_SUBS.filter(k=>has.has(k)).map(k=>`<button class="chipbtn${n(k)?"":" zero"}" data-fsub="${k}" aria-pressed="${k===FSUB}">${k}<small>${n(k)}</small></button>`).join("")}</div>`; })() : ""}
     <input type="search" id="q" data-pos="C8" class="search" placeholder="장소·메뉴·태그 검색 (예: 물회, 일출, 아이와)" value="${esc(state.q)}" aria-label="검색">
     <div id="stayExtra"></div>
     <div class="grid" id="placeGrid" data-pos="C9"></div>
