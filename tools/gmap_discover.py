@@ -20,10 +20,15 @@ FOOD_IN = ["맛집", "현지인 맛집", "막국수", "한우 고기", "닭갈�
 COMMON = [("카페", "카페"), ("카페", "베이커리 디저트 카페"), ("소품샵", "소품샵 기념품"),
           ("산", "등산 산"), ("계곡", "계곡 폭포"), ("호수·강", "호수 강 저수지"), ("숲·꽃", "수목원 숲 자연휴양림"), ("관광지", "가볼만한곳 관광명소")]
 SEA = [("바다", "해변 해수욕장")]
+# 시·군마다 더 찾는 것: (분류, 검색어, 붙일 태그)
+EXTRA = [("맛집", "중국집 중식", ["중식"]), ("체험", "키즈카페", ["아이와", "키즈카페", "실내"]), ("체험", "동물원 동물농장 체험목장", ["아이와", "동물체험"])]
+PICKS = pathlib.Path(__file__).with_name("gmap_picks.json")
+KID_T = {"zoo", "aquarium", "amusement_park", "amusement_center", "playground", "farm", "tourist_attraction", "childrens_camp", "park", "wildlife_park"}
+CHINESE = re.compile(r"반점|짬뽕|중화|중국|홍콩|마라|양꼬치|차이나")
 # 분류별 (리뷰 수 하한, 평점 하한) 조건들 중 하나라도 맞으면 통과 / 지역당 최대 개수
 RULE = {"맛집": ([(300, 4.0), (100, 4.4)], 40), "카페": ([(200, 4.1), (80, 4.5)], 15), "소품샵": ([(20, 4.2)], 8),
         "산": ([(30, 4.0)], 10), "계곡": ([(30, 4.0)], 10), "바다": ([(50, 4.0)], 12), "호수·강": ([(50, 4.0)], 8),
-        "숲·꽃": ([(50, 4.0)], 8), "관광지": ([(300, 4.2)], 12)}
+        "숲·꽃": ([(50, 4.0)], 8), "관광지": ([(300, 4.2)], 12), "체험": ([(30, 4.0)], 8)}
 FOOD_T = {"restaurant", "food", "meal_takeaway", "korean_restaurant", "seafood_restaurant", "noodle_restaurant", "barbecue_restaurant"}
 CAFE_T = {"cafe", "coffee_shop", "bakery", "dessert_shop", "tea_house"}
 SHOP_T = {"gift_shop", "store", "home_goods_store", "clothing_store", "book_store", "market"}
@@ -59,6 +64,7 @@ def ok_type(cat, p):
     if cat == "맛집": return bool(t & FOOD_T) and not (t & {"lodging", "cafe", "coffee_shop"} and not t & {"restaurant"})
     if cat == "카페": return bool(t & CAFE_T)
     if cat == "소품샵": return bool(t & SHOP_T) and not (t & BAD_SHOP) and not (t & FOOD_T)
+    if cat == "체험": return not (t & (FOOD_T | CAFE_T | {"lodging", "hotel", "motel"})) and (bool(t & KID_T) or bool(re.search(r"키즈|놀이|플레이|동물|농장|목장|아쿠아|체험", name)))
     if cat == "관광지": return not (t & NOT_NATURE) and bool(t & {"tourist_attraction", "museum", "park", "historical_landmark", "amusement_park", "observation_deck", "cultural_landmark", "art_gallery", "zoo", "aquarium"})
     return not (t & NOT_NATURE) and bool(re.search(NAT_KEY[cat], name))
 
@@ -73,8 +79,9 @@ def main():
     a = ap.parse_args()
     jobs = []
     for city, (reg, sea) in CITY.items():
-        for kw in (FOOD_SEA if sea else FOOD_IN): jobs.append((city, reg, "맛집", f"{city} {kw}"))
-        for cat, kw in COMMON + (SEA if sea else []): jobs.append((city, reg, cat, f"{city} {kw}"))
+        for kw in (FOOD_SEA if sea else FOOD_IN): jobs.append((city, reg, "맛집", f"{city} {kw}", []))
+        for cat, kw in COMMON + (SEA if sea else []): jobs.append((city, reg, cat, f"{city} {kw}", []))
+        for cat, kw, tg in EXTRA: jobs.append((city, reg, cat, f"{city} {kw}", tg))
     print(f"검색 {len(jobs)}회 시작", file=sys.stderr)
     try: search(a.key, "강릉 맛집")
     except urllib.error.HTTPError as e:
@@ -82,7 +89,7 @@ def main():
     with cf.ThreadPoolExecutor(6) as ex:
         res = list(ex.map(lambda j: search(a.key, j[3]), jobs))
     best, seen_total = {}, 0
-    for (city, reg, cat, q), places in zip(jobs, res):
+    for (city, reg, cat, q, xtag), places in zip(jobs, res):
         for p in places:
             seen_total += 1
             addr = p.get("formattedAddress", "")
@@ -93,10 +100,14 @@ def main():
             if not loc.get("latitude"): continue
             pid = p["id"]; n, r = p.get("userRatingCount") or 0, p.get("rating") or 0
             row = best.get(pid)
-            if row and row["_n"] >= n and row["cat"] != "관광지": continue
+            if "중식" in xtag and not ("chinese_restaurant" in p.get("types", []) or CHINESE.search(p["displayName"]["text"])): xtag = []
+            if row and row["_n"] >= n and row["cat"] != "관광지":
+                row["tags"] += [x for x in xtag if x not in row["tags"]]; continue
             parts = addr.replace("대한민국", "").split()
             area = next((x for x in parts if re.search(r"(읍|면|동|리)$", x)), city)
             tags = (["리뷰많은곳"] if n >= (1000 if cat in ("맛집", "카페", "관광지") else 300) else []) + (["평점높은곳"] if r >= 4.5 else [])
+            tags += [x for x in xtag if x not in tags]
+            if row: tags += [x for x in row["tags"] if x not in tags]
             best[pid] = {"id": pid, "name": safe(p["displayName"]["text"]), "cat": cat, "region": reg, "city": city, "area": re.sub(r"\d+가?$", "", area),
                          "addr": safe(re.sub(r"^대한민국\s*", "", addr)), "lat": round(loc["latitude"], 5), "lng": round(loc["longitude"], 5),
                          "type": (p.get("primaryTypeDisplayName") or {}).get("text", ""), "tags": tags, "_n": n, "_r": r}
@@ -106,6 +117,26 @@ def main():
         k = (row["city"], row["cat"]); cnt[k] = cnt.get(k, 0) + 1
         if cnt[k] > RULE[row["cat"]][1]: continue
         out.append({k2: v for k2, v in row.items() if not k2.startswith("_")})
+    # 운영자가 조사해 꼭 넣을 곳(gmap_picks.json): 구글에서 영업 중인지·주소를 확인하고 좌표를 새로 받는다
+    picks = json.loads(PICKS.read_text(encoding="utf-8")).get("picks", []) if PICKS.exists() else []
+    if picks:
+        found = [search(a.key, k["q"]) for k in picks]
+        idx = {x["id"]: x for x in out}; miss = []
+        for k, places in zip(picks, found):
+            reg = CITY.get(k["city"], (None,))[0]
+            hit = next((p for p in places if p.get("businessStatus") in (None, "OPERATIONAL") and "강원" in p.get("formattedAddress", "")
+                        and re.search(k["city"] + r"(시|군)", p.get("formattedAddress", "")) and (p.get("location") or {}).get("latitude")), None)
+            if not reg or not hit: miss.append(k["name"]); continue
+            addr = hit["formattedAddress"]; parts = addr.replace("대한민국", "").split()
+            area = next((x for x in parts if re.search(r"(읍|면|동|리)$", x)), k["city"])
+            row = idx.get(hit["id"]) or {"id": hit["id"], "tags": []}
+            row.update({"name": safe(k.get("name") or hit["displayName"]["text"]), "cat": k["cat"], "region": reg, "city": k["city"],
+                        "area": re.sub(r"\d+가?$", "", area), "addr": safe(re.sub(r"^대한민국\s*", "", addr)),
+                        "lat": round(hit["location"]["latitude"], 5), "lng": round(hit["location"]["longitude"], 5),
+                        "type": (hit.get("primaryTypeDisplayName") or {}).get("text", ""), "sig": safe(k.get("sig", "")), "tip": safe(k.get("tip", "")), "pick": 1})
+            row["tags"] = row.get("tags", []) + [x for x in k.get("tags", []) if x not in row.get("tags", [])]
+            if hit["id"] not in idx: out.append(row); idx[hit["id"]] = row
+        print(f"직접 고른 곳 {len(picks) - len(miss)}/{len(picks)}곳 확인" + (f" · 못 찾음(폐업·검색 실패): {', '.join(miss)}" if miss else ""))
     by = {}
     for x in out: by[x["cat"]] = by.get(x["cat"], 0) + 1
     if len(out) < 50:
