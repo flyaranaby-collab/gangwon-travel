@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611141347";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611141413";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -642,6 +642,7 @@ section.panel { gap: 16px; }
 .ctour .ctas { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--surface, #fff) 60%, #e6eef8); color: var(--muted); white-space: nowrap; align-self: start; }
 .ctour .ctlive { color: #16a34a; font-weight: 700; }
 .ctour .kv dd { word-break: keep-all; }
+.trainbox .trtoggle { width: 100%; justify-content: center; margin-top: 4px; }
 </style>
 
 <header class="hero">
@@ -4564,7 +4565,7 @@ function wxRefresh(){
 // 예매·결제는 코레일 또는 코레일과 제휴한 네이버에서만 할 수 있다. 앱은 열차를 고르게 해 주고 그 화면으로 넘긴다.
 const TR_DEFAULT_ST = ["서울","청량리","강릉","정동진","묵호","동해","진부","평창","둔내","횡성","만종","원주","서원주","춘천","남춘천","영월"];
 const TR_TO = { gangneung:"강릉", donghae:"동해", pyeongchang:"진부", wonju:"원주", chuncheon:"춘천", jeongseon:"영월", hongcheon:"춘천", inje:"춘천", hwacheon:"춘천", sokcho:"강릉", yangyang:"강릉" };
-const TRN = { data: store.get("train") || null, from:"서울", to:"", day:0, pick:null, loading:false, at:0 };
+const TRN = { data: store.get("train") || null, from:"서울", to:"", day:0, pick:null, loading:false, at:0, open:false };
 async function trLoad(force){
   if (TRN.loading || (!force && Date.now() - TRN.at < 10*60*1000)) return; TRN.loading = true; TRN.at = Date.now();
   try { const r = await fetch(GH.raw + "train.json?t=" + Date.now(), { cache:"no-store" });
@@ -4623,10 +4624,13 @@ function trainBox(){
         ${picked?`<div class="trbook"><p><b>${trDayLabel(d,TRN.day)} ${trT(dep)} ${esc(TRN.from)} → ${esc(TRN.to)} · ${esc(grade)} ${esc(no)}</b></p>
           <div class="trbtns">${trBookLinks(d, r)}</div></div>`:""}</li>`; }).join("")}</ol>
       <p class="meta">일반실 어른 1명 요금 · 출처: 국토교통부(TAGO) 열차정보 · 실제 운행·요금·남은 좌석은 예매 화면이 기준이에요.</p>`;
-  return `<div class="eyebrow">TRAIN</div><h3>🚄 열차 시간표 · 예매</h3>
+  const form = `<div class="eyebrow">TRAIN</div><h3>🚄 열차 시간표 · 예매</h3>
     <div class="trform"><label>출발<select id="trFrom">${opt(TRN.from)}</select></label>
       <button type="button" class="chipbtn" id="trSwap" aria-label="출발·도착 바꾸기">⇄</button>
-      <label>도착<select id="trTo">${opt(TRN.to)}</select></label></div>
+      <label>도착<select id="trTo">${opt(TRN.to)}</select></label></div>`;
+  const cnt = all && all.length ? ` (${trDayLabel(d,TRN.day)} ${all.length}편)` : "";
+  if (!TRN.open) return form + `<button type="button" class="btn trtoggle" data-tropen="1" aria-expanded="false">🕒 시간 보기${cnt}</button>`;
+  return form + `<button type="button" class="btn ghost trtoggle" data-tropen="0" aria-expanded="true">▲ 시간표 접기</button>
     <div class="trdays">${days.map((x,i)=>`<button type="button" class="chipbtn" data-trday="${i}" aria-pressed="${i===TRN.day}">${trDayLabel(x,i)}</button>`).join("")}</div>
     ${body}
     ${rows && rows.length ? "" : `<div class="trbtns">${trBookLinks(d, null)}</div>`}
@@ -4638,7 +4642,8 @@ document.addEventListener("change", e=>{
   if (e.target.id==="trTo"){ TRN.to = e.target.value; TRN.pick = null; trRefresh(); }
 });
 document.addEventListener("click", async e=>{
-  const t = e.target.closest("#trSwap, [data-trday], [data-trpick], [data-trcopy]"); if (!t) return;
+  const t = e.target.closest("#trSwap, [data-trday], [data-trpick], [data-trcopy], [data-tropen]"); if (!t) return;
+  if (t.dataset.tropen){ TRN.open = t.dataset.tropen==="1"; if (!TRN.open) TRN.pick = null; trRefresh(); return; }
   if (t.dataset.trcopy){ try { await navigator.clipboard.writeText(t.dataset.trcopy); } catch(_) { prompt("이 내용을 복사하세요", t.dataset.trcopy); return; }
     const o = t.textContent; t.textContent = "복사했어요 ✓"; setTimeout(()=>{ t.textContent = o; }, 2000); return; }
   if (t.id==="trSwap"){ [TRN.from, TRN.to] = [TRN.to, TRN.from]; TRN.pick = null; }
