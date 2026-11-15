@@ -2709,6 +2709,7 @@ function photoFor(p){
   const k = KTO_PHOTOS[p.id] || (p.img ? { url:p.img } : null);
   if (k){ const tag = PHOTO_KIND[k.kind] || "";
     return { url:httpsUrl(k.url), tag, example:!!tag, credit:(tag ? tag + " · " : "") + (k.credit || "사진: 한국관광공사 · 공공누리 제1유형(출처 표시)"), artist:k.by || "한국관광공사" }; }
+  if (p.gphoto) return { url:p.gphoto.url, credit:`사진: ${p.gphoto.by} · Google 지도`, artist:p.gphoto.by };   // 구글 사진은 찍은 사람 표시 의무
   const up = state.uploads[p.id];
   if (up && up.url) return { url:up.url, credit:up.credit || "운영자 등록 사진", artist:"운영자 등록" };
   return null;
@@ -3010,7 +3011,8 @@ function gmapToPlace(it){
   if (!REG[it.region] || !inGangwon(+it.lat, +it.lng) || !nm) return null;
   const food = cat==="맛집" || cat==="카페";
   return { id:"g-"+it.id, gid:it.id, source:"gmap", region:it.region, name:nm, cat, area:it.area||it.city||REG[it.region].name, lat:+it.lat, lng:+it.lng,
-    sig: cleanTxt(it.sig) || it.type || cat, addr: it.addr||"", hours:"네이버지도에서 확인", fee: food ? "메뉴별" : "현장 확인", closed:[], closedNote:"휴무일은 네이버지도에서 확인",
+    sig: cleanTxt(it.sig) || it.type || cat, addr: it.addr||"", hours:"네이버지도에서 확인",
+    gphoto: it.photo && cleanUrl(it.photo.url) ? { url: cleanUrl(it.photo.url), by: cleanTxt(it.photo.by) || "Google 지도 사용자" } : null, fee: food ? "메뉴별" : "현장 확인", closed:[], closedNote:"휴무일은 네이버지도에서 확인",
     tip: it.tip ? cleanTxt(it.tip) + " 영업시간·휴무는 네이버지도에서 확인하세요." : "구글 지도에서 리뷰 수와 평점이 높아 고른 곳이에요. 영업시간·휴무는 네이버지도에서 확인하세요.",
     who: (it.tags||[]).includes("아이와") ? {친구:1,연인:1,가족:3,혼자:1} : {친구:2,연인:2,가족:2,혼자:2}, tags:[...(it.tags||[]), "구글지도"], mapq:((it.city||"")+" "+nm).trim() };
 }
