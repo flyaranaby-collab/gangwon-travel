@@ -189,7 +189,8 @@ def main():
         pathlib.Path(a.ver).write_text(str(kto["rev"]), encoding="utf-8")
     print(f"Google Places 사진 {len(got)}곳 채움 / 대상 {len(tg)}곳")
 
-try:
-    main()
-except Exception as e:
-    print(f"Google Places 단계 오류: {e}")
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Google Places 단계 오류: {e}")

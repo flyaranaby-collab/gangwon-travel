@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611151125";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611151132";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2727,11 +2727,16 @@ const KTO_PHOTOS = /*KTO_PHOTOS*/{"beoljip":{"url":"http://tong.visitkorea.or.kr
 const PHOTO_KIND = { menu:"메뉴 예시 사진", area:"주변 풍경 사진", item:"분위기 예시 사진" };
 const httpsUrl = u => String(u||"").replace(/^http:\/\//, "https://");
 // 우선순위: 위키미디어 공용 > 관광공사 > 운영자가 올린 사진
+// 음식점·카페·빵집: 간판 대신 음식 사진(자동으로 골라 kto.json의 fphoto에 저장). 구글 사진이라 찍은 사람을 표시한다.
+var FOOD_PH = {};
+function foodPhoto(p){ return FOOD_PH[p.id] || (p.gid && FOOD_PH["g-"+p.gid]) || null; }
 function photoFor(p){
   const op = OWNER.photos[p.id];
   if (op && op.url) return { url:op.url, credit:op.credit || "운영자 등록 사진", artist:"운영자 등록" };
   const up0 = state.uploads[p.id];
   if (up0 && up0.url) return { url:up0.url, credit:up0.credit || "운영자 등록 사진", artist:"운영자 등록" };
+  const fp = (p.cat==="맛집" || p.cat==="카페") ? foodPhoto(p) : null;
+  if (fp && fp.url) return { url:fp.url, credit:`사진: ${fp.by || "Google 지도 사용자"} · Google 지도`, artist:fp.by };
   const c = PHOTOS[p.id];
   if (c) { const tag = PHOTO_KIND[c.kind] || "";
     return { url:c.url, tag, example:!!tag, credit:`${tag ? tag+" · " : ""}사진: ${c.artist || "작가 미상"} · ${c.license} · `, link:c.page, linkText:"위키미디어 공용", artist:c.artist }; }
@@ -3028,7 +3033,9 @@ const state = {
 (()=>{ try { const k = JSON.parse(localStorage.getItem("gw_kto") || "null");
   if (k && +k.rev > KTO_REV && Array.isArray(k.items) && k.items.length > 100){
     KTO_SNAPSHOT.splice(0, KTO_SNAPSHOT.length, ...k.items);
-    Object.keys(KTO_PHOTOS).forEach(x=>delete KTO_PHOTOS[x]); Object.assign(KTO_PHOTOS, k.photos || {}); window.KTO_LIVE_REV = +k.rev; } } catch(_) {} })();
+    Object.keys(KTO_PHOTOS).forEach(x=>delete KTO_PHOTOS[x]); Object.assign(KTO_PHOTOS, k.photos || {}); window.KTO_LIVE_REV = +k.rev; }
+  if (k && k.fphoto && typeof k.fphoto === "object") Object.keys(k.fphoto).forEach(id=>{ const f = k.fphoto[id];
+    if (f && /^https:\/\/lh3\.googleusercontent\.com\//.test(f.url)) FOOD_PH[id] = { url:f.url, by:cleanTxt(f.by||"") }; }); } catch(_) {} })();
 const KTO_CACHE = store.get("ktoCache", []);
 const KTO_ADDED = mergeKto([...KTO_SNAPSHOT, ...KTO_CACHE]);
 // ───────── 구글 지도 인기 장소(gmap.json): 지역×검색어 조합으로 평점·리뷰 수가 높은 곳을 고른 목록 ─────────

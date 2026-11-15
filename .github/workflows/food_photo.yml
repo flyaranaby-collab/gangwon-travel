@@ -1,0 +1,57 @@
+name: 음식점 사진을 음식 사진으로
+# 음식점·카페·빵집 대표 사진을 간판 대신 음식 사진으로 고르고, 이름이 안 맞는 가게 사진은 바로잡는다.
+# 이미 고른 곳은 다시 하지 않는다(구글 요청 아끼기). 확인용 사진 모음은 작업 결과(artifact)로 남긴다.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "시·군만 (예: 강릉 또는 강릉,속초). 비우면 전체"
+        required: false
+        default: ""
+      sheet:
+        description: "확인용 사진 모음 만들기 (yes/no)"
+        required: false
+        default: "yes"
+permissions:
+  contents: write
+concurrency:
+  group: tourapi
+  cancel-in-progress: false
+jobs:
+  food:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: 그림 판별 도구 설치
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers pillow
+          sudo apt-get install -y -q fonts-noto-cjk >/dev/null
+      - name: 음식 사진 고르기
+        env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}", ONLY: "${{ github.event.inputs.only }}", SHEET: "${{ github.event.inputs.sheet }}" }
+        run: |
+          S=""; [ "$SHEET" = "yes" ] && S="--sheet sheets"
+          python3 tools/food_photo.py --key "$GOOGLE_PLACES_KEY" --kto web/kto.json --gmap web/gmap.json --html web/index.html --ver web/kto_ver.txt --only "$ONLY" $S
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: food-sheets
+          path: |
+            sheets/
+            tools/food_photo_report.json
+          if-no-files-found: ignore
+      - name: 저장소에 올리기
+        run: |
+          git config user.name "gangwon-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add web/kto.json web/kto_ver.txt tools/food_photo_report.json
+          git diff --cached --quiet && echo "바뀐 내용 없음" && exit 0
+          git commit -m "음식점 사진을 음식 사진으로 (자동)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase -q origin main && git push && exit 0
+            echo "올리기 재시도 $i"; sleep $((i*10))
+          done
+          exit 1
