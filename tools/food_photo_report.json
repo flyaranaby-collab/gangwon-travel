@@ -9186,5 +9186,101 @@
 "st": "food",
 "food": 0.82,
 "k": 1
+},
+{
+"id": "nammae",
+"name": "남매식당",
+"g": "남매식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "miga",
+"name": "미가식당",
+"g": "미가식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "chukhang",
+"name": "축항식당",
+"g": "축항식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "wanseon",
+"name": "완선섭국",
+"g": "완선섭국",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "imdang-sik",
+"name": "임당식당",
+"g": "임당식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "hanttuk",
+"name": "회산동 한뚝배기",
+"g": "회산동한뚝배기",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gamjajeok",
+"name": "감자적1번지",
+"g": "감자적1번지",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gangbori",
+"name": "강보리밥",
+"g": "강보리밥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "songcheon",
+"name": "송천식당",
+"g": "송천식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "hongjilmok",
+"name": "홍질목식당",
+"g": "홍질목식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "jmj-wonjo",
+"name": "원조칼국수",
+"g": "원조칼국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "jingarak",
+"name": "진가락",
+"g": "진가락",
+"st": "food",
+"food": 1.0,
+"k": 1
 }
 ]
