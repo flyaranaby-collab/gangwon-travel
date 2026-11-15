@@ -1,0 +1,12 @@
+name: 장소 좌표 찾기(일회성)
+on:
+  workflow_dispatch:
+    inputs:
+      names: { description: "찾을 이름들(| 로 구분)", required: true }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}", NAMES: "${{ github.event.inputs.names }}" }
+        run: IFS='|' read -ra A <<< "$NAMES"; python3 tools/coords_once.py "${A[@]}"
