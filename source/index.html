@@ -671,6 +671,18 @@ section.panel { gap: 16px; }
 .bnav button.on { color: #2b6aa3; }
 .sitemc em, .ticket .tstamp, .expamt.need { color: #a84b1b; }
 .ticket .tstamp { border-color: #a84b1b; }
+.ticket .btn { flex: none; }
+.ticket.used { opacity: .65; border-style: solid; border-color: var(--line); background: var(--surface); }
+.ticket.used .tstamp { color: var(--pine); border-color: var(--pine); transform: none; border-radius: 12px; width: 70px; height: 54px; }
+.redeem-scrim { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(11,16,25,.74);
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.redeem-card { width: min(100%, 420px); display: grid; gap: 14px; padding: 22px 20px; border-radius: var(--r); background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.redeem-card h2 { font-size: 22px; margin: 2px 0; }
+.redeem-shop { display: block; color: var(--muted); font-size: 14px; }
+.redeem-clock { font-variant-numeric: tabular-nums; font-size: 40px; font-weight: 600; text-align: center; letter-spacing: .02em; padding: 12px 0; border-radius: 10px; background: var(--brass-soft); color: var(--brass); }
+.redeem-steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14px; }
+.redeem-warn { margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); font-size: 14px; }
+.redeem-row { display: flex; gap: 8px; flex-wrap: wrap; } .redeem-row .btn { flex: 1 1 140px; }
 .ctour .ctlive { color: #15803d; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .bnav button.on { color: #8cc0ee; } :root:not([data-theme="light"]) .sitemc em, :root:not([data-theme="light"]) .expamt.need { color: #f0a070; } :root:not([data-theme="light"]) .ctour .ctlive { color: #6ee7a0; } :root:not([data-theme="light"]) .ctour .ctas { background: var(--sea-soft); color: var(--ink); } :root:not([data-theme="light"]) .opsbar .danger { color: var(--bad); } }
 :root[data-theme="dark"] .bnav button.on { color: #8cc0ee; } :root[data-theme="dark"] .sitemc em, :root[data-theme="dark"] .expamt.need { color: #f0a070; } :root[data-theme="dark"] .ctour .ctlive { color: #6ee7a0; } :root[data-theme="dark"] .ctour .ctas { background: var(--sea-soft); color: var(--ink); } :root[data-theme="dark"] .opsbar .danger { color: var(--bad); }
@@ -2915,10 +2927,7 @@ const ticketHref = q => PARTNERS.ticket.link ? PARTNERS.ticket.link(q) : naver(q
 // 유료 추천 노출: 계약한 가게의 장소 id와 문구. 카드와 '추천 가게' 줄에 '광고'가 붙는다.
 const SPONSORED = [];   // 예: { id:"oars", copy:"강릉 엽서 10% 할인" }
 // 제휴 쿠폰: 가게와 계약해 앱 전용 쿠폰을 배포. demo는 화면 확인용 예시.
-const PARTNER_COUPONS = [
-  { id:"demo-cafe", shop:"(예시) 제휴 카페", title:"음료 10% 할인", cond:"결제 전 이 화면 제시 · 1인 1회", demo:true },
-  { id:"demo-stay", shop:"(예시) 제휴 숙소", title:"평일 1박 5천 원 할인", cond:"예약 시 쿠폰 코드 입력", demo:true },
-];
+const PARTNER_COUPONS = [];   // 실제 제휴 쿠폰만 넣는다. 운영 탭 '수익 설정'에서 등록한 것이 여기에 채워진다.
 // 운영자 수익 설정을 화면 기능에 연결한다(기간이 지난 광고·쿠폰은 자동으로 내려간다)
 const bizActive = x => !x.until || x.until >= todayISOStr();
 function todayISOStr(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
@@ -2926,9 +2935,7 @@ function applyBiz(){
   const B = OWNER.biz;
   SPONSORED.length = 0; B.sponsored.filter(bizActive).forEach(x=>SPONSORED.push({ id:x.id, copy:x.copy||"" }));
   const real = B.coupons.filter(bizActive).map((c,i)=>({ id:c.id || ("cp-"+i), shop:c.shop||"", title:c.title||"", cond:c.cond||"", until:c.until||"", img:c.img||"" }));
-  PARTNER_COUPONS.length = 0; (real.length ? real : [
-    { id:"demo-cafe", shop:"(예시) 제휴 카페", title:"음료 10% 할인", cond:"결제 전 이 화면 제시 · 1인 1회", demo:true },
-    { id:"demo-stay", shop:"(예시) 제휴 숙소", title:"평일 1박 5천 원 할인", cond:"예약 시 쿠폰 코드 입력", demo:true }]).forEach(c=>PARTNER_COUPONS.push(c));
+  PARTNER_COUPONS.length = 0; real.forEach(c=>PARTNER_COUPONS.push(c));
   const tpl = t => t && /^https:\/\//.test(t) ? (q => t.replace("{q}", encodeURIComponent(q))) : null;
   PARTNERS.stay.link = tpl(B.partner.stay); PARTNERS.ticket.link = tpl(B.partner.ticket);
 }
@@ -3064,7 +3071,7 @@ const state = {
   startTime: store.get("startTime", "09:00"),
   people: store.get("people", 2),
   mode: store.get("mode", "car"),
-  region: store.get("region", "all"),
+  region: store.get("region", "gangneung"),
   showRev: window.APK_BUILD ? false : store.get("showRev", true),
   isOps: false,
   season: null,   // null이면 여행 날짜의 계절
@@ -3072,11 +3079,12 @@ const state = {
   canUpload: false,
   uploads: {},
   claimed: store.get("claimed", []),
+  used: store.get("used", {}),   // 사용 완료한 쿠폰: { 쿠폰 id: 사용 시각 }
   clicks: store.get("clicks", {}),
   inq: { type:INQ_TYPES[0], place:"", msg:"", err:"" },
   ai: { busy:false, msg:"", err:"" },
   kto: { busy:false, msg:"", key: store.get("ktoKey", "") },
-  ops: { inquiries:[], clicks:[], claims:[], deals:[], note:"" },
+  ops: { inquiries:[], clicks:[], claims:[], redeems:[], deals:[], note:"" },
   deal: null,   // 편집 중인 거래(null이면 닫힘)
   dealMsg: "",
 };
@@ -3776,6 +3784,7 @@ function renderDeals(){
     <div class="deals">${DEALS.map(d=>`<article class="deal"><span class="kind">${ICON_TAG}${d.kind}</span><h3>${d.name}</h3><p>${esc(d.desc)}</p><p class="how">${esc(d.how)}</p><a class="more" href="${naver(d.name+" "+(state.region==="all"?"강원":REG[state.region].q))}" target="_blank" rel="noopener">자세히 찾아보기 ↗</a></article>`).join("")}</div>
     <div class="revbox${PARTNER_COUPONS.some(c=>!c.demo)?" revapp":""}" style="margin-top:22px"><h2>${REV}제휴 쿠폰</h2>
       <p class="meta">제휴 가게가 이 앱 사용자에게만 주는 쿠폰이에요. 받으면 아래 ‘내 쿠폰 메모’에 담겨요.</p>
+      ${PARTNER_COUPONS.length ? "" : `<p class="notice">강릉 구도심 가게와 첫 쿠폰을 준비하고 있어요. 가게 사장님이시면 아래 문의 양식으로 연락 주세요.</p>`}
       <div class="sponsors">${PARTNER_COUPONS.map(c=>{ const got = state.claimed.includes(c.id);
         return `<div class="sponsor">${cpImgHtml(c)}${c.demo?`<span class="adpill" style="justify-self:start">예시</span>`:""}<b>${esc(c.title)}</b><span>${esc(c.shop)} · ${esc(c.cond)}</span><button class="btn ${got?"added":""}" style="justify-self:start" data-coupon="${c.id}" ${got?"disabled":""}>${got?"받음 ✓":"쿠폰 받기"}</button></div>`; }).join("")}</div>
     </div>
@@ -4065,6 +4074,7 @@ async function initRuntime(){
   RT.user = await useCap("user");
   RT.db = await useCap("db");
   if (RT.user){ try { RT.uid = await RT.user.id(); } catch(_){} try { state.isOps = !!(await RT.user.isOwner()); } catch(_){} }
+  await syncRedeems();
   if (isLocal && !window.APK_BUILD) state.isOps = true;   // 앱(APK)은 운영자 토큰이 있을 때만 운영 탭을 연다
   if (window.APK_BUILD && ghToken()){ state.isOps = true; document.body.classList.add("opsmode"); renderGrid(); }
   renderApkEntry();
@@ -4114,7 +4124,7 @@ let opsSubscribed = false;
 function subscribeOps(){
   if (opsSubscribed) return; opsSubscribed = true;
   const timer = setTimeout(()=>{ state.ops.note = "운영 데이터를 아직 불러오지 못했어요. 잠시 뒤 다시 확인하세요."; renderOps(); }, 10000);
-  [["inquiries","inquiries"],["clicks","clicks"],["stampclaims","claims"],["deals","deals"]].forEach(([col,key])=>{
+  [["inquiries","inquiries"],["clicks","clicks"],["stampclaims","claims"],["redeems","redeems"],["deals","deals"]].forEach(([col,key])=>{
     RT.db.collection(col).onSnapshot(snap=>{
       if (!snap.metadata.fromCache){ clearTimeout(timer); state.ops.note = ""; }
       state.ops[key] = snap.docs.map(d=>({ id:d.id, ...(d.data()||{}) })); renderOps();
@@ -4233,11 +4243,15 @@ function renderOps(){
   const claims = (local ? [{ items:store.get("local_stampclaims", []) }] : state.ops.claims).flatMap(d=>d.items||[]);
   const sum = pre => Object.entries(agg).filter(([k])=>k.startsWith(pre)).reduce((a,[,v])=>a+v,0);
   const cnt = t => inq.filter(x=>x.type===t).length;
+  // 쿠폰 사용 기록. 방문자가 직접 쓰는 값이라 이름은 걸러서 보여 주고, 건수는 어림값으로 본다.
+  const redeemItems = (local ? [{ items:store.get("local_redeems", []) }] : (state.ops.redeems||[])).flatMap(d=>d.items||[]);
+  const redeemBy = {}; redeemItems.forEach(x=>{ const k = cleanTxt(String((x && (x.shop || x.coupon)) || "")).slice(0,30); if (k) redeemBy[k] = (redeemBy[k]||0) + 1; });
+  const redeemTxt = Object.keys(redeemBy).length ? " (" + Object.entries(redeemBy).map(([k,v])=>`${k} ${v}`).join(", ") + ")" : "";
   const feats = [
     ["숙소 제휴 예약 링크", "제휴 수수료", PARTNERS.stay.link ? "제휴 링크 연결됨" : "제휴 링크 미설정 · 지금은 일반 검색으로 연결", `클릭 ${sum("stay:")}`],
     ["티켓·체험 예매 링크", "제휴 수수료", PARTNERS.ticket.link ? "제휴 링크 연결됨" : "제휴 링크 미설정 · 지금은 일반 검색으로 연결", `클릭 ${sum("ticket:")}`],
     ["추천 가게(광고) 노출", "광고비", `${SPONSORED.length}곳 노출 중`, `클릭 ${sum("ad:")}`],
-    ["제휴 쿠폰", "가게 제휴비", `${PARTNER_COUPONS.filter(c=>!c.demo).length}개 운영 · 예시 ${PARTNER_COUPONS.filter(c=>c.demo).length}개`, `받기 ${sum("coupon:")}`],
+    ["제휴 쿠폰", "가게 제휴비", `${PARTNER_COUPONS.length}개 운영`, `받기 ${sum("coupon:")} · 사용 ${redeemItems.length}${redeemTxt}`],
     ["입점·광고·제휴 문의", "영업 창구", "문의 폼 운영 중", `문의 ${inq.filter(x=>REV_TYPES.has(x.type)).length}`],
     ["업주 정보 수정(업주 인증)", "유료 전환 창구", "카드마다 ‘사장님이신가요?’ 링크", `요청 ${cnt("업주 정보 수정")}`],
     ["AI 맞춤 코스", "프리미엄 구독 후보", "Claude 앱에서 동작", ""],
@@ -4306,6 +4320,7 @@ document.addEventListener("click", e=>{
     state.tab="places"; state.cat="전체"; state.q=""; state.trend=state.photo=state.summer=state.review=state.local=state.dealOnly=state.rain=state.kids=state.bread=false; render(); ensureCard(t.dataset.goto);
     const c = document.getElementById("card-"+t.dataset.goto); if (c) c.scrollIntoView({ block:"center" }); return;
   }
+  if (t.dataset.redeem){ openRedeem(t.dataset.redeem); return; }
   if (t.dataset.coupon){
     const c = PARTNER_COUPONS.find(x=>x.id===t.dataset.coupon); if (!c || state.claimed.includes(c.id)) return;
     state.claimed.push(c.id); state.coupons.push({ t:`${c.shop} ${c.title}`, n:c.cond }); trackRev("coupon:"+c.id); save(); renderDeals(); renderCouponBook(); renderMy(); return;
@@ -4539,12 +4554,75 @@ document.addEventListener("click", e=>{
   state.favs.forEach(id=>{ if (!state.course.includes(id)) state.course.push(id); });
   save(); render(); const prev = state.tab; state.tab = "course"; navPush(prev!=="course"); renderTop(); keepTabPos();
 });
+// ── 쿠폰 1회 사용 ──
+// 쿠폰은 계정(로그인 시) 또는 이 기기에서 한 번만 쓸 수 있다. 사용 화면의 시계가 계속 움직여서 스크린샷 재사용을 직원이 가려내기 쉽다.
+// 로그인하지 않은 방문자는 이 기기 저장소에만 기록돼서, 저장소를 지우면 다시 쓸 수 있다.
+function isUsed(id){ return !!(state.used && state.used[id]); }
+function couponExpired(c){ return !!(c && c.until && c.until < todayISOStr()); }
+function redeemSlot(c){
+  if (isUsed(c.id)){ const d = new Date(state.used[c.id]); return `<span class="tstamp">사용 완료<br>${isNaN(d) ? "" : (d.getMonth()+1)+"/"+d.getDate()}</span>`; }
+  if (couponExpired(c)) return `<span class="tstamp">기간<br>만료</span>`;
+  return `<button class="btn" type="button" data-redeem="${esc(c.id)}">사용하기</button>`;
+}
+let redeemTimer = null;
+function closeRedeem(){ clearInterval(redeemTimer); redeemTimer = null; const b = document.getElementById("redeemBox"); if (b) b.remove(); }
+function openRedeem(id){
+  const c = PARTNER_COUPONS.find(x=>x.id===id); if (!c || isUsed(id) || couponExpired(c)) return;
+  closeRedeem();
+  const box = document.createElement("div"); box.id = "redeemBox"; box.className = "redeem-scrim";
+  let armed = false;
+  const tick = () => { const el = box.querySelector("#redeemClock"); if (el) el.textContent = new Date().toLocaleTimeString("ko-KR", { hour12:false }); };
+  const draw = () => {
+    box.innerHTML = `<div class="redeem-card" role="dialog" aria-modal="true" aria-labelledby="redeemTitle">
+      <div><span class="redeem-shop">${esc(c.shop)}</span><h2 id="redeemTitle">${esc(c.title)}</h2><span class="redeem-shop">${esc(c.cond||"")}${c.until?` · ${esc(c.until)}까지`:""}</span></div>
+      <div class="redeem-clock" id="redeemClock"></div>
+      ${armed ? `<p class="redeem-warn">사용 완료로 바꾸면 되돌릴 수 없고, 이 쿠폰은 다시 쓸 수 없어요. 가게 직원이 확인했나요?</p>`
+              : `<ol class="redeem-steps"><li>결제 전에 직원에게 이 화면을 보여 주세요.</li><li>시계가 움직이는지 직원이 확인해요.</li><li>혜택을 받은 뒤 아래 버튼을 눌러 주세요.</li></ol>`}
+      <div class="redeem-row">
+        ${armed ? `<button class="btn" type="button" data-rd="done">네, 사용 완료</button><button class="btn ghost" type="button" data-rd="back">아니요</button>`
+                : `<button class="btn" type="button" data-rd="arm">사용 완료 처리</button><button class="btn ghost" type="button" data-rd="close">닫기</button>`}
+      </div></div>`;
+    tick(); const f = box.querySelector("[data-rd]"); if (f) f.focus();
+  };
+  box.addEventListener("click", e=>{
+    e.stopPropagation();
+    const b = e.target.closest("[data-rd]");
+    if (!b){ if (e.target===box) closeRedeem(); return; }
+    const a = b.dataset.rd;
+    if (a==="close") closeRedeem();
+    else if (a==="arm"){ armed = true; draw(); }
+    else if (a==="back"){ armed = false; draw(); }
+    else if (a==="done") finishRedeem(c);
+  });
+  box.addEventListener("keydown", e=>{ if (e.key==="Escape") closeRedeem(); });
+  document.body.appendChild(box); draw();
+  redeemTimer = setInterval(tick, 1000);
+}
+async function finishRedeem(c){
+  if (isUsed(c.id)){ closeRedeem(); return; }
+  const at = new Date().toISOString();
+  state.used[c.id] = at; store.set("used", state.used);
+  trackRev("redeem:"+c.id);
+  closeRedeem(); renderCouponBook(); renderMy();
+  try { await appendMine("redeems", { coupon:c.id, shop:cleanTxt(c.shop).slice(0,40), title:cleanTxt(c.title).slice(0,40), at }); } catch(_){}
+}
+// 로그인한 계정의 사용 기록을 불러와서 다른 기기에서 쓴 쿠폰도 막는다
+async function syncRedeems(){
+  if (!(RT.db && RT.uid)) return;
+  try {
+    const s = await RT.db.doc("redeems/"+RT.uid).get();
+    if (s.exists){
+      ((s.data()||{}).items||[]).forEach(x=>{ if (x && x.coupon && !state.used[x.coupon]) state.used[x.coupon] = x.at || new Date().toISOString(); });
+      store.set("used", state.used); renderCouponBook(); renderMy();
+    }
+  } catch(_){}
+}
 // ── 쿠폰북 ──
 function renderCouponBook(){
   const el = document.getElementById("tab-coupons"); if (!el) return;
   const mine = PARTNER_COUPONS.filter(c=>state.claimed.includes(c.id)), more = PARTNER_COUPONS.filter(c=>!state.claimed.includes(c.id) && !(c.demo && window.APK_BUILD));
   el.innerHTML = `<div class="sec-title"><h2>쿠폰북</h2><span class="en">Coupons</span></div>
-    ${mine.length ? `<div class="tickets">${mine.map(c=>`<div class="ticket">${cpImgHtml(c)}<div><b>${esc(c.title)}</b><span>${esc(c.shop)}</span><small>${esc(c.cond||"")}${c.until?` · ${esc(c.until)}까지`:""}</small></div><span class="tstamp">사용 시<br>화면 제시</span></div>`).join("")}</div>`
+    ${mine.length ? `<div class="tickets">${mine.map(c=>`<div class="ticket${isUsed(c.id)?" used":""}">${cpImgHtml(c)}<div><b>${esc(c.title)}</b><span>${esc(c.shop)}</span><small>${esc(c.cond||"")}${c.until?` · ${esc(c.until)}까지`:""}</small></div>${redeemSlot(c)}</div>`).join("")}</div>`
       : `<p class="meta">받은 제휴 쿠폰이 없어요.</p>`}
     ${more.length ? `<h3 style="margin:18px 0 8px">받을 수 있는 쿠폰</h3><div class="sponsors">${more.map(c=>`<div class="sponsor">${cpImgHtml(c)}${c.demo?`<span class="adpill" style="justify-self:start">예시</span>`:""}<b>${esc(c.title)}</b><span>${esc(c.shop)} · ${esc(c.cond||"")}</span><button class="btn" style="justify-self:start" data-coupon="${c.id}">쿠폰 받기</button></div>`).join("")}</div>` : ""}
     <div class="wallet" style="margin-top:18px"><h2>내 쿠폰 메모</h2><span class="meta">다른 곳에서 받은 쿠폰이나 할인 코드를 적어 두세요. 이 휴대폰에만 저장돼요.</span>
