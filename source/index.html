@@ -3046,6 +3046,20 @@ function mergeGmap(items){
 let GMAP_REV = 0;
 const GMAP_ADDED = (()=>{ try { const g = JSON.parse(localStorage.getItem("gw_gmap") || "null");
   if (g && Array.isArray(g.items) && g.items.length){ GMAP_REV = +g.rev || 0; return mergeGmap(g.items); } } catch(_) {} return 0; })();
+// 빵과 관련된 곳은 모두 '빵지순례'로: 이름·대표 메뉴에 빵이 보이면 태그를 붙이고, '맛집'으로 들어온 빵집은 '카페'(빵·디저트)로 옮긴다.
+// 그래서 맛집·현지인 맛집 목록에는 빵집이 섞이지 않는다.
+const BREAD_NAME = /빵|베이커리|제과|과자점|도넛|도너츠|꽈배기|베이글|브레드|bakery|bread|boulangerie|파티세리|patisserie/i;
+const BREAD_SIG = /감자빵|식빵|소금빵|크루아상|크로와상|타르트|휘낭시에|까눌레|스콘|베이글|애플파이|찐빵|단팥빵|바게트|치아바타|빵(\s|,|$)/;
+const BREAD_NOT = /버거|피자|짬뽕순두부|순두부/;
+const BREAD_MOVED = (()=>{ let n = 0;
+  for (const p of PLACES){
+    if (!["맛집","카페"].includes(p.cat) || BREAD_NOT.test(p.name)) continue;
+    if (!(BREAD_NAME.test(p.name) || BREAD_SIG.test(p.sig||""))) continue;
+    if (!p.tags.includes("빵지순례")) p.tags.push("빵지순례");
+    p.tags = p.tags.filter(t=>t!=="현지인맛집");
+    if (p.cat==="맛집"){ p.cat = "카페"; n++; }
+  }
+  return n; })();
 // 운영자가 고친 장소 정보: 바꾼 항목만 덮어쓰고, 원래 값은 __orig 에 남겨 '원래대로'를 할 수 있다
 const EDIT_KEYS = ["name","cat","region","area","sig","hours","fee","closed","closedNote","tags","lat","lng","link","tip","mapq","addr"];
 function applyEdits(){
@@ -3256,7 +3270,7 @@ function passToggles(p){
     && (!state.photo || PHOTO_TAGS.some(t=>p.tags.includes(t)))
     && (!state.review || p.tags.includes("리뷰많은곳") || p.tags.includes("평점높은곳"))
     && (!state.summer || ["여름피서","물놀이","계곡"].some(t=>p.tags.includes(t)) || p.cat==="계곡")
-    && (!state.local || p.tags.includes("현지인맛집"))
+    && (!state.local || (p.tags.includes("현지인맛집") && !p.tags.includes("빵지순례")))
     && (!state.kids || isKid(p))
     && (!state.bread || p.tags.includes("빵지순례"));
 }
