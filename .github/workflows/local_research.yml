@@ -1,0 +1,10 @@
+name: 강릉 현지인 맛집 조사(일회성)
+on: { workflow_dispatch: {} }
+jobs:
+  r:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
+        run: python3 tools/local_research.py
