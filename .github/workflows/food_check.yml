@@ -1,0 +1,14 @@
+name: 음식 사진 점검(구글 요청 없음)
+on: { workflow_dispatch: {} }
+jobs:
+  chk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q 'transformers==4.46.3' pillow
+      - run: python3 tools/food_photo_check.py
