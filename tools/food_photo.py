@@ -137,10 +137,15 @@ def main():
     ap.add_argument("--ver"); ap.add_argument("--only", default=""); ap.add_argument("--max", type=int, default=4)
     ap.add_argument("--limit", type=int, default=0); ap.add_argument("--sheet", default=""); ap.add_argument("--min", type=float, default=0.6)
     ap.add_argument("--all", action="store_true", help="이미 고른 곳도 다시")
+    ap.add_argument("--low", action="store_true", help="음식 사진을 못 찾은 곳만 뒤쪽 사진(5~10번째)까지 더 본다")
     a = ap.parse_args()
     tg, kto = targets(a)
     done = kto.get("fphoto", {})
-    if not a.all: tg = [t for t in tg if t["id"] not in done]   # 이미 고른 곳은 다시 하지 않는다(요청 아끼기)
+    start = 0
+    if a.low:
+        tg = [t for t in tg if t["id"] in done and (done[t["id"]].get("food") or 0) < a.min and not done[t["id"]].get("deep")]
+        start, a.max = a.max, 10
+    elif not a.all: tg = [t for t in tg if t["id"] not in done]   # 이미 고른 곳은 다시 하지 않는다(요청 아끼기)
     if a.limit: tg = tg[:a.limit]
     print(f"대상 음식점·카페 {len(tg)}곳 (검색 필요 {sum(1 for t in tg if not t.get('gid'))}곳)")
 
@@ -160,8 +165,8 @@ def main():
             else: report.append({"id": t["id"], "name": t["name"], "st": "notfound"})
             continue
         pid, disp, phs = r
-        best = None
-        for k, ph in enumerate(phs[:a.max]):
+        best = dict(done[t["id"]], deep=1) if a.low else None
+        for k, ph in list(enumerate(phs[:a.max]))[start:]:
             try: uri = photo_uri(a.key, ph); calls += 1
             except Exception: continue
             if not uri: continue
@@ -169,7 +174,7 @@ def main():
             except Exception: sc = 0.0
             by = ", ".join(x.get("displayName", "") for x in ph.get("authorAttributions", []) if x.get("displayName")) or "Google 지도 사용자"
             cand = {"url": uri, "by": re.sub(r"[<>\"]", "", by)[:60], "food": round(sc, 2), "k": k}
-            if best is None or sc > best["food"]: best = cand
+            if best is None or sc > (best.get("food") or 0): best = cand
             if sc >= a.min: break
         if best:
             fph[t["id"]] = best
@@ -188,7 +193,10 @@ def main():
     for x in report: c[x["st"]] = c.get(x["st"], 0) + 1
     print(f"끝: 음식 사진 {c.get('food', 0)} · 음식 사진 없어 첫 사진 {c.get('other', 0)} · 구글에 사진 없음 {c.get('nophoto', 0)} · "
           f"이름 맞는 곳 못 찾음 {c.get('notfound', 0)} · 잘못 붙은 사진 지움 {c.get('removed', 0)} · 사진 요청 {calls}회")
-    pathlib.Path("tools/food_photo_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=0), encoding="utf-8")
+    rp = pathlib.Path("tools/food_photo_report.json")   # 이전 결과와 합친다(장소 id 기준)
+    allr = {x["id"]: x for x in (json.loads(rp.read_text(encoding="utf-8")) if rp.exists() else [])}
+    allr.update({x["id"]: x for x in report})
+    rp.write_text(json.dumps(list(allr.values()), ensure_ascii=False, indent=0), encoding="utf-8")
     if a.sheet: sheets(a.sheet, tg, fph, report)
 
 

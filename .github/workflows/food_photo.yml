@@ -8,6 +8,10 @@ on:
         description: "시·군만 (예: 강릉 또는 강릉,속초). 비우면 전체"
         required: false
         default: ""
+      low:
+        description: "음식 사진 못 찾은 곳 더 보기 (yes/no)"
+        required: false
+        default: "yes"
       sheet:
         description: "확인용 사진 모음 만들기 (yes/no)"
         required: false
@@ -31,10 +35,11 @@ jobs:
           pip install -q 'transformers==4.46.3' pillow
           sudo apt-get install -y -q fonts-noto-cjk >/dev/null
       - name: 음식 사진 고르기
-        env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}", ONLY: "${{ github.event.inputs.only }}", SHEET: "${{ github.event.inputs.sheet }}" }
+        env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}", ONLY: "${{ github.event.inputs.only }}", SHEET: "${{ github.event.inputs.sheet }}", LOW: "${{ github.event.inputs.low }}" }
         run: |
           S=""; [ "$SHEET" = "yes" ] && S="--sheet sheets"
           python3 tools/food_photo.py --key "$GOOGLE_PLACES_KEY" --kto web/kto.json --gmap web/gmap.json --html web/index.html --ver web/kto_ver.txt --only "$ONLY" $S
+          if [ "$LOW" = "yes" ]; then python3 tools/food_photo.py --key "$GOOGLE_PLACES_KEY" --kto web/kto.json --gmap web/gmap.json --html web/index.html --ver web/kto_ver.txt --only "$ONLY" --low; fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
