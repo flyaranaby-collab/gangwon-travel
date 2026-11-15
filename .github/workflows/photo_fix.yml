@@ -1,0 +1,37 @@
+name: 잘못 붙은 사진 다시 찾기
+# 사진이 다른 가게 것으로 붙었을 때: 그 장소 id들만 사진을 지우고, 이름이 맞는 구글 장소의 사진으로 다시 찾는다.
+# 검색은 고른 장소 수만큼만 한다(전체를 다시 검색하지 않음).
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: "장소 id(쉼표로 구분). 예: donghwa,chodang-halmeoni"
+        required: true
+permissions:
+  contents: write
+concurrency:
+  group: tourapi
+  cancel-in-progress: false
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: 사진 다시 찾기
+        env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}", IDS: "${{ github.event.inputs.ids }}" }
+        run: python3 tools/gplaces_sync.py --key "$GOOGLE_PLACES_KEY" --kto web/kto.json --html web/index.html --ver web/kto_ver.txt --redo "$IDS"
+      - name: 저장소에 올리기
+        run: |
+          git config user.name "gangwon-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add web/kto.json web/kto_ver.txt
+          git diff --cached --quiet && echo "바뀐 내용 없음" && exit 0
+          git commit -m "잘못 붙은 사진 다시 찾기 (자동)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase -q origin main && git push && exit 0
+            echo "올리기 재시도 $i"; sleep $((i*10))
+          done
+          exit 1

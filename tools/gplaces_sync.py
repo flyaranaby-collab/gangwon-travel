@@ -9,6 +9,23 @@ import argparse, json, re, urllib.parse, urllib.request, concurrent.futures as c
 PLACES_BASE = "https://places.googleapis.com/v1"
 GW_ADDR = re.compile(r"강원|Gangwon|강릉|Gangneung|속초|Sokcho|양양|Yangyang|고성|Goseong|동해|Donghae|삼척|Samcheo?k|평창|Pyeongchang|정선|Jeongseon|영월|Yeongw[eo]?ol|춘천|Chuncheon|원주|W[eo]?onju|인제|Inje|홍천|Hongcheon|화천|Hwacheon|태백|Taebaek",re.I)
 
+GENERIC = {"식당", "본점", "카페", "맛집", "강원", "시장", "마을", "거리"}
+CITIES = ["강릉", "속초", "양양", "고성", "동해", "삼척", "평창", "정선", "영월", "춘천", "원주", "인제", "홍천", "화천", "태백", "횡성", "철원", "양구"]
+
+
+def same_name(want, disp):
+    """검색 결과가 정말 그 가게인지: 찾는 이름의 핵심 낱말이 구글 이름에 들어 있어야 한다(근처 다른 가게 사진이 붙는 문제 방지)."""
+    nz = lambda x: re.sub(r"[\s()·&\-_.,'\[\]]", "", str(x)).lower()
+    d, w = nz(disp), nz(want)
+    if not d or not w: return False
+    if w in d or d in w: return True
+    for tok in re.split(r"[\s()·\[\]]+", want):
+        t = nz(tok)
+        if len(t) < 2 or t in GENERIC or t in CITIES or any(t.startswith(c) and t.endswith("점") for c in CITIES): continue
+        if t in d: return True
+    return False
+
+
 def search_place(api_key, name, city=""):
     """Google Places Text Search로 장소 검색, place_id 반환"""
     query = name + (" " + city if city else "") + " 강원"
@@ -34,6 +51,8 @@ def search_place(api_key, name, city=""):
             # 강원도 주소인지 확인
             # 강원도 주소인지 확인 (영어 주소는 "Gangwon" 이나 시·군 이름만 오기도 한다)
             if not GW_ADDR.search(addr):
+                continue
+            if not same_name(name, (p.get("displayName") or {}).get("text", "")):
                 continue
             photos = p.get("photos", [])
             if photos:
@@ -101,13 +120,23 @@ def main():
         ap.add_argument("--" + k, required=True)
     ap.add_argument("--ver", default=None)
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--redo", default="", help="쉼표로 나눈 장소 id: 잘못 붙은 사진을 지우고 이름을 확인해 다시 찾는다")
     a = ap.parse_args()
 
     kto = json.loads(pathlib.Path(a.kto).read_text(encoding="utf-8"))
     kto.setdefault("photos", {})
     gtried_g = set(kto.get("gtried_g", []))  # google 시도 목록 별도 관리
 
-    tg = [t for t in targets(kto, a.html) if t["id"] not in gtried_g]
+    redo = [x.strip() for x in a.redo.split(",") if x.strip()]
+    if redo:
+        for r in redo: kto["photos"].pop(r, None)
+        gtried_g -= set(redo)
+        print(f"사진 다시 찾기: {', '.join(redo)}", file=sys.stderr)
+    tg = [t for t in targets(kto, a.html) if t["id"] not in gtried_g and (not redo or t["id"] in redo)]
+    if redo and not tg:   # 대상이 없어도 지운 결과는 저장한다
+        kto["gtried_g"] = sorted(gtried_g); kto["rev"] = int(time.time() * 1000)
+        pathlib.Path(a.kto).write_text(json.dumps(kto, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        if a.ver: pathlib.Path(a.ver).write_text(str(kto["rev"]), encoding="utf-8")
     print(f"Google Places 검색 대상: {len(tg)}곳", file=sys.stderr)
 
     if not tg:
