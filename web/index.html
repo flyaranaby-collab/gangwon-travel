@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="202611151120";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="202611151125";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3331,8 +3331,8 @@ function renderGrid(){
   const sig = [state.region, state.cat, q, state.rain, state.dealOnly, state.trend, state.photo, state.summer, state.review, state.local, state.kids, state.bread, state.who, FSUB].join("|");
   if (GRID.sig !== sig){ GRID.sig = sig; GRID.n = GRID_STEP; }
   const shown = list.slice(0, GRID.n), left = list.length - shown.length;
-  const pg = document.getElementById("placeGrid"); pg.classList.toggle("tiles", !state.isOps);   // 운영자는 수정 버튼이 있는 큰 카드
-  pg.innerHTML = list.length ? shown.map(p=>state.isOps ? card(p) : tile(p)).join("")
+  const pg = document.getElementById("placeGrid"); pg.classList.add("tiles");   // 운영자도 사진 카드 · 수정 버튼은 자세한 페이지에
+  pg.innerHTML = list.length ? shown.map(tile).join("")
       + (left > 0 ? `<div class="moreRow"><button class="btn ghost" data-more="1">더 보기 · ${left}곳 남음</button></div>` : "")
     : (()=>{ const on = [["local","현지인 맛집"],["photo","포토존"],["trend","요즘 뜨는 곳"],["review","리뷰 많은 곳"],["kids","아이와 함께"],["bread","빵지순례"],["dealOnly","할인 있는 곳"],["summer","여름 피서"],["rain","비 오는 날"]].filter(([k])=>state[k]).map(x=>x[1]);
         return `<div class="empty">조건에 맞는 곳이 없어요.${on.length ? ` 켜 둔 조건: <b>${on.join(", ")}</b>${state.cat!=="전체" ? ` · 분류: <b>${esc(state.cat)}</b>` : ""}<br><button class="btn ghost" data-clearfilters style="margin-top:10px">조건 모두 끄기</button>` : " 검색어나 분류를 바꿔 보세요."}</div>`; })();
