@@ -105,9 +105,70 @@ def same_name(k, disp):
     return False
 
 
+MISSED = {"names": []}   # 못 찾은 직접 고른 곳: 새로 받기(refresh) 때는 다시 검색하지 않고, 한 달에 한 번 전체 검색 때만 다시 찾아본다
+DETAIL_MASK = "id,location,businessStatus,photos"   # 위치·영업 여부·사진 목록만(평점 등은 받지 않음 → 가벼운 요금 등급)
+
+
+def details(key, pid):
+    """장소 번호로 바로 조회(검색 없이). 실패하면 None."""
+    req = urllib.request.Request(f"https://places.googleapis.com/v1/places/{pid}", headers={"X-Goog-Api-Key": key, "X-Goog-FieldMask": DETAIL_MASK})
+    for i in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r: return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            if e.code in (400, 404): return None
+            time.sleep(2 * (i + 1))
+        except Exception:
+            time.sleep(2 * (i + 1))
+    return None
+
+
+def photo_of(key, d):
+    """장소 사진 한 장의 주소와 찍은 사람(구글 표시 의무). 사진이 없으면 None."""
+    ph = (d or {}).get("photos") or []
+    if not ph: return None
+    try:
+        u = f"https://places.googleapis.com/v1/{ph[0]['name']}/media?maxWidthPx=800&key={key}&skipHttpRedirect=true"
+        with urllib.request.urlopen(urllib.request.Request(u), timeout=20) as r: uri = json.loads(r.read()).get("photoUri")
+    except Exception: return None
+    by = ", ".join(x.get("displayName", "") for x in ph[0].get("authorAttributions", []) if x.get("displayName"))
+    return {"url": uri, "by": safe(by) or "Google 지도 사용자"} if uri else None
+
+
+def refresh(a, old):
+    """이미 아는 곳은 검색하지 않고 장소 번호로 위치·영업 여부만 새로 받는다(구글 약관: 좌표는 30일 안에 새로). 사진은 없는 곳만 한 번."""
+    def one(row):
+        d = details(a.key, row["id"])
+        if d is None: return row, "keep"            # 일시 오류면 이전 값 유지(다음 달에 다시)
+        if d.get("businessStatus") == "CLOSED_PERMANENTLY": return row, "closed"
+        loc = d.get("location") or {}
+        if loc.get("latitude"): row["lat"], row["lng"] = round(loc["latitude"], 5), round(loc["longitude"], 5)
+        if not row.get("photo"):
+            ph = photo_of(a.key, d)
+            if ph: row["photo"] = ph
+            return row, "photo" if ph else "ok"
+        return row, "ok"
+    with cf.ThreadPoolExecutor(6) as ex: res = list(ex.map(one, old))
+    out = [r for r, st in res if st != "closed"]
+    c = {}
+    for _, st in res: c[st] = c.get(st, 0) + 1
+    print(f"장소 번호로 새로 받기 {len(old)}곳: 정상 {c.get('ok', 0) + c.get('photo', 0)} · 사진 새로 {c.get('photo', 0)} · 폐업 빠짐 {c.get('closed', 0)} · 오류로 이전 값 유지 {c.get('keep', 0)}")
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--key", required=True); ap.add_argument("--out", required=True)
+    ap.add_argument("--mode", choices=["full", "refresh"], default="refresh", help="full: 새 장소까지 다시 검색(한 달에 한 번) / refresh: 아는 곳만 번호로 새로 받기")
     a = ap.parse_args()
+    outp = pathlib.Path(a.out)
+    prev = json.loads(outp.read_text(encoding="utf-8")) if outp.exists() else {}
+    old = prev.get("items", [])
+    a.prev_missed = set(prev.get("missed", [])) if a.mode == "refresh" else set()
+    old_by = {x["id"]: x for x in old}
+    if a.mode == "refresh" and len(old) >= 50:
+        out = refresh(a, [dict(x) for x in old])
+        pick_new(a, out)
+        save(a, out); return
     jobs = []
     for city, (reg, sea) in CITY.items():
         for kw in (FOOD_SEA if sea else FOOD_IN): jobs.append((city, reg, "맛집", f"{city} {kw}", []))
@@ -151,8 +212,34 @@ def main():
         ck = row.get("_capk", row["cat"]); k = (row["city"], ck); cnt[k] = cnt.get(k, 0) + 1
         if cnt[k] > (KIDS_RULE[1] if ck == "키즈" else 6 if ck == "빵" else RULE[row["cat"]][1]): continue
         out.append({k2: v for k2, v in row.items() if not k2.startswith("_")})
-    # 운영자가 조사해 꼭 넣을 곳(gmap_picks.json): 구글에서 영업 중인지·주소를 확인하고 좌표를 새로 받는다
+    for x in out:   # 예전에 받은 사진은 그대로 쓴다(다시 받지 않음)
+        if old_by.get(x["id"], {}).get("photo"): x["photo"] = old_by[x["id"]]["photo"]
+    pick_new(a, out, old_by)
+    # 사진 없는 곳만 사진 한 장(장소 번호로)
+    need = [x for x in out if not x.get("photo")]
+    with cf.ThreadPoolExecutor(6) as ex: got = list(ex.map(lambda x: photo_of(a.key, details(a.key, x["id"])), need))
+    for x, ph in zip(need, got):
+        if ph: x["photo"] = ph
+    print(f"사진 새로 받음 {sum(1 for g in got if g)}곳 / 사진 없던 곳 {len(need)}곳")
+    print(f"검색 결과 {seen_total}건 중 {len(out)}곳")
+    save(a, out)
+
+
+def pick_new(a, out, old_by=None):
+    """운영자가 조사해 꼭 넣을 곳(gmap_picks.json). 이미 찾은 곳(같은 이름의 pick)은 장소 번호로 새로 받고, 처음 보는 곳만 검색한다."""
     picks = json.loads(PICKS.read_text(encoding="utf-8")).get("picks", []) if PICKS.exists() else []
+    idx = {x["id"]: x for x in out}
+    known = {x["name"]: x for x in out if x.get("pick")}
+    if old_by: known.update({x["name"]: x for x in old_by.values() if x.get("pick") and x["name"] not in known})
+    todo = [k for k in picks if k.get("name") not in known and k.get("name") not in getattr(a, "prev_missed", set())]
+    MISSED["names"] = sorted(getattr(a, "prev_missed", set()) & {k.get("name") for k in picks})
+    for k in picks:   # 이미 아는 곳: 글(sig·tip)·태그만 최신으로, 목록에 없으면 이전 값으로 넣기
+        x = known.get(k.get("name"))
+        if not x: continue
+        if x["id"] not in idx: x = dict(x); out.append(x); idx[x["id"]] = x
+        x = idx[x["id"]]; x.update({"cat": k["cat"], "sig": safe(k.get("sig", "")), "tip": safe(k.get("tip", "")), "pick": 1})
+        x["tags"] = x.get("tags", []) + [t for t in k.get("tags", []) if t not in x.get("tags", [])]
+    picks = todo
     if picks:
         found = [search(a.key, k["q"]) for k in picks]
         idx = {x["id"]: x for x in out}; miss = []
@@ -171,14 +258,18 @@ def main():
                         "type": (hit.get("primaryTypeDisplayName") or {}).get("text", ""), "sig": safe(k.get("sig", "")), "tip": safe(k.get("tip", "")), "pick": 1})
             row["tags"] = row.get("tags", []) + [x for x in k.get("tags", []) if x not in row.get("tags", [])]
             if hit["id"] not in idx: out.append(row); idx[hit["id"]] = row
-        print(f"직접 고른 곳 {len(picks) - len(miss)}/{len(picks)}곳 확인" + (f" · 못 찾음(폐업·검색 실패): {', '.join(miss)}" if miss else ""))
+        MISSED["names"] = sorted(set(MISSED["names"]) | set(miss))
+        print(f"새로 고른 곳 {len(picks) - len(miss)}/{len(picks)}곳 확인" + (f" · 못 찾음(폐업·검색 실패): {', '.join(miss)}" if miss else ""))
+
+
+def save(a, out):
     by = {}
     for x in out: by[x["cat"]] = by.get(x["cat"], 0) + 1
     if len(out) < 50:
         print(f"고른 곳이 {len(out)}곳뿐이라 저장하지 않습니다", file=sys.stderr); sys.exit(1)
     rev = int(time.time() * 1000)
-    pathlib.Path(a.out).write_text(json.dumps({"rev": rev, "src": "Google Maps", "items": out}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print(f"검색 결과 {seen_total}건 중 {len(out)}곳 저장: {by}")
+    pathlib.Path(a.out).write_text(json.dumps({"rev": rev, "src": "Google Maps", "missed": MISSED["names"], "items": out}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"{len(out)}곳 저장: {by} · 사진 있는 곳 {sum(1 for x in out if x.get('photo'))}")
 
 
 if __name__ == "__main__":

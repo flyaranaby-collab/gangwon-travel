@@ -1,10 +1,20 @@
 name: 구글 지도 인기 장소 수집
 # 지역×검색어 조합으로 평점·리뷰 수가 높은 장소를 골라 web/gmap.json 에 저장한다.
-# 저장소 비밀값 GOOGLE_PLACES_KEY 를 쓴다. 구글 약관(좌표 30일 보관)에 맞춰 매달 두 번 새로 받는다.
+# 저장소 비밀값 GOOGLE_PLACES_KEY 를 쓴다. 구글 약관(좌표 30일 보관)에 맞춰 좌표를 새로 받는다.
+# - 매달 2일: full(새 장소까지 다시 검색, 약 300회 검색)
+# - 매달 16일: refresh(아는 곳만 장소 번호로 위치·영업 여부 새로 받기, 검색 없음)
+# - 사진은 없는 곳만 한 번 받는다(이미 받은 사진은 다시 받지 않음)
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "full=새 장소까지 다시 검색(무거움) / refresh=아는 곳만 새로 받기(가벼움)"
+        type: choice
+        options: [refresh, full]
+        default: refresh
   schedule:
-    - cron: '17 19 1,15 * *'   # 매달 2일·16일 새벽(한국 시간)
+    - cron: '17 19 1 * *'    # 매달 2일 새벽(한국 시간): full
+    - cron: '17 19 15 * *'   # 매달 16일 새벽(한국 시간): refresh
 permissions:
   contents: write
 concurrency:
@@ -22,7 +32,10 @@ jobs:
         env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
         run: |
           if [ -z "$GOOGLE_PLACES_KEY" ]; then echo "::error::GOOGLE_PLACES_KEY 가 없습니다"; exit 1; fi
-          python3 tools/gmap_discover.py --key "$GOOGLE_PLACES_KEY" --out web/gmap.json
+          MODE="${{ github.event.inputs.mode }}"
+          if [ -z "$MODE" ]; then [ "${{ github.event.schedule }}" = "17 19 1 * *" ] && MODE=full || MODE=refresh; fi
+          echo "실행 방식: $MODE"
+          python3 tools/gmap_discover.py --key "$GOOGLE_PLACES_KEY" --out web/gmap.json --mode "$MODE"
       - name: 저장소에 올리기
         run: |
           git config user.name "gangwon-bot"
