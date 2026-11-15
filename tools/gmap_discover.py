@@ -21,7 +21,7 @@ COMMON = [("카페", "카페"), ("카페", "베이커리 디저트 카페"), ("�
           ("산", "등산 산"), ("계곡", "계곡 폭포"), ("호수·강", "호수 강 저수지"), ("숲·꽃", "수목원 숲 자연휴양림"), ("관광지", "가볼만한곳 관광명소")]
 SEA = [("바다", "해변 해수욕장")]
 # 시·군마다 더 찾는 것: (분류, 검색어, 붙일 태그)
-EXTRA = [("맛집", "중국집 중식", ["중식"]), ("체험", "키즈카페", ["아이와", "키즈카페", "실내"]), ("체험", "동물원 동물농장 체험목장", ["아이와", "동물체험"])]
+EXTRA = [("빵", "빵집 베이커리", ["빵지순례"]), ("맛집", "중국집 중식", ["중식"]), ("체험", "키즈카페", ["아이와", "키즈카페", "실내"]), ("체험", "동물원 동물농장 체험목장", ["아이와", "동물체험"])]
 PICKS = pathlib.Path(__file__).with_name("gmap_picks.json")
 # 키즈카페는 따로 넉넉히 찾는다(시·군별 검색어). 동물농장과 몫을 나누지 않게 "키즈" 몫으로 센다.
 KIDS_Q = {"강릉": ["키즈카페", "실내 놀이터 키즈카페", "키즈풀 키즈카페", "무인 키즈카페", "교동 키즈카페", "유천동 키즈카페", "포남동 키즈카페", "주문진 키즈카페", "어린이 실내 놀이터", "키즈 펜션 놀이방"]}
@@ -69,6 +69,7 @@ def ok_type(cat, p):
     if cat == "맛집": return bool(t & FOOD_T) and not (t & {"lodging", "cafe", "coffee_shop"} and not t & {"restaurant"})
     if cat == "카페": return bool(t & CAFE_T)
     if cat == "소품샵": return bool(t & SHOP_T) and not (t & BAD_SHOP) and not (t & FOOD_T)
+    if cat == "빵": return bool(t & {"bakery"}) or bool(re.search(r"빵|베이커리|제과|과자점|bakery|boulangerie", name, re.I))
     if cat == "키즈":
         if t & {"lodging", "hotel", "motel", "school", "hospital", "doctor", "museum", "art_gallery"} or KIDS_BAD.search(name): return False
         if t & {"cafe", "coffee_shop", "restaurant", "food"} and not re.search(r"키즈|kids|놀이", name, re.I): return False   # 일반 카페·식당은 빼기
@@ -80,6 +81,7 @@ def ok_type(cat, p):
 
 def passes(cat, p):
     n, r = p.get("userRatingCount") or 0, p.get("rating") or 0
+    if cat == "빵": return n >= 300 and r >= 4.2   # 시·군 빵지순례: 리뷰 많고 평점 높은 빵집
     if cat == "키즈":
         if n == 0: return "playground" in p.get("types", []) and bool(re.search(r"키즈카페|키즈룸|놀이터", p["displayName"]["text"]))   # 새로 생겨 리뷰가 없는 키즈카페
         return any(n >= a and r >= b for a, b in KIDS_RULE[0])
@@ -140,14 +142,14 @@ def main():
             tags = (["리뷰많은곳"] if n >= (1000 if cat in ("맛집", "카페", "관광지") else 300) else []) + (["평점높은곳"] if r >= 4.5 else [])
             tags += [x for x in xtag if x not in tags]
             if row: tags += [x for x in row["tags"] if x not in tags]
-            best[pid] = {"id": pid, "name": safe(p["displayName"]["text"]), "cat": "체험" if cat == "키즈" else cat, "_capk": cat, "region": reg, "city": city, "area": re.sub(r"\d+가?$", "", area),
+            best[pid] = {"id": pid, "name": safe(p["displayName"]["text"]), "cat": {"키즈": "체험", "빵": "카페"}.get(cat, cat), "_capk": cat, "region": reg, "city": city, "area": re.sub(r"\d+가?$", "", area),
                          "addr": safe(re.sub(r"^대한민국\s*", "", addr)), "lat": round(loc["latitude"], 5), "lng": round(loc["longitude"], 5),
                          "type": (p.get("primaryTypeDisplayName") or {}).get("text", ""), "tags": tags, "_n": n, "_r": r}
     # 지역(시·군)·분류별 상한: 리뷰 수 많은 순
     out, cnt = [], {}
     for row in sorted(best.values(), key=lambda x: (-x["_n"], -x["_r"])):
         ck = row.get("_capk", row["cat"]); k = (row["city"], ck); cnt[k] = cnt.get(k, 0) + 1
-        if cnt[k] > (KIDS_RULE[1] if ck == "키즈" else RULE[row["cat"]][1]): continue
+        if cnt[k] > (KIDS_RULE[1] if ck == "키즈" else 6 if ck == "빵" else RULE[row["cat"]][1]): continue
         out.append({k2: v for k2, v in row.items() if not k2.startswith("_")})
     # 운영자가 조사해 꼭 넣을 곳(gmap_picks.json): 구글에서 영업 중인지·주소를 확인하고 좌표를 새로 받는다
     picks = json.loads(PICKS.read_text(encoding="utf-8")).get("picks", []) if PICKS.exists() else []
