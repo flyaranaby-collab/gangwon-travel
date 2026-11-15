@@ -28,7 +28,7 @@ jobs:
       - name: 그림 판별 도구 설치
         run: |
           pip install -q torch --index-url https://download.pytorch.org/whl/cpu
-          pip install -q transformers pillow
+          pip install -q 'transformers==4.46.3' pillow
           sudo apt-get install -y -q fonts-noto-cjk >/dev/null
       - name: 음식 사진 고르기
         env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}", ONLY: "${{ github.event.inputs.only }}", SHEET: "${{ github.event.inputs.sheet }}" }

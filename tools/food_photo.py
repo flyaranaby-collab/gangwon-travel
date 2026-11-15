@@ -113,16 +113,14 @@ class Judge:
         self.torch = torch
         self.m = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").eval()
         self.p = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-        with torch.no_grad():
-            tk = self.p(text=FOOD + OTHER, return_tensors="pt", padding=True)
-            te = self.m.get_text_features(**tk)
-            self.te = te / te.norm(dim=-1, keepdim=True)
+        self.tk = self.p(text=FOOD + OTHER, return_tensors="pt", padding=True)
 
     def food(self, img):
+        # 모델 전체를 한 번에 돌려 그림-글 짝 점수(logits_per_image)를 받는다(버전마다 바뀌는 중간 함수는 쓰지 않음)
         with self.torch.no_grad():
-            ie = self.m.get_image_features(**self.p(images=img, return_tensors="pt"))
-            ie = ie / ie.norm(dim=-1, keepdim=True)
-            pr = (100 * ie @ self.te.T).softmax(dim=-1)[0]
+            out = self.m(input_ids=self.tk["input_ids"], attention_mask=self.tk["attention_mask"],
+                         pixel_values=self.p(images=img, return_tensors="pt")["pixel_values"])
+            pr = out.logits_per_image.softmax(dim=-1)[0]
         return float(pr[:len(FOOD)].sum())
 
 
@@ -146,10 +144,12 @@ def main():
     if a.limit: tg = tg[:a.limit]
     print(f"대상 음식점·카페 {len(tg)}곳 (검색 필요 {sum(1 for t in tg if not t.get('gid'))}곳)")
 
+    J = Judge()   # 판별 도구를 먼저 준비한다(여기서 실패하면 구글 검색을 하지 않음)
+    from PIL import Image
+    J.food(Image.new("RGB", (64, 64), "white"))
     found = {}
     with cf.ThreadPoolExecutor(6) as ex:
         for t, r in zip(tg, ex.map(lambda t: find(a.key, t), tg)): found[t["id"]] = r
-    J = Judge()
     fph, report, calls = {}, [], 0
     for i, t in enumerate(tg, 1):
         r = found.get(t["id"])
