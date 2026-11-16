@@ -532,3 +532,5 @@ WHEN · 다녀오는 날	WHEN · Trip date	WHEN · 出行日	WHEN · 旅行日
 위치 다시 찾기	Find location again	重新定位	位置を再検索
 화장실 자료에는 좌표가 없어 주소로 위치를 추정했어요(‘약’ 표시는 동네 단위 추정). 지도 버튼은 정확한 주소로 찾아요.	The toilet data has no coordinates, so locations are estimated from addresses ("approx." means neighborhood-level). Map buttons search the exact address.	厕所数据没有坐标，位置按地址推算（“约”表示按街区推算）。地图按钮按准确地址搜索。	トイレのデータには座標がないため、住所から位置を推定しています（「約」は地区単位の推定）。地図ボタンは正確な住所で検索します。
 📍 주소 미확인	📍 Address unverified	📍 地址未确认	📍 住所未確認
+📍 주소 없음	📍 No address	📍 无地址	📍 住所なし
+전체 지역	All regions	全部地区	全地域
