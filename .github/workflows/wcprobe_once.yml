@@ -1,0 +1,9 @@
+name: 화장실 응답 확인(일회성)
+on: { workflow_dispatch: {} }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - env: { K: "${{ secrets.KTO_KEY }}" }
+        run: |
+          for t in 1 2 3; do echo "== try $t"; curl -sS -m 60 -w "\nHTTP %{http_code} %{time_total}s\n" "https://api.data.go.kr/openapi/tn_pubr_public_toilet_api?serviceKey=$K&pageNo=1&numOfRows=1&type=json" | head -c 700; echo; sleep 5; done
