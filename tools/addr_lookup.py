@@ -1,5 +1,5 @@
 """직접 고른 장소의 공식 주소를 한국관광공사 TourAPI(키워드 검색)에서 찾는다.
-- 이름이 같고(공백·기호 무시, 한쪽이 다른 쪽을 포함) 좌표가 1.5km 안인 관광공사 등록 장소만 인정한다.
+- 이름이 같고(공백·기호 무시, 한쪽이 다른 쪽을 포함) 이름 길이가 절반 이상 겹치고, 좌표가 1.2km(맛집·카페 0.5km) 안인 관광공사 등록 장소만 인정한다.
 - 못 찾으면 비워 둔다(추측해서 넣지 않음).
 사용: python3 tools/addr_lookup.py --key KEY tools/addr_targets.json > found.json
 """
@@ -8,7 +8,7 @@ B = "https://apis.data.go.kr/B551011/KorService2/searchKeyword2"
 
 def call(key, kw):
     q = urllib.parse.urlencode({"serviceKey": key, "MobileOS": "ETC", "MobileApp": "GangwonTrip", "_type": "json",
-                                "keyword": kw, "areaCode": 32, "numOfRows": 50, "pageNo": 1, "arrange": "A"}, safe="")
+                                "keyword": kw, "numOfRows": 50, "pageNo": 1, "arrange": "A"}, safe="")
     for t in range(4):
         r = subprocess.run(["curl", "-sS", "-m", "40", B + "?" + q], capture_output=True, text=True)
         try:
@@ -24,7 +24,9 @@ def km(a, b, c, d):
 
 def parts(name):
     ps = [p.strip() for p in re.split(r"[·/]|\(|\)", name) if p.strip()]
-    return [name] + [p for p in ps if p != name and len(norm(p)) >= 2]
+    out = [name] + [p for p in ps if p != name and len(norm(p)) >= 3]
+    out += [x.replace("해변", "해수욕장") for x in out if "해변" in x]
+    return list(dict.fromkeys(out))
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--key", required=True); ap.add_argument("targets"); a = ap.parse_args()
@@ -36,7 +38,9 @@ def main():
                 try: d = km(t["lat"], t["lng"], float(it["mapy"]), float(it["mapx"]))
                 except Exception: continue
                 n1, n2 = norm(kw), norm(it.get("title"))
-                if not n1 or not n2 or not (n1 in n2 or n2 in n1) or d > 1.5 or not it.get("addr1"): continue
+                if "강원" not in (it.get("addr1") or ""): continue
+                lim = 0.5 if t.get("cat") in ("맛집", "카페") else 1.2      # 가게는 지점이 많아 더 가까워야 같은 곳
+                if not n1 or not n2 or not (n1 in n2 or n2 in n1) or min(len(n1), len(n2)) / max(len(n1), len(n2)) < 0.5 or d > lim or not it.get("addr1"): continue
                 score = d + (0 if n1 == n2 else 0.5)
                 if not best or score < best[0]: best = (score, it, d)
             if best and best[0] < 0.3: break

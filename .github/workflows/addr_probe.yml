@@ -1,9 +1,0 @@
-name: 주소 검색 점검(일회성)
-on: { workflow_dispatch: {} }
-jobs:
-  c:
-    runs-on: ubuntu-latest
-    steps:
-      - env: { K: "${{ secrets.KTO_KEY }}" }
-        run: |
-          for kw in 경포대 경포해변 안목; do for extra in "&areaCode=32" "" ; do echo "== $kw $extra"; curl -sS -m 40 "https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=$K&MobileOS=ETC&MobileApp=GangwonTrip&_type=json&numOfRows=5&pageNo=1&arrange=A&keyword=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" $kw)$extra" | head -c 600; echo; done; done
