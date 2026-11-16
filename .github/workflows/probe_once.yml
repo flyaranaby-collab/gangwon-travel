@@ -1,0 +1,10 @@
+name: 자료 주소 확인(일회성)
+on: { workflow_dispatch: {} }
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for u in "https://file.localdata.go.kr/file/public_restroom_info/info" "https://file.localdata.go.kr/file/parking_info/info"; do
+            echo "== $u"; curl -sSL -m 120 -D h.txt -o f.bin "$u"; cat h.txt | grep -iE "^HTTP|content-type|content-disposition|location" ; ls -l f.bin; file f.bin; head -c 600 f.bin | iconv -f cp949 -t utf-8 2>/dev/null | head -5; echo
+          done
