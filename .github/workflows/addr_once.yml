@@ -1,0 +1,9 @@
+name: 장소 공식 주소 찾기(일회성)
+on: { workflow_dispatch: {} }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env: { KTO_KEY: "${{ secrets.KTO_KEY }}" }
+        run: python3 tools/addr_lookup.py --key "$KTO_KEY" tools/addr_targets.json
