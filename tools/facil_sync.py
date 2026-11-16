@@ -22,11 +22,15 @@ def page(key, name, n):
         last = (r.stdout or r.stderr)[:300]
         try:
             j = json.loads(r.stdout)
-            h = j["response"]["header"]
+            j = j.get("response", j)
+            h = j["header"]
             if h.get("resultCode") not in ("00", "0", "NORMAL_CODE", "03"):
                 raise RuntimeError(f"{name}: {h.get('resultMsg')} — 공공데이터포털에서 활용신청했는지 확인하세요")
-            b = j["response"].get("body") or {}
-            return b.get("items") or [], int(b.get("totalCount") or 0)
+            b = j.get("body") or {}
+            it = b.get("items") or []
+            if isinstance(it, dict): it = it.get("item") or []
+            if isinstance(it, dict): it = [it]
+            return it, int(b.get("totalCount") or 0)
         except RuntimeError: raise
         except Exception: time.sleep(3 * (t + 1))
     raise RuntimeError(f"{name}: 응답을 읽지 못함 — {last}")
@@ -57,7 +61,10 @@ def num(x):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--key", required=True); ap.add_argument("--out", required=True); a = ap.parse_args()
     wc = []
-    for d in every(a.key, "tn_pubr_public_toilet_api"):
+    try: wcall = every(a.key, "tn_pubr_public_toilet_api")
+    except RuntimeError as e:
+        print("화장실 자료는 건너뜀:", e, flush=True); wcall = []
+    for d in wcall:
         if not gw(d): continue
         la, lo = num(g(d, "latitude")), num(g(d, "longitude"))
         if not la or not lo: continue
@@ -73,7 +80,7 @@ def main():
         bc = g(d, "basicCharge"); bt = g(d, "basicTime")
         pk.append([g(d, "prkplceNm"), g(d, "rdnmadr", "lnmadr"), la, lo, g(d, "prkplceType"), g(d, "parkingchrgeInfo"), g(d, "prkcmprt"),
                    f"{op}~{cl}" if op and cl else "", f"{bt}분 {bc}원" if bc and bc != "0" and bt else "", g(d, "phoneNumber")])
-    if len(wc) < 100 or len(pk) < 50: raise SystemExit(f"강원 자료가 너무 적어요(화장실 {len(wc)}, 주차장 {len(pk)}) — 저장하지 않음")
+    if len(pk) < 50: raise SystemExit(f"강원 자료가 너무 적어요(주차장 {len(pk)}) — 저장하지 않음")
     json.dump({"ts": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "wc": wc, "pk": pk}, open(a.out, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     print(f"강원 공중화장실 {len(wc)}곳 · 공영주차장 {len(pk)}곳 저장")
 
