@@ -1,0 +1,9 @@
+name: 장소 주소 구글로 찾기(일회성)
+on: { workflow_dispatch: {} }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
+        run: python3 tools/addr_google.py tools/addr_targets2.json
