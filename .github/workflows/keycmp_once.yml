@@ -1,0 +1,11 @@
+name: 키 일치 확인(일회성)
+on: { workflow_dispatch: {} }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - env: { K: "${{ secrets.KTO_KEY }}" }
+        run: |
+          h=$(printf %s "$K" | sha256sum | cut -d' ' -f1)
+          [ "$h" = "ebfc4870eb52010eb490758e4da05101911f2daf0218244407fa90df7e794483" ] && echo "SAME_KEY" || echo "DIFFERENT_KEY len=${#K}"
+          for a in tn_pubr_public_toilet_api tn_pubr_prkplce_info_api; do echo "== $a"; curl -sS -m 40 "https://api.data.go.kr/openapi/$a?serviceKey=$K&pageNo=1&numOfRows=1&type=json" | head -c 300; echo; done
