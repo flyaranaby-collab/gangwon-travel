@@ -1,0 +1,9 @@
+name: 화장실 새 주소 확인(일회성)
+on: { workflow_dispatch: {} }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - env: { K: "${{ secrets.KTO_KEY }}" }
+        run: |
+          curl -sS -m 60 -G "https://apis.data.go.kr/1741000/public_restroom_info_v2/info_v2" --data-urlencode "serviceKey=$K" -d pageNo=1 -d numOfRows=2 -d returnType=json --data-urlencode "cond[LCTN_ROAD_NM_ADDR::LIKE]=강원특별자치도 강릉시" -w "\nHTTP %{http_code}\n" | head -c 3000
