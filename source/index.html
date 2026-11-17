@@ -4262,7 +4262,7 @@ function memoMerge(docs){
 function memoBox(){
   const all = MEMO.d.items, open = all.filter(x=>!x.done);
   const list = (MEMO.filter==="todo" ? open : all).slice().sort((a,b)=>(a.done-b.done) || String(b.at).localeCompare(String(a.at)));
-  return `<section class="revbox memo" aria-label="운영 메모장" data-pos="E6">
+  return `<section class="revbox memo" aria-label="운영 메모장" data-pos="O1">
     <h2>📝 메모장</h2>
     <p class="meta">앱을 쓰다 고칠 점·아이디어·할 일을 적어 두세요. ${window.APK_BUILD ? "이 휴대폰에만 저장돼요." : (RT.db ? "운영자만 볼 수 있게 저장돼요(다른 사람에게 안 보여요)." : "이 기기에만 저장돼요.")} ‘전체 복사’로 Claude에게 그대로 보내 고쳐 달라고 할 수 있어요.</p>
     <form id="memoForm" class="memoform" autocomplete="off">
