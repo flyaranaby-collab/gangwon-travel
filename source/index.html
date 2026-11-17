@@ -1999,6 +1999,12 @@ const seasonPick = p => { const ss = SEASONS[seasonOf(tripDay().getMonth()+1)]; 
 // 자연은 바다·산·계곡·호수·강·숲·꽃·고원으로 나눈다 (예전 분류 "자연"은 쓰는 장소가 있을 때만 버튼이 보인다)
 // 맛집 세부 분류(이름·대표 메뉴·태그 낱말로 나눈다). 위에서부터 먼저 맞는 것으로 정해진다
 const FOOD_RULES = [
+  // 구글 업종 이름(예: '일본 음식점')이 대표 메뉴 칸에 들어온 경우를 먼저 본다
+  ["일식", /일본\s*음식점|일식당|일본\s*요리|초밥\s*음식점|라멘\s*음식점/],
+  ["중식", /중국\s*음식점|중식당|중국\s*요리/],
+  ["양식", /이탈리아\s*음식점|프랑스\s*음식점|미국\s*음식점|양식당|스테이크\s*하우스|햄버거\s*음식점|피자\s*음식점|다이닝\s*레스토랑/],
+  ["해산물·회", /해산물\s*(요리|음식점)|생선\s*요리|회집/],
+  ["한식", /한국\s*음식점|한식당|한정식/],
   ["카페·디저트", /카페|커피|cafe|coffee|베이커리|빵|제과|디저트|젤라또|아이스크림|빙수|케이크|케익|라떼|아메리카노|에스프레소|휘낭시에|피스타치오|에이드|마카롱|도넛|와플|크로플|스콘|찻집|다방|스타벅스|테라로사|인절미|피지오|티룸|tea/i],
   ["한식", /순두부|막국수|옹심이|칼국수|순대국|닭볶음탕|오일장|전통시장|아리랑시장|냉삼/],
   ["분식·치킨", /김밥|떡볶이/],
@@ -2007,7 +2013,7 @@ const FOOD_RULES = [
   ["양식", /양식|파스타|피자|pizza|pasta|스테이크|steak|버거|burger|리조또|샐러드|비스트로|bistro|레스토랑|그릴|펍|pub|와인|타코|멕시칸|이탈리|프렌치|잠봉|샌드위치|풍기|화덕|올리오|브런치|롯데리아|맘스터치|맥도날드|버거킹|KFC/i],
   ["분식·치킨", /분식|김밥|떡볶이|순대|어묵|오뎅|호떡|닭강정|핫도그|꽈배기|토스트|라면|치킨|통닭|바베큐|전병|부침|만두/i],
   ["해산물·회", /물회|막회|활어|횟집|회센터|회코스|모둠회|회덮밥|회세트|회포장|송어회|광어회|회비빔|(^|[\s,·])회($|[\s,·])|대게|홍게|킹크랩|조개|전복|문어|오징어|생선|해물|해산물|수산|섭국|장치|곰치|도치|가자미|광어|우럭|복어|아구|아귀|굴|성게|멍게|새우|게장|매운탕|코다리|명태|도루묵|생태|꼬막|어시장|조림/],
-  ["한식", /한식|두부|냉면|국밥|해장국|감자탕|백숙|닭갈비|갈비|불고기|삼겹|한우|소고기|고기|구이|화로|오리|정식|쌈밥|곤드레|비빔밥|찌개|전골|탕|국수|수제비|메밀|보리밥|청국장|된장|시래기|황태|더덕|산채|나물|족발|보쌈|불백|돼지|닭|제육|육개장|설렁탕|곰탕|추어|백반|반찬|한상|면옥|가든|식당|시장|감자전|김치찜|모듬전|모둠전|치마살|샤브|철판/],
+  ["한식", /한식|두부|볶음|낙지|냉면|국밥|해장국|감자탕|백숙|닭갈비|갈비|불고기|삼겹|한우|소고기|고기|구이|화로|오리|정식|쌈밥|곤드레|비빔밥|찌개|전골|탕|국수|수제비|메밀|보리밥|청국장|된장|시래기|황태|더덕|산채|나물|족발|보쌈|불백|돼지|닭|제육|육개장|설렁탕|곰탕|추어|백반|반찬|한상|면옥|가든|식당|시장|감자전|김치찜|모듬전|모둠전|치마살|샤브|철판/],
 ];
 const FOOD_SUBS = ["한식","해산물·회","중식","일식","양식","분식·치킨","카페·디저트","기타"];
 function foodSub(p){
@@ -4548,7 +4554,22 @@ document.addEventListener("click", e=>{
 });
 function miniRow(p){ const ph = photoFor(p);
   return `<button class="mrow" data-detail="p:${p.id}">${ph?`<img src="${esc(ph.url)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'mico',textContent:'${catEmoji(p.cat)}'}))">`:`<span class="mico">${catEmoji(p.cat)}</span>`}
-    <span class="mtx"><b>${esc(p.name)}</b><small>${esc(p.cat)} · ${esc(where(p))}</small></span><span class="mgo">›</span></button>`; }
+    <span class="mtx"><b>${esc(p.name)}</b><small>${esc(miniSub(p))}</small></span><span class="mgo">›</span></button>`; }
+// 작은 줄 둘째 줄: 맛집·카페는 '요리 종류 · 대표 메뉴', 그 밖은 '분류 · 동네'
+function sigShort(p){
+  const t = String(p.sig||"").replace(/대표 메뉴는 현장 확인|현장 확인|정보 없음/g,"").replace(/^\s*(대표\s*메뉴|시그니처)\s*[:：]?\s*/,"").trim();
+  if (!t) return "";
+  // '일본 음식점', '로스터리 카페' 같은 업종 이름은 메뉴가 아니라서 뺀다
+  const first = t.split(/[,，·/+]|\s+및\s+/).map(x=>x.trim()).filter(x=>x && !/(음식점|식당|레스토랑|전문점|라운지|카페|술집|주점|^바$)$/.test(x)).slice(0,2).join(", ");
+  return first.length > 22 ? first.slice(0,21) + "…" : first;
+}
+function miniSub(p){
+  if (p.cat==="맛집" || p.cat==="카페"){
+    const k = foodSub(p), sig = sigShort(p);
+    return [k==="기타" ? p.cat : k, sig || where(p)].filter(Boolean).join(" · ");
+  }
+  return `${p.cat} · ${where(p)}`;
+}
 function renderFavs(){
   const el = document.getElementById("tab-favs"); if (!el) return;
   const list = state.favs.map(byId).filter(Boolean);
