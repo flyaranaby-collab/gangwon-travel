@@ -14,7 +14,7 @@ s = re.sub(r'/_blob/([0-9a-f]{32})', APP + r'\1.jpg', s)
 # 앱에서는 쓰지 않는 운영자용 입력칸(관광공사 인증키·문의 연락처)을 아예 빼서, 보안 검사가 '정보 수집'으로 오해하지 않게 한다
 s = re.sub(r'<div class="sec-title"><h2>한국관광공사 TourAPI</h2>.*?(?=<div class="sec-title"><h2>문의·제보</h2>)', '', s, count=1, flags=re.S)
 s = re.sub(r'<form class="revbox" id="inqForm".*?</form>`;', '`;', s, count=1, flags=re.S)
-VER = time.strftime("%Y%m%d%H%M")
+VER = time.strftime("%Y%m%d%H%M%S")   # 14자리(앱이 숫자 크기로 새 버전을 판단)
 head = ('<script>window.APK_BUILD=true;window.NOTE_VER="' + VER + '";window.KAKAO_KEY="' + KAKAO_JS_KEY + '";'
         'document.addEventListener("error",function(e){var t=e.target;'
         'if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\\/assets\\/photos\\/|android_asset\\/photos\\//.test(t.src)){'
