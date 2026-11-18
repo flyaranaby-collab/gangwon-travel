@@ -19,4 +19,6 @@ for q in QS:
             "r": p.get("rating"), "n": p.get("userRatingCount"), "gid": p["id"],
             "hours": (p.get("regularOpeningHours") or {}).get("weekdayDescriptions")}
     time.sleep(0.3)
-print("CN_JSON=" + json.dumps(list(seen.values()), ensure_ascii=False))
+for v in seen.values():
+    v["cn"] = "chinese_restaurant" in v.pop("types", [])
+    print("CN=" + json.dumps(v, ensure_ascii=False))
