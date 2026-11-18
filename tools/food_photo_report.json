@@ -1967,10 +1967,10 @@
 {
 "id": "kto-3536056",
 "name": "청수",
-"g": "청수",
-"st": "nophoto",
-"food": null,
-"k": null
+"g": "청수그린가든",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "kto-3536043",
@@ -2728,7 +2728,10 @@
 {
 "id": "kto-3533668",
 "name": "초당맷돌젤라또",
-"st": "notfound"
+"g": "맷돌젤라또",
+"st": "nophoto",
+"food": null,
+"k": null
 },
 {
 "id": "kto-3533636",
@@ -9525,6 +9528,110 @@
 "id": "hyorae-anmok",
 "name": "효레의식당 안목점",
 "g": "효레의식당 안목점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "jjamppong-hanseonsaeng",
+"name": "짬뽕한선생",
+"g": "짬뽕한선생",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "kimchef-haemul",
+"name": "김셰프 해물짬뽕",
+"g": "김셰프 해물짬뽕",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "cheongsol-banjeom",
+"name": "청솔반점",
+"g": "청솔반점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "miru-chinese",
+"name": "미루",
+"g": "미루",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "hwangje-banjeom",
+"name": "황제반점",
+"g": "황제반점",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "daeseong-banjeom",
+"name": "대성반점",
+"g": "대성반점",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "kimjongwook-chinese",
+"name": "김종욱셰프의 중국요리",
+"g": "김종욱셰프의 중국요리",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bokyangchun",
+"name": "복양춘",
+"g": "복양춘",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "mokhwa-banjeom",
+"name": "목화반점",
+"g": "목화반점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "dongbu-banjeom",
+"name": "동부반점",
+"g": "동부반점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ildeung-jjamppong",
+"name": "일등짬뽕",
+"g": "일등짬뽕",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "okgye-banjeom",
+"name": "옥계반점",
+"g": "옥계반점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "jumunjin-suta",
+"name": "주문진수타손짜장",
+"g": "주문진수타손짜장",
 "st": "food",
 "food": 1.0,
 "k": 1
