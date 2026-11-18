@@ -1,0 +1,9 @@
+name: 맛집 후보 확인(일회성)
+on: { workflow_dispatch: {} }
+jobs:
+  c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
+        run: python3 tools/cand_check.py tools/cand_names.json
