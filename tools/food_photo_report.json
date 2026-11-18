@@ -1033,7 +1033,10 @@
 {
 "id": "kto-3547651",
 "name": "훌랄라참숯바베큐치킨 입암1점",
-"st": "notfound"
+"g": "훌랄라참숯바베큐치킨포남점",
+"st": "nophoto",
+"food": null,
+"k": null
 },
 {
 "id": "kto-3547678",
@@ -1861,7 +1864,10 @@
 {
 "id": "kto-3536240",
 "name": "조개상회 강릉점",
-"st": "notfound"
+"g": "조개상회",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "kto-3536200",
@@ -9279,6 +9285,246 @@
 "id": "jingarak",
 "name": "진가락",
 "g": "진가락",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "sinri-myeonok",
+"name": "신리면옥 강릉점",
+"g": "신리면옥강릉점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "nokdu-bindae",
+"name": "강릉녹두빈대떡",
+"g": "강릉녹두빈대떡",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "pohang-mulhoe",
+"name": "포항물회",
+"g": "포항물회",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "yukyeong-tang",
+"name": "육영탕수육",
+"g": "육영탕수육전문점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "choding-pudding",
+"name": "쵸딩 초당옥수수푸딩",
+"g": "쵸딩 초당옥수수푸딩카페 (PUDDING CAFE CHODING )",
+"st": "food",
+"food": 0.99,
+"k": 0
+},
+{
+"id": "bau-cafe",
+"name": "바우카페",
+"g": "바우카페본점",
+"st": "food",
+"food": 0.88,
+"k": 2
+},
+{
+"id": "gangnaengi-sokuri",
+"name": "강냉이소쿠리",
+"g": "강냉이소쿠리(아이스크림",
+"st": "food",
+"food": 0.99,
+"k": 5
+},
+{
+"id": "haeseong-hoe",
+"name": "해성횟집",
+"g": "해성횟집",
+"st": "food",
+"food": 0.69,
+"k": 0
+},
+{
+"id": "hotel-of-salt",
+"name": "호텔오브솔트",
+"g": "호텔오브솔트",
+"st": "food",
+"food": 0.65,
+"k": 1
+},
+{
+"id": "makamoye",
+"name": "마카모예 베이글바",
+"g": "마카모예 베이글바",
+"st": "food",
+"food": 0.76,
+"k": 0
+},
+{
+"id": "aesi-dangcho",
+"name": "애시당초",
+"g": "애시당초",
+"st": "food",
+"food": 0.66,
+"k": 1
+},
+{
+"id": "daeyoung-crab",
+"name": "대영유통",
+"g": "대영유통",
+"st": "food",
+"food": 0.62,
+"k": 0
+},
+{
+"id": "yeomjeon-jogae",
+"name": "강릉염전조개구이",
+"g": "강릉염전조개구이 강릉역본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "yeondang-sotbap",
+"name": "연당길솥밥",
+"g": "연당길솥밥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gyeongpo-pocha",
+"name": "경포바다포차",
+"g": "경포바다포차",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "coffee-346",
+"name": "346커피스토리",
+"g": "346커피스토리",
+"st": "food",
+"food": 0.88,
+"k": 2
+},
+{
+"id": "pasta-bonita",
+"name": "빠스따보니따",
+"g": "빠스따보니따",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "jeonggam",
+"name": "정감",
+"g": "정감",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "neoul-jumak",
+"name": "너울주막",
+"g": "너울 주막",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "hasta-pasta",
+"name": "아스따 파스타",
+"g": "아스따",
+"st": "food",
+"food": 0.94,
+"k": 1
+},
+{
+"id": "cheonil-sikdang",
+"name": "천일식당",
+"g": "천일식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "danji-sojubang",
+"name": "단지 (소주방)",
+"g": "강릉종합유통단지",
+"st": "other",
+"food": 0.02,
+"k": 2
+},
+{
+"id": "gyeongpo-sundubu",
+"name": "경포순두부",
+"g": "경포순두부 (구.김원기할머니초당순두부)",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "songjeong-yong",
+"name": "송정용짬뽕",
+"g": "송정용짬뽕",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "check-east",
+"name": "체크이스트",
+"g": "강릉카페 체크이스트 Gangneung Cafe CheckEast 江陵咖啡馆 江陵カフェ チェックイースト مقهى تشيك إيست في جانغنيونغ",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-dakgangjeong",
+"name": "강릉닭강정",
+"g": "강릉닭강정",
+"st": "food",
+"food": 0.93,
+"k": 1
+},
+{
+"id": "gn-gelato",
+"name": "강릉젤라또",
+"g": "강릉젤라또",
+"st": "food",
+"food": 0.66,
+"k": 0
+},
+{
+"id": "haengbeok-burger",
+"name": "행벅수제버거",
+"g": "행벅수제버거",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "toms-bistro",
+"name": "톰스비스트로 경포",
+"g": "톰스비스트로 경포",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "hyorae-anmok",
+"name": "효레의식당 안목점",
+"g": "효레의식당 안목점",
 "st": "food",
 "food": 1.0,
 "k": 1
