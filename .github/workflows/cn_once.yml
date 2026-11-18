@@ -6,4 +6,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
-        run: python3 tools/cn_scan.py
+        run: python3 tools/cn_menu.py tools/cn_pick.json
