@@ -2728,10 +2728,7 @@
 {
 "id": "kto-3533668",
 "name": "초당맷돌젤라또",
-"g": "맷돌젤라또",
-"st": "nophoto",
-"food": null,
-"k": null
+"st": "notfound"
 },
 {
 "id": "kto-3533636",
@@ -9632,6 +9629,299 @@
 "id": "jumunjin-suta",
 "name": "주문진수타손짜장",
 "g": "주문진수타손짜장",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "cheonghakgol",
+"name": "청학골",
+"g": "청학골",
+"st": "nophoto",
+"food": null,
+"k": null
+},
+{
+"id": "wangsil-macha",
+"name": "왕실마차",
+"g": "왕실마차",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gyeongpo479",
+"name": "경포479",
+"g": "경포479",
+"st": "food",
+"food": 0.92,
+"k": 1
+},
+{
+"id": "sanchon-seongsan",
+"name": "산촌",
+"g": "산촌",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "jinbo-mulhoe",
+"name": "진보양푼이물회섭국",
+"g": "진보양푼이물회섭국",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "wonyoung-fish",
+"name": "원영생선구이",
+"g": "원영생선구이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "seonyeol-haejang",
+"name": "선열해장국",
+"g": "선열해장국",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ppalgan-samgyeop",
+"name": "빨간삼겹살",
+"g": "빨간삼겹살",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "baetsok-chaeum",
+"name": "뱃속채움",
+"g": "뱃속채움",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "soban-gn",
+"name": "소반",
+"g": "소반",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "chodanghwa",
+"name": "초당화",
+"g": "초당화",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "parkga-kkeopdegi",
+"name": "박가네숯불껍데기",
+"g": "박가네숯불껍데기",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "geumsongaji",
+"name": "금송아지",
+"g": "금송아지",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gangneung-galbi",
+"name": "강릉갈비",
+"g": "강릉갈비",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "cheonghakdong-sundae",
+"name": "청학동순대",
+"g": "청학동순대",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "hongga-ongsimi",
+"name": "강릉홍가네옹심이",
+"g": "강릉홍가네옹심이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "cheonggiwa",
+"name": "청기와한정식",
+"g": "청기와한정식",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "yeopo-galbi",
+"name": "여포갈비",
+"g": "여포갈비",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "hanwoowon",
+"name": "한우원",
+"g": "한우원",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "sodori",
+"name": "소도리",
+"g": "소도리",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "sanmaeul-gn",
+"name": "산마을",
+"g": "산마을",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "dojeon-jeon",
+"name": "도전 (전집)",
+"g": "도전",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "myojeong",
+"name": "묘정",
+"g": "묘정",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "hoepocha-the30",
+"name": "회포차 더30",
+"g": "회포차 더30",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "manyang-matgap",
+"name": "만양맛값",
+"g": "만양맛값",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "jumakdari",
+"name": "주막다리",
+"g": "주막다리",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "sara-izakaya",
+"name": "사라 (이자카야)",
+"g": "사라",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bar-asta",
+"name": "바 아스타",
+"g": "바 아스타",
+"st": "food",
+"food": 0.99,
+"k": 5
+},
+{
+"id": "sun-record",
+"name": "썬레코드",
+"g": "썬레코드 SUN RECORD",
+"st": "food",
+"food": 0.62,
+"k": 1
+},
+{
+"id": "cheonmangeum-pocha",
+"name": "천만금포장마차",
+"g": "천만금포장마차",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "sanullim-live",
+"name": "산울림 라이브카페 포장마차",
+"g": "산울림 라이브카페 포장마차",
+"st": "other",
+"food": 0.42,
+"k": 4
+},
+{
+"id": "ponam-pocha",
+"name": "포남거리포차",
+"g": "포남거리포차",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "yorokobi",
+"name": "요로코비",
+"g": "요로코비",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-stone",
+"name": "강릉스톤",
+"g": "강릉스톤",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "hyoju-macha",
+"name": "효주실내마차",
+"g": "효주실내마차",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "bon-voyage-bar",
+"name": "봉보야쥬 (Bon voyage)",
+"st": "notfound"
+},
+{
+"id": "neureupnamu",
+"name": "느릅나무",
+"g": "느릅나무",
 "st": "food",
 "food": 1.0,
 "k": 1
