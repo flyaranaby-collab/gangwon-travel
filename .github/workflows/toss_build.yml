@@ -1,0 +1,16 @@
+name: 토스판 묶음 파일 만들기
+# 웹 수첩(source/index.html)을 토스판으로 바꿔 gangwon-note.ait 를 만든다. 결과는 실행 기록의 'Artifacts'에서 받는다.
+on: { workflow_dispatch: {} }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - working-directory: toss
+        run: |
+          npm install --no-audit --no-fund
+          AIT_LANG=ko npx ait build
+      - uses: actions/upload-artifact@v4
+        with: { name: gangwon-note-ait, path: toss/gangwon-note.ait, retention-days: 30 }

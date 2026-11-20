@@ -1,0 +1,16 @@
+{
+  "name": "gangwon-note-toss",
+  "private": true,
+  "type": "module",
+  "description": "강원 여행 수첩 · 앱인토스(토스 미니앱) 판. 기존 웹 수첩·안드로이드 앱과 따로 만든다.",
+  "scripts": {
+    "build:web": "node build.mjs",
+    "build": "node build.mjs && ait build"
+  },
+  "dependencies": {
+    "@apps-in-toss/web-framework": "3.10.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0"
+  }
+}
