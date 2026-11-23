@@ -27,7 +27,7 @@
     var a = e.target.closest && e.target.closest("a[href]");
     if (!a) return;
     var href = a.getAttribute("href") || "";
-    if (/^(https?:|tel:|sms:|mailto:|kakaot:|kakaomap:|nmap:|intent:)/i.test(href)) {
+    if (/^(https?:|tel:|sms:|mailto:|kakaot:|kakaomap:|nmap:|tmap:|intent:)/i.test(href)) {
       e.preventDefault(); e.stopPropagation();
       A.Device.openURL(href).catch(function () {});
     }

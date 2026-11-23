@@ -702,3 +702,19 @@ WHEN · 다녀오는 날	WHEN · Trip date	WHEN · 出行日	WHEN · 旅行日
 느릅나무	Neureupnamu	榆树	ヌルムナム
 생맥주, 하이볼, 치킨	Draft beer, highballs, fried chicken	生啤、嗨棒、炸鸡	生ビール、ハイボール、チキン
 🔗 이 장소 공유하기	🔗 Share this place	🔗 分享此地点	🔗 この場所を共有
+바로 길찾기	Directions	一键导航	ルート案内
+네이버지도 길찾기	Naver Map directions	Naver地图导航	NAVER地図経路
+티맵 내비 길찾기	Tmap navigation	Tmap导航	Tmapナビ
+구글 지도 길찾기	Google Maps directions	谷歌地图导航	Googleマップ経路
+우천 시 이용 제한·불편	Restricted / inconvenient in rain	雨天受限或不便	雨天時は利用制限・不便
+강풍 시 운휴·주의	Suspended / caution in strong wind	大风时停运或注意	強風時は運休・注意
+근처 실내 대안:	Nearby indoor alternatives:	附近室内替代方案：	近くの屋内代替スポット：
+출발지 복귀 포함	Include return to start	包含返回出发地	出発地への帰りを含む
+오늘 가까운 순	Today: nearest first	今日按距离排序	今日を近い順に
+전체 일정 최적화	Optimize whole trip	优化全部行程	全日程を最適化
+복귀 포함	incl. return	含返程	帰り含む
+복귀 길찾기	Return directions	返程导航	帰りのルート
+네이버지도 복귀 길찾기	Naver Map return directions	Naver地图返程导航	NAVER地図で帰りのルート
+출발지 복귀	Return to start	返回出发地	出発地へ戻る
+모든 일차의 장소를 이동 동선 기준으로 다시 나눠 배치할까요? 현재 일차별 순서는 바뀝니다.	Re-split all places across days by travel route? The current order of each day will change.	要按移动路线重新分配各天的地点吗？当前每天的顺序将会改变。	全日程の場所を移動ルートに合わせて振り分け直しますか？各日の現在の順序は変わります。
+이동 시간은 직선거리에 도로 보정을 더한 추정치예요. ‘출발지 복귀 포함’을 켜면 마지막 장소에서 선택한 출발지까지 돌아가는 시간·거리도 합산해요. 비용은 입장료·식비(1인 대략값) × 인원이고 교통·숙박비는 빠져 있어요. 실제 버스 노선·배차는 길찾기 링크에서 확인하세요.	Travel times are estimates: straight-line distance plus a road correction. With 'Include return to start' on, the time and distance from the last stop back to your starting point are added. Cost = admission and meals (rough per person) × people, excluding transport and lodging. Check real bus routes and schedules via the directions links.	移动时间是直线距离加道路修正的估算值。开启“包含返回出发地”后，会加上从最后一个地点返回所选出发地的时间和距离。费用为门票·餐费(每人大约值)×人数，不含交通和住宿费。实际公交线路和班次请在导航链接中确认。	移動時間は直線距離に道路補正を加えた推定値です。「出発地への帰りを含む」をオンにすると、最後の場所から出発地までの時間・距離も合算します。費用は入場料・食費(1人の目安)×人数で、交通費・宿泊費は含みません。実際のバス路線・本数はルートリンクで確認してください。

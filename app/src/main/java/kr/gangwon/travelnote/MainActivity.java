@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
     private static final String HOST = "https://appassets.androidplatform.net";
     // 휴대폰의 다른 앱으로 넘겨도 되는 링크 종류(지도·전화·카카오T 등). 그 밖의 형식은 열지 않는다.
     private static final Set<String> EXTERNAL = new HashSet<>(Arrays.asList(
-            "http", "https", "tel", "mailto", "geo", "sms", "kakaot", "kakaomap", "nmap", "market"));
+            "http", "https", "tel", "mailto", "geo", "sms", "kakaot", "kakaomap", "nmap", "tmap", "market"));
     private WebView web;
     private WebViewAssetLoader loader;
     private ValueCallback<Uri[]> fileCallback;
@@ -103,6 +103,8 @@ public class MainActivity extends Activity {
                 } catch (ActivityNotFoundException e) {
                     if ("kakaot".equals(scheme)) {
                         openUrl("https://play.google.com/store/apps/details?id=com.kakao.taxi");
+                    } else if ("tmap".equals(scheme)) {
+                        openUrl("https://play.google.com/store/apps/details?id=com.skt.tmap.ku");
                     } else {
                         Toast.makeText(MainActivity.this, "이 링크를 열 앱이 없어요.", Toast.LENGTH_SHORT).show();
                     }
