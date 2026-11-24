@@ -9925,5 +9925,109 @@
 "st": "food",
 "food": 1.0,
 "k": 1
+},
+{
+"id": "ng-noraegok",
+"name": "노래곡막국수",
+"g": "노래곡막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ng-chaeban",
+"name": "채반",
+"g": "채반",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ng-hyeongbunsik",
+"name": "형분식한식",
+"g": "형분식한식",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ng-namgyeong",
+"name": "남경막국수",
+"g": "남경막국수",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "ng-hakmaeul",
+"name": "학마을한우",
+"g": "학마을한우",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ng-gudeulmok",
+"name": "구들목한약화로구이",
+"g": "구들목한약화로구이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ng-haemulsamchon",
+"name": "해물파는삼촌",
+"g": "해물파는삼촌",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "ng-choiganeungi",
+"name": "최가네한방능이백숙",
+"g": "최가네한방능이백숙",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "ng-chuncheon1",
+"name": "춘천1번지닭갈비 (내곡점)",
+"g": "춘천1번지닭갈비",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ng-pho-n-bak",
+"name": "포앤박 강릉쌀국수",
+"g": "포앤박 강릉쌀국수",
+"st": "food",
+"food": 0.91,
+"k": 1
+},
+{
+"id": "ng-badam-tuna",
+"name": "바닮 참치&연어",
+"g": "바닮 참치&연어",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ng-hallabanjeom",
+"name": "한라대반점",
+"g": "한라대반점",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "ng-motijeo",
+"name": "못잊어 닭내장탕",
+"g": "못잊어 닭내장탕",
+"st": "food",
+"food": 1.0,
+"k": 0
 }
 ]
