@@ -1,0 +1,9 @@
+name: 내곡동 맛집 후보(일회성)
+on: { workflow_dispatch: {} }
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/nk_scan.py
+        env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
