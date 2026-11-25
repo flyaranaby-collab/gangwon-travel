@@ -10029,5 +10029,133 @@
 "st": "food",
 "food": 1.0,
 "k": 0
+},
+{
+"id": "ip-kongsaeya",
+"name": "콩새야",
+"g": "콩새야",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ip-sukseongdonga",
+"name": "숙성돈가",
+"g": "숙성돈가",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "ip-ilpumdaepae",
+"name": "일품대패 3900냥",
+"g": "일품대패 3900냥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ip-seonsikdang",
+"name": "선식당 입암점",
+"g": "선식당 입암점",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "ip-namgangneung-mak",
+"name": "남강릉 막국수",
+"g": "남강릉 막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ip-dadam-gimbap",
+"name": "다담김밥",
+"g": "다담김밥",
+"st": "other",
+"food": 0.03,
+"k": 1
+},
+{
+"id": "ip-gangneung-banjeom",
+"name": "강릉반점",
+"g": "강릉반점",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "ip-donghae-banjeom",
+"name": "동해반점",
+"g": "동해반점",
+"st": "other",
+"food": 0.05,
+"k": 0
+},
+{
+"id": "ip-tuna-sushi",
+"name": "참치앤초밥",
+"g": "참치앤초밥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "ip-kemono",
+"name": "케모노",
+"g": "케모노",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "bs-garamjip",
+"name": "가람집감자적옹심",
+"g": "가람집감자적옹심",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bs-manseon",
+"name": "만선감자옹심이",
+"g": "만선감자옹심이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bs-samu",
+"name": "삼우칼국수",
+"g": "삼우칼국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bs-mandong",
+"name": "만동면옥",
+"g": "만동면옥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bs-samgyetang",
+"name": "건강삼계탕",
+"g": "건강삼계탕",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bs-nakji-daejang",
+"name": "낙지 대장",
+"g": "낙지 대장",
+"st": "food",
+"food": 1.0,
+"k": 1
 }
 ]
