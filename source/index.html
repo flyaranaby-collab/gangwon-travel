@@ -109,7 +109,7 @@ button { cursor: pointer; }
 .days button[aria-pressed=true] small { color: var(--hero-top); opacity: .7; }
 .days.regions button { font-size: 14px; padding: 6px 12px; border-radius: 999px; display: inline-flex; gap: 6px; align-items: baseline; }
 .days.regions button small { display: inline; }
-#localBtn[aria-pressed=true] { background: var(--pine); border-color: var(--pine); color: var(--surface); }
+#localBtn[aria-pressed=true], #pickBtn[aria-pressed=true] { background: var(--pine); border-color: var(--pine); color: var(--surface); }
 #trendBtn[aria-pressed=true] { background: var(--bad); border-color: var(--bad); color: var(--surface); }
 .today { text-align: right; font-size: 13px; color: var(--hero-muted); font-variant-numeric: tabular-nums; line-height: 1.7; }
 .today b { color: var(--hero-ink); font-family: var(--font-display); font-size: 17px; font-weight: 600; }
@@ -4207,6 +4207,7 @@ function applyStreets(){
   }
 }
 applyStreets();
+if (state.local){ state.local = false; state.pick = true; }
 // 강릉 로컬 엄선 38곳(2026-11-27): 11월에 영업 중 확인 + 후기 평가가 꾸준히 좋은 곳. L=현지인 단골, T=검증된 관광 명소, B=둘 다
 const CURATED = {"bs-garamjip":"L","bs-samu":"L","hongga-ongsimi":"L","yeondang-sotbap":"T","haeseong-hoe":"L","pohang-mulhoe":"L","jinbo-mulhoe":"B","wonyoung-fish":"T","seonyeol-haejang":"L","cheonghakdong-sundae":"L","ng-noraegok":"L","songjeong-yong":"B","daeseong-banjeom":"L","ng-gudeulmok":"L","gangbori":"L","gn-cafe-bohemian-gp":"T","gn-cafe-terarosa-gp":"T","gn-cafe-gorae":"L","gn-cafe-ethiopia":"L","gn-cafe-myeongjuga":"L","gn-cafe-hongje-mansion":"L","gn-cafe-got":"T","gn-cafe-lumiere":"T","gn-cafe-sodolen":"T","gn-cafe-suncafe":"T","gn-cafe-giwa":"T","gn-cafe-gwagaek":"L","gn-cafe-myeongju-baerong":"L","gn-bread-ppangdabang":"T","gn-cafe-gnsand":"T","gn-cafe-dooti":"T","choding-pudding":"T","gn-cafe-sundubu-gelato-jmj":"T","gn-bread-gyodong":"L","gn-cafe-52block":"L","gn-cafe-noir":"L","gn-cafe-chodang-tart":"T","gn-cafe-awave":"L"};
 for (const p of PLACES){ const k = CURATED[p.id]; if (!k) continue;
@@ -4482,7 +4483,7 @@ function renderPlaces(){
       const cat = c => `<button class="chipbtn" data-cat="${c}" aria-pressed="${c===state.cat}">${ic(IC[c])}${c}</button>`;
       const tg = (id, on, label, e) => `<button class="chipbtn" id="${id}" aria-pressed="${on}">${ic(e)}${label}</button>`;
       const has = c => PLACES.some(p=>p.cat===c);
-      const top = [cat("전체"), cat("맛집"), cat("숙소"), tg("localBtn", state.local, "현지인 맛집", "🧑‍🍳"), tg("pickBtn", state.pick, "로컬 엄선", "🏅"), cat("소품샵"), cat("카페"), tg("breadBtn", state.bread, "빵지순례", "🥐"), tg("photoBtn", state.photo, "포토존", "📸")];
+      const top = [cat("전체"), cat("맛집"), cat("숙소"), tg("pickBtn", state.pick, "로컬 엄선", "🏅"), cat("소품샵"), cat("카페"), tg("breadBtn", state.bread, "빵지순례", "🥐"), tg("photoBtn", state.photo, "포토존", "📸")];
       const rest = ["바다","산","계곡","호수·강","숲·꽃","고원","자연","체험","역사","관광지"].filter(c=>CATS.includes(c) || has(c)).map(cat);
       const more = [tg("trendBtn", state.trend, "요즘 뜨는 곳", "🔥"), tg("reviewBtn", state.review, "리뷰 많은 곳", "⭐"), tg("kidsBtn", state.kids, "아이와 함께", "👶"), tg("dealBtn", state.dealOnly, "할인 있는 곳", "🏷️"), tg("summerBtn", state.summer, "여름 피서", "🏖️"), tg("rainBtn", state.rain, "비 오는 날", "☔")];
       return top.join("") + `<span class="sep"></span>` + rest.join("") + `<span class="sep"></span>` + more.join("");
@@ -4511,7 +4512,7 @@ function passToggles(p){
     && (!state.local || (p.tags.includes("현지인맛집") && !p.tags.includes("빵지순례")))
     && (!state.kids || isKid(p))
     && (!state.bread || p.tags.includes("빵지순례"))
-    && (!state.pick || !!CURATED[p.id]);
+    && (!state.pick || !!CURATED[p.id] || (p.tags.includes("현지인맛집") && !p.tags.includes("빵지순례")));
 }
 function renderGrid(){
   const q = state.q.trim().toLowerCase();
@@ -4523,7 +4524,7 @@ function renderGrid(){
       && (state.cat!=="맛집" || FSUB==="전체" || (FSUB==="술집" ? isBar(p) : foodSub(p)===FSUB))
       && passToggles(p)
       && (!q || [p.name,p.sig,p.area,REG[p.region].name,p.cat,...p.tags].join(" ").toLowerCase().includes(q)))
-    .sort((a,b)=>(orderIdx(a.id)-orderIdx(b.id)) || (ad.has(b.id)-ad.has(a.id)) || (b.who[state.who]-a.who[state.who]) || ((a.source==="kto")-(b.source==="kto")));
+    .sort((a,b)=>(state.pick ? (!!CURATED[b.id]-!!CURATED[a.id]) : 0) || (orderIdx(a.id)-orderIdx(b.id)) || (ad.has(b.id)-ad.has(a.id)) || (b.who[state.who]-a.who[state.who]) || ((a.source==="kto")-(b.source==="kto")));
   // '가까운 순'이면 내 위치에서 가까운 곳부터(위치를 아직 모르면 추천순으로 두고 위치를 찾는다)
   const nnote = document.getElementById("nsortNote");
   if (NEAR_SORT && MYPOS){
@@ -4541,7 +4542,7 @@ function renderGrid(){
   const pg = document.getElementById("placeGrid"); pg.classList.add("tiles");   // 운영자도 사진 카드 · 수정 버튼은 자세한 페이지에
   pg.innerHTML = list.length ? shown.map(tile).join("")
       + (left > 0 ? `<div class="moreRow"><button class="btn ghost" data-more="1">더 보기 · ${left}곳 남음</button></div>` : "")
-    : (()=>{ const on = [["local","현지인 맛집"],["photo","포토존"],["trend","요즘 뜨는 곳"],["review","리뷰 많은 곳"],["kids","아이와 함께"],["bread","빵지순례"],["pick","로컬 엄선"],["dealOnly","할인 있는 곳"],["summer","여름 피서"],["rain","비 오는 날"]].filter(([k])=>state[k]).map(x=>x[1]);
+    : (()=>{ const on = [["photo","포토존"],["trend","요즘 뜨는 곳"],["review","리뷰 많은 곳"],["kids","아이와 함께"],["bread","빵지순례"],["pick","로컬 엄선"],["dealOnly","할인 있는 곳"],["summer","여름 피서"],["rain","비 오는 날"]].filter(([k])=>state[k]).map(x=>x[1]);
         return `<div class="empty">조건에 맞는 곳이 없어요.${on.length ? ` 켜 둔 조건: <b>${on.join(", ")}</b>${state.cat!=="전체" ? ` · 분류: <b>${esc(state.cat)}</b>` : ""}<br><button class="btn ghost" data-clearfilters style="margin-top:10px">조건 모두 끄기</button>` : " 검색어나 분류를 바꿔 보세요."}</div>`; })();
 }
 const GRID_STEP = 24, GRID = { sig:"", n:GRID_STEP };
