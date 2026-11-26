@@ -770,7 +770,10 @@
 {
 "id": "kto-3532659",
 "name": "솥고집 주문진점",
-"st": "notfound"
+"g": "솥고집 강릉입암점",
+"st": "nophoto",
+"food": null,
+"k": null
 },
 {
 "id": "kto-3532662",
@@ -1329,10 +1332,7 @@
 {
 "id": "kto-3537137",
 "name": "원조가보리살 솥뚜껑생삼겹살",
-"g": "솥뚜껑생삼겹살",
-"st": "nophoto",
-"food": null,
-"k": null
+"st": "notfound"
 },
 {
 "id": "kto-3537135",
@@ -2537,9 +2537,9 @@
 "id": "kto-3534229",
 "name": "팔당수산",
 "g": "팔당수산",
-"st": "nophoto",
-"food": null,
-"k": null
+"st": "food",
+"food": 1.0,
+"k": 0
 },
 {
 "id": "kto-3534143",
@@ -10492,6 +10492,46 @@
 "g": "우가 한방카페",
 "st": "food",
 "food": 0.93,
+"k": 1
+},
+{
+"id": "gn-bread-insalt",
+"name": "인솔트베이커리",
+"g": "인솔트베이커리",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-bread-choi",
+"name": "카페초이",
+"g": "카페초이",
+"st": "food",
+"food": 0.9,
+"k": 0
+},
+{
+"id": "gn-bread-ppangdabang",
+"name": "강릉빵다방 본점",
+"g": "강릉빵다방 본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-bread-gyodong",
+"name": "교동빵집",
+"g": "교동빵집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-bread-dolce",
+"name": "돌체테리아",
+"g": "돌체테리아",
+"st": "food",
+"food": 1.0,
 "k": 1
 }
 ]
