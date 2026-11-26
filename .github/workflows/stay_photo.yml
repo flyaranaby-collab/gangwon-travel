@@ -1,9 +1,9 @@
-name: 강릉 숙소 후보(일회성)
+name: 숙소 사진 받기(일회성)
 on: { workflow_dispatch: {} }
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 tools/stay_scan.py
+      - run: python3 tools/stay_photo.py
         env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
