@@ -5,5 +5,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 tools/bread_scan.py
+      - run: python3 tools/bread_check.py
         env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
