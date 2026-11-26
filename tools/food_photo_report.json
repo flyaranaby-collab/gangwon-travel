@@ -770,10 +770,7 @@
 {
 "id": "kto-3532659",
 "name": "솥고집 주문진점",
-"g": "솥고집 강릉입암점",
-"st": "nophoto",
-"food": null,
-"k": null
+"st": "notfound"
 },
 {
 "id": "kto-3532662",
@@ -1332,7 +1329,10 @@
 {
 "id": "kto-3537137",
 "name": "원조가보리살 솥뚜껑생삼겹살",
-"st": "notfound"
+"g": "솥뚜껑생삼겹살",
+"st": "nophoto",
+"food": null,
+"k": null
 },
 {
 "id": "kto-3537135",
@@ -10156,6 +10156,342 @@
 "g": "낙지 대장",
 "st": "food",
 "food": 1.0,
+"k": 1
+},
+{
+"id": "gn-cafe-got",
+"name": "곳",
+"g": "곳",
+"st": "food",
+"food": 0.99,
+"k": 2
+},
+{
+"id": "gn-cafe-gnsand",
+"name": "강릉샌드 본점",
+"g": "강릉샌드 본점",
+"st": "food",
+"food": 0.87,
+"k": 2
+},
+{
+"id": "gn-cafe-lumiere",
+"name": "카페 뤼미에르",
+"g": "카페 뤼미에르",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-cafe-bohemian-gp",
+"name": "보헤미안 박이추 커피 경포점",
+"g": "보헤미안 박이추 커피 경포점",
+"st": "food",
+"food": 0.61,
+"k": 2
+},
+{
+"id": "gn-cafe-giwa",
+"name": "카페 기와",
+"g": "카페 기와",
+"st": "food",
+"food": 0.75,
+"k": 1
+},
+{
+"id": "gn-cafe-inomae",
+"name": "이놈애커피",
+"g": "이놈애커피",
+"st": "food",
+"food": 0.61,
+"k": 1
+},
+{
+"id": "gn-cafe-sodolen",
+"name": "카페소돌엔",
+"g": "카페소돌엔",
+"st": "food",
+"food": 0.93,
+"k": 1
+},
+{
+"id": "gn-cafe-chodang-tart",
+"name": "초당타르트",
+"g": "초당타르트",
+"st": "food",
+"food": 0.88,
+"k": 1
+},
+{
+"id": "gn-cafe-finefine",
+"name": "파인파인",
+"g": "파인파인",
+"st": "food",
+"food": 0.95,
+"k": 1
+},
+{
+"id": "gn-cafe-pervade",
+"name": "퍼베이드",
+"g": "퍼베이드",
+"st": "food",
+"food": 0.7,
+"k": 1
+},
+{
+"id": "gn-cafe-sundubu-gelato-jmj",
+"name": "순두부젤라또 주문진점",
+"g": "순두부젤라또 주문진점",
+"st": "food",
+"food": 0.98,
+"k": 2
+},
+{
+"id": "gn-cafe-theoslo",
+"name": "디오슬로",
+"g": "디오슬로",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-cafe-busstop",
+"name": "커피내리는 버스정류장",
+"g": "커피내리는 버스정류장",
+"st": "food",
+"food": 0.98,
+"k": 2
+},
+{
+"id": "gn-cafe-oddcoffee",
+"name": "오드커피",
+"g": "오드커피",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gn-cafe-creamhouse",
+"name": "크림하우스",
+"g": "크림하우스",
+"st": "food",
+"food": 0.84,
+"k": 1
+},
+{
+"id": "gn-cafe-myeongju-baerong",
+"name": "명주배롱",
+"g": "명주배롱",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gn-cafe-5to7",
+"name": "5to7 강릉",
+"g": "5to7 강릉",
+"st": "food",
+"food": 0.89,
+"k": 1
+},
+{
+"id": "gn-cafe-heo",
+"name": "허씨커피",
+"g": "허씨커피",
+"st": "food",
+"food": 0.98,
+"k": 2
+},
+{
+"id": "gn-cafe-gwagaek",
+"name": "과객",
+"g": "과객",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-cafe-geuriuni",
+"name": "그리우니",
+"g": "그리우니",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-cafe-100brand",
+"name": "100 BRAND",
+"g": "100 BRAND",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gn-cafe-52block",
+"name": "52블럭",
+"g": "52블럭",
+"st": "food",
+"food": 0.93,
+"k": 1
+},
+{
+"id": "gn-cafe-myeongjuga",
+"name": "커피명주가",
+"g": "커피명주가",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gn-cafe-opinghouse",
+"name": "오핑하우스",
+"g": "오핑하우스",
+"st": "food",
+"food": 0.89,
+"k": 1
+},
+{
+"id": "gn-cafe-ethiopia",
+"name": "에티오피아",
+"g": "에티오피아",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gn-cafe-bsideground",
+"name": "비사이드그라운드",
+"g": "비사이드그라운드",
+"st": "food",
+"food": 0.95,
+"k": 1
+},
+{
+"id": "gn-cafe-chodang110",
+"name": "초당110",
+"g": "초당110",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gn-cafe-dooti",
+"name": "두티",
+"g": "두티 - 강릉 초당두부 티라미수 디저트 카페",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gn-cafe-gorae",
+"name": "초당고래로스팅카페",
+"g": "초당고래로스팅카페",
+"st": "food",
+"food": 0.84,
+"k": 0
+},
+{
+"id": "gn-cafe-terarosa-gp",
+"name": "테라로사 경포호수점",
+"g": "테라로사 경포호수점",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gn-cafe-garu",
+"name": "베이커리가루",
+"g": "베이커리가루",
+"st": "food",
+"food": 0.94,
+"k": 1
+},
+{
+"id": "gn-cafe-endtoend",
+"name": "엔드투앤드",
+"g": "엔드투앤드",
+"st": "food",
+"food": 0.95,
+"k": 1
+},
+{
+"id": "gn-cafe-shelly",
+"name": "쉘리스커피",
+"g": "쉘리스커피",
+"st": "food",
+"food": 0.71,
+"k": 1
+},
+{
+"id": "gn-cafe-suncafe",
+"name": "썬카페",
+"g": "썬카페",
+"st": "food",
+"food": 0.84,
+"k": 1
+},
+{
+"id": "gn-cafe-nine",
+"name": "나인",
+"g": "나인",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gn-cafe-noir",
+"name": "카페누아베이커리",
+"g": "카페누아베이커리",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gn-cafe-florian",
+"name": "플로리안",
+"g": "플로리안",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gn-cafe-hongje-mansion",
+"name": "홍제멘션",
+"g": "홍제멘션",
+"st": "food",
+"food": 0.72,
+"k": 1
+},
+{
+"id": "gn-cafe-baekya",
+"name": "백야커피",
+"g": "백야커피",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gn-cafe-awave",
+"name": "AWAVE",
+"g": "AWAVE",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gn-cafe-calamari",
+"name": "깔라마리",
+"g": "깔라마리",
+"st": "food",
+"food": 0.94,
+"k": 1
+},
+{
+"id": "gn-cafe-uga",
+"name": "우가 한방카페",
+"g": "우가 한방카페",
+"st": "food",
+"food": 0.93,
 "k": 1
 }
 ]
