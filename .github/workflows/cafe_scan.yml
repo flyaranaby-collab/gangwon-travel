@@ -1,9 +1,0 @@
-name: 강릉 카페 후보(일회성)
-on: { workflow_dispatch: {} }
-jobs:
-  run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: python3 tools/cafe_detail.py tools/cafe_pick.json
-        env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}", KTO_KEY: "${{ secrets.KTO_KEY }}" }
