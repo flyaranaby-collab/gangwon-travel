@@ -54,7 +54,12 @@ def targets(a):
         pid, mid, name, cat = m.groups()
         if cat not in ("맛집", "카페"): continue
         rg = re.search(r'region:"(\w+)"', mid)
-        out.append({"id": pid, "name": name, "city": REGION_CITY.get(rg.group(1) if rg else "gangneung", "")})
+        t = {"id": pid, "name": name, "city": REGION_CITY.get(rg.group(1) if rg else "gangneung", "")}
+        gm_ = re.search(r'gid:"([^"]+)"', mid)   # 앱에 적어 둔 구글 장소 번호가 있으면 그걸 그대로 쓴다(이름이 같은 다른 가게 사진 방지)
+        if gm_: t["gid"] = gm_.group(1)
+        ad_ = re.search(r'addr:"[^"]*?(강릉|속초|양양|고성|동해|삼척|평창|정선|영월|춘천|원주|인제|홍천|화천|태백|횡성|철원|양구)', mid)
+        if ad_ and not rg: t["city"] = ad_.group(1)
+        out.append(t)
     kto = json.loads(pathlib.Path(a.kto).read_text(encoding="utf-8"))
     for x in kto.get("items", []):
         if str(x.get("contenttypeid")) != "39": continue
@@ -66,6 +71,7 @@ def targets(a):
         byname.setdefault(nz(g["name"]), g)
     seen = set()
     for t in out:   # 같은 이름의 구글 인기 장소가 있으면 검색 없이 그 장소 번호를 쓴다
+        if t.get("gid"): seen.add(t["gid"]); continue
         g = byname.get(nz(t["name"]))
         if g and (not t["city"] or t["city"] == g.get("city", t["city"])): t["gid"] = g["id"]; seen.add(g["id"])
     for g in byname.values():
