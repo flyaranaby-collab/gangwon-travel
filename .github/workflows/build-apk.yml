@@ -1,7 +1,7 @@
 name: APK 만들기
 on:
   push:
-    branches: [main]
+    branches: [pro-test-none]
     # 운영자가 앱에서 저장한 장소·사진은 앱을 다시 만들 필요가 없다
     paths-ignore: ['web/owner.json', 'web/photos/u-*', 'web/kto.json', 'web/kto_ver.txt', 'web/med.json', 'web/er.json', 'web/weather.json', 'web/gmap.json', 'web/train.json', 'docs/**']
   workflow_dispatch:
@@ -21,6 +21,7 @@ jobs:
           cp web/index.html app/src/main/assets/index.html
           cp web/version.txt app/src/main/assets/version.txt
           cp -r web/photos app/src/main/assets/photos
+          cp -r pro/app/. app/src/main/assets/
       - name: 고정 서명 키 준비 (GitHub Secrets)
         env:
           KS: ${{ secrets.GANGWON_KEYSTORE }}
@@ -34,12 +35,13 @@ jobs:
       - run: chmod +x gradlew && ./gradlew assembleRelease --no-daemon
         env:
           GANGWON_KEY_PASS: ${{ secrets.GANGWON_KEY_PASS }}
-      - run: cp app/build/outputs/apk/release/app-release.apk gangwon-travel.apk
+      - run: cp app/build/outputs/apk/release/app-release.apk gangwon-travel-pro-test.apk
       - name: 다운로드 페이지에 APK 올리기
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: 강원 여행 수첩 v1.0.${{ github.run_number }}
+          tag_name: pro-test-${{ github.run_number }}
+          name: Pro 시험판 ${{ github.run_number }}
           body: 아래 gangwon-travel.apk 를 눌러 내려받은 뒤 휴대폰에서 설치하세요.
-          files: gangwon-travel.apk
-          make_latest: true
+          files: gangwon-travel-pro-test.apk
+          make_latest: false
+          prerelease: true

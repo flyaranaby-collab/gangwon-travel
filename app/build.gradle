@@ -11,7 +11,7 @@ android {
     namespace 'kr.gangwon.travelnote'
     compileSdk 34
     defaultConfig {
-        applicationId 'kr.gangwon.travelnote'
+        applicationId 'kr.gangwon.travelnote.pro'
         minSdk 26
         targetSdk 34
         versionCode 100 + runNo
