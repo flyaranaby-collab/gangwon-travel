@@ -1,9 +1,0 @@
-name: 임시 가지 지우기(일회성)
-on: workflow_dispatch
-permissions: { contents: write }
-jobs:
-  d:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: git push origin --delete pick-tmp
