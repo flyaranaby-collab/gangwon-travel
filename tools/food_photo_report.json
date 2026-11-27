@@ -3588,7 +3588,10 @@
 {
 "id": "seonchang",
 "name": "선창활어횟집",
-"st": "removed"
+"g": "선창활어회집",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "naembibap",
@@ -3657,17 +3660,26 @@
 {
 "id": "wonhee",
 "name": "원희네닭갈비 (삼척)",
-"st": "removed"
+"g": "원희네닭갈비",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "toseong",
 "name": "토성집 (삼척)",
-"st": "removed"
+"g": "토성집보리밥",
+"st": "food",
+"food": 1.0,
+"k": 0
 },
 {
 "id": "sindari",
 "name": "신다리 (삼척)",
-"st": "removed"
+"g": "신다리",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "hyundae-mak",
@@ -3728,22 +3740,31 @@
 {
 "id": "beonyoung",
 "name": "번영수퍼 (북평)",
-"st": "removed"
+"st": "notfound"
 },
 {
 "id": "ilmi",
 "name": "일미닭강정 (영월)",
-"st": "removed"
+"g": "일미닭강정",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "mitan",
 "name": "미탄집 (영월 서부시장)",
-"st": "removed"
+"g": "미탄집",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "jucheon-muk",
 "name": "주천묵집 (영월)",
-"st": "removed"
+"g": "주천묵집",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "wonjo-sutbul",
@@ -3860,7 +3881,10 @@
 {
 "id": "bisugumi",
 "name": "비수구미식당",
-"st": "removed"
+"g": "비수구미민박",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "hwacheon-eojuk",
@@ -4057,7 +4081,7 @@
 {
 "id": "yy-namyeongho",
 "name": "남영호횟집 (낙산항 회센터)",
-"st": "removed"
+"st": "notfound"
 },
 {
 "id": "yy-2doaging",
@@ -4118,7 +4142,7 @@
 {
 "id": "saga",
 "name": "카페 사가",
-"st": "removed"
+"st": "notfound"
 },
 {
 "id": "najeon",
@@ -4147,7 +4171,10 @@
 {
 "id": "220volt",
 "name": "카페 드 220볼트",
-"st": "removed"
+"g": "카페드220V볼트 본점",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "sanida",
@@ -4589,7 +4616,10 @@
 {
 "id": "kto-2795476",
 "name": "행복밥상",
-"st": "notfound"
+"g": "행복밥상뷔페식",
+"st": "nophoto",
+"food": null,
+"k": null
 },
 {
 "id": "kto-2787382",
@@ -10532,6 +10562,2086 @@
 "g": "돌체테리아",
 "st": "food",
 "food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-t7nq7qado",
+"name": "황부자튀김",
+"g": "황부자튀김",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-sok-8uyxi0enw",
+"name": "진솔할머니순두부",
+"g": "진솔할머니순두부",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-sok-thpwidtia",
+"name": "회가",
+"g": "회가",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-xprb36xoe",
+"name": "옛고을순두부",
+"g": "옛고을순두부",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-l9kb86rf4",
+"name": "송도물회",
+"g": "송도물회",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-vws2y5z18",
+"name": "감나무집",
+"g": "감나무집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-d8ss72dog",
+"name": "초당본점",
+"g": "초당본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-ajztyamsu",
+"name": "초원순두부",
+"g": "초원순두부",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-sok-njipvm78",
+"name": "소야삼교리동치미막국수",
+"g": "소야삼교리동치미막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-imhms98q8",
+"name": "설악산로 한우",
+"g": "설악산로 한우",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-sok-o3y7mre70",
+"name": "시골이모순두부",
+"g": "시골이모순두부",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-dro3bnm8m",
+"name": "맛이부자튀김맛집",
+"g": "맛이부자튀김맛집",
+"st": "food",
+"food": 0.84,
+"k": 0
+},
+{
+"id": "gr-sok-efcb5874w",
+"name": "등대곳간",
+"g": "등대곳간",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-szsok6vrs",
+"name": "비금도",
+"g": "비금도",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-pdcdjvee",
+"name": "도리스 파티세리",
+"g": "도리스 파티세리",
+"st": "food",
+"food": 0.64,
+"k": 1
+},
+{
+"id": "gr-sok-o7xyu3tes",
+"name": "어나더블루",
+"g": "어나더블루",
+"st": "food",
+"food": 0.74,
+"k": 1
+},
+{
+"id": "gr-sok-nnqwxyohw",
+"name": "시드누아 속초점",
+"g": "시드누아 속초점",
+"st": "food",
+"food": 0.94,
+"k": 1
+},
+{
+"id": "gr-sok-swuccwbme",
+"name": "맘마미아 베이커리",
+"g": "맘마미아 베이커리",
+"st": "food",
+"food": 0.94,
+"k": 1
+},
+{
+"id": "gr-sok-e5lu1rjs",
+"name": "카페너래",
+"g": "카페너래",
+"st": "food",
+"food": 0.85,
+"k": 2
+},
+{
+"id": "gr-sok-qly2uryhe",
+"name": "ARUNA",
+"g": "ARUNA",
+"st": "food",
+"food": 0.81,
+"k": 1
+},
+{
+"id": "gr-sok-2zr9odgk",
+"name": "베이커리 가루",
+"g": "베이커리 가루",
+"st": "food",
+"food": 0.98,
+"k": 0
+},
+{
+"id": "gr-sok-aa7tqom4",
+"name": "오션투유리조트파인다이닝레스토랑",
+"g": "오션투유리조트파인다이닝레스토랑",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gr-sok-8eyj8clo",
+"name": "녹원생선찜",
+"g": "녹원생선찜",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-rqhk3phe",
+"name": "가조오리숯불구이",
+"g": "가조오리숯불구이",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-sok-9kwxecina",
+"name": "용촌고기집",
+"g": "용촌고기집",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-sok-6bvpwiwm",
+"name": "별미여행",
+"g": "별미여행",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-zdpse3wq8",
+"name": "부두식당",
+"g": "부두식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-dqg6bluma",
+"name": "광범이네횟집",
+"g": "광범이네횟집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-3iikujwza",
+"name": "바다정원",
+"g": "바다정원",
+"st": "food",
+"food": 0.93,
+"k": 1
+},
+{
+"id": "gr-sok-5dczlts1y",
+"name": "델피노 더엠브로시아",
+"g": "델피노 더엠브로시아",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-sok-8rribkqwu",
+"name": "커피고 by MOHB",
+"g": "커피고 by MOHB",
+"st": "food",
+"food": 0.64,
+"k": 1
+},
+{
+"id": "gr-sok-2o2hjrebs",
+"name": "스위밍터틀",
+"g": "스위밍터틀",
+"st": "other",
+"food": 0.56,
+"k": 7
+},
+{
+"id": "gr-yan-0rbkqljd4",
+"name": "흥부네밥상",
+"g": "흥부네밥상",
+"st": "food",
+"food": 1.0,
+"k": 4
+},
+{
+"id": "gr-yan-qowb9wxg",
+"name": "옛뜰",
+"g": "옛뜰",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-iva2tcq7i",
+"name": "범부메밀국수",
+"g": "범부메밀국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-ivdo5pcki",
+"name": "놀자대게 본점",
+"g": "놀자대게 본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-irza6wtg",
+"name": "이태원왕갈비",
+"g": "이태원왕갈비",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-lit3hl0tk",
+"name": "이모네집",
+"g": "이모네집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-8fzgq4omu",
+"name": "동쪽바다세꼬시",
+"g": "동쪽바다세꼬시",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-mfcy3cnd8",
+"name": "상운메밀촌",
+"g": "상운메밀촌",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-gfx12dzso",
+"name": "각두골",
+"g": "각두골",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-mwnh5uide",
+"name": "양양째복",
+"g": "양양째복",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-3irtly0m8",
+"name": "오색30년할머니순두부",
+"g": "오색30년할머니순두부",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-82gzsuoto",
+"name": "범골토종닭",
+"g": "범골토종닭",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-8dbmd8q48",
+"name": "여여정",
+"g": "여여정",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-d1fvqj9wc",
+"name": "속초가든",
+"g": "속초가든",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-npbwcwhdk",
+"name": "처녀횟집",
+"g": "처녀횟집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-ieeoykbhs",
+"name": "토박이식당",
+"g": "토박이식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-yan-7cl0kxvb4",
+"name": "카페 둔치",
+"g": "카페 둔치",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gr-yan-age5gxla",
+"name": "P.E.I Coffee",
+"g": "P.E.I Coffee",
+"st": "food",
+"food": 0.93,
+"k": 1
+},
+{
+"id": "gr-yan-k9gffobom",
+"name": "카페로그",
+"g": "카페로그",
+"st": "food",
+"food": 0.85,
+"k": 1
+},
+{
+"id": "gr-yan-fkrar9xi4",
+"name": "바다지기 공방카페",
+"g": "바다지기 공방카페",
+"st": "food",
+"food": 0.95,
+"k": 9
+},
+{
+"id": "gr-yan-udopzlyry",
+"name": "배배 젤라또",
+"g": "배배 젤라또",
+"st": "food",
+"food": 0.68,
+"k": 1
+},
+{
+"id": "gr-yan-calocpes",
+"name": "헤이카페",
+"g": "헤이카페",
+"st": "food",
+"food": 0.68,
+"k": 1
+},
+{
+"id": "gr-yan-olwytkrjy",
+"name": "컨센트릭 양양점",
+"g": "컨센트릭 양양점",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gr-yan-e1y7lvki",
+"name": "킨십 카페",
+"g": "킨십 카페",
+"st": "food",
+"food": 0.95,
+"k": 3
+},
+{
+"id": "gr-don-sztz7pnwa",
+"name": "소복소복",
+"g": "소복소복",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-zl1g04fy8",
+"name": "홍대포",
+"g": "홍대포",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-lrnuiyhmi",
+"name": "만강홍",
+"g": "만강홍",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-dultjtxdy",
+"name": "송림해장국",
+"g": "송림해장국",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-0jn4fez8",
+"name": "진모래횟집",
+"g": "진모래횟집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-lb9tmzuze",
+"name": "수림",
+"g": "수림",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-adderxgbs",
+"name": "담다",
+"g": "담다",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-5kojapmzg",
+"name": "추암횟집대게",
+"g": "추암횟집대게",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-0gm0k4kg",
+"name": "옥이네분식",
+"g": "옥이네분식",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-lktk5v2js",
+"name": "돈까스야",
+"g": "돈까스야",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-qciytqnqc",
+"name": "묵호식당",
+"g": "묵호식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-bt4etr3pu",
+"name": "동남회집",
+"g": "동남회집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-rbq5cco8",
+"name": "더좋은날 망상해수욕장 본점",
+"g": "더좋은날 망상해수욕장 본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-qvvtllpjq",
+"name": "베이커리카페 클램",
+"g": "베이커리카페 클램",
+"st": "food",
+"food": 0.95,
+"k": 1
+},
+{
+"id": "gr-don-78prdqvw",
+"name": "리즈카페",
+"g": "리즈카페",
+"st": "food",
+"food": 0.64,
+"k": 1
+},
+{
+"id": "gr-don-ralju5s40",
+"name": "동해제빵소",
+"g": "동해제빵소",
+"st": "food",
+"food": 0.99,
+"k": 0
+},
+{
+"id": "gr-don-t8p6l4hq4",
+"name": "아롱별",
+"g": "아롱별",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-2mtq4qjca",
+"name": "카페 코스타",
+"g": "카페 코스타",
+"st": "food",
+"food": 0.97,
+"k": 1
+},
+{
+"id": "gr-don-t0apkxbuu",
+"name": "삼고정문",
+"g": "삼고정문",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-cmhedzzoq",
+"name": "만남의식당",
+"g": "만남의식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-nnk8epbgq",
+"name": "뜰애홍합밥",
+"g": "뜰애홍합밥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-ypbt35bro",
+"name": "부림해물",
+"g": "부림해물",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-p4x8llwmg",
+"name": "공대현스시",
+"g": "공대현스시",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-46y2ua9pq",
+"name": "삼척수제비(Samcheok Sujebi)",
+"g": "삼척수제비(Samcheok Sujebi)",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-lmwaacsu",
+"name": "삼정식당",
+"g": "삼정식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-ixqenqpyi",
+"name": "우리한우식당",
+"g": "우리한우식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-don-771rszc8",
+"name": "남이네식당",
+"g": "남이네식당",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gr-don-xr5ede2gw",
+"name": "쏠비치삼척 마마티라",
+"g": "쏠비치삼척 마마티라",
+"st": "food",
+"food": 0.97,
+"k": 2
+},
+{
+"id": "gr-don-jpi812zao",
+"name": "보사노바 삼척점",
+"g": "보사노바 삼척점",
+"st": "food",
+"food": 0.96,
+"k": 0
+},
+{
+"id": "gr-don-r5jyab8oq",
+"name": "하쿠나마타타",
+"g": "하쿠나마타타",
+"st": "food",
+"food": 0.9,
+"k": 1
+},
+{
+"id": "gr-don-mkspmzuhe",
+"name": "네가있는바다",
+"g": "네가있는바다",
+"st": "food",
+"food": 0.69,
+"k": 1
+},
+{
+"id": "gr-don-gx9klvnha",
+"name": "102 Coffee",
+"g": "102 Coffee",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gr-pye-ju9z1iae4",
+"name": "평창한우마을 면온점(봉평)",
+"g": "평창한우마을 면온점(봉평)",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-pye-slxbpvfbe",
+"name": "다키닥팜",
+"g": "다키닥팜",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gr-pye-vn8qnu4rc",
+"name": "흔들바위",
+"g": "흔들바위",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-3uqcdaiqc",
+"name": "묵사발",
+"g": "묵사발",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-nrlbfmzrq",
+"name": "대관령한우프라자",
+"g": "대관령한우프라자",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-lrgxlcjh4",
+"name": "오대산정가네순메밀막국수",
+"g": "오대산정가네순메밀막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-e665womay",
+"name": "대관령토종한우",
+"g": "대관령토종한우",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-pye-vbmovdzfq",
+"name": "산골식당",
+"g": "산골식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-bhzcjgum",
+"name": "소한마리국밥",
+"g": "소한마리국밥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-gynwuko8",
+"name": "평창우리한우타운",
+"g": "평창우리한우타운",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-7vrgkvuke",
+"name": "강원수산횟집",
+"g": "강원수산횟집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-mdicxdgs",
+"name": "대관령시골밥상",
+"g": "대관령시골밥상",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-pye-62vvrz6se",
+"name": "명미횟집",
+"g": "명미횟집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-auek0ylss",
+"name": "한우돼지세상",
+"g": "한우돼지세상",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-mksd3nxjg",
+"name": "방아다리막국수",
+"g": "방아다리막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-c9wd1dg6y",
+"name": "안미송어장횟집",
+"g": "안미송어장횟집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-zcmoyblle",
+"name": "봉평메밀옛골(초가집옛골)",
+"g": "봉평메밀옛골(초가집옛골)",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-5imjvad8m",
+"name": "빠삭",
+"g": "빠삭",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-pkkorejyi",
+"name": "7HUNDRED coffee roasters",
+"g": "7HUNDRED coffee roasters",
+"st": "food",
+"food": 0.94,
+"k": 1
+},
+{
+"id": "gr-pye-u7mcwt7z0",
+"name": "마추픽추",
+"g": "마추픽추",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-zxderhbjq",
+"name": "바셀로",
+"g": "바셀로",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-mtmiy9kq8",
+"name": "루&루 베이커리",
+"g": "루&루 베이커리",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-vrxv0w8ok",
+"name": "연월일",
+"g": "연월일",
+"st": "food",
+"food": 0.83,
+"k": 1
+},
+{
+"id": "gr-pye-gvzx0hjg4",
+"name": "티팩토리",
+"g": "티팩토리",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-pye-jxabb6gw",
+"name": "이화에월백하고",
+"g": "이화에월백하고",
+"st": "food",
+"food": 0.96,
+"k": 1
+},
+{
+"id": "gr-pye-lkfnjowo8",
+"name": "그리심",
+"g": "그리심",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-xtdhregq4",
+"name": "옥산장",
+"g": "옥산장",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gr-jeo-p2fedffyu",
+"name": "구공탄구이",
+"g": "구공탄구이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-c2gmp16ea",
+"name": "군언송어횟집",
+"g": "군언송어횟집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-iw3ifqxp4",
+"name": "번영식당",
+"g": "번영식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-jszyvxufi",
+"name": "함백산실비식당",
+"g": "함백산실비식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-pljfpwrwu",
+"name": "짐포리식당",
+"g": "짐포리식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-rutmzmqk",
+"name": "고향한우촌",
+"g": "고향한우촌",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-yfwsyrmc0",
+"name": "산마실 식당",
+"g": "산마실 식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-ygdp5ly0",
+"name": "동박골식당",
+"g": "동박골식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-v2q84gy7w",
+"name": "거목한방순대국",
+"g": "거목한방순대국",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-f8mhcf4ys",
+"name": "싸리골식당",
+"g": "싸리골식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-icnrsenxi",
+"name": "누리한우촌",
+"g": "누리한우촌",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-ufsz6qst0",
+"name": "운암정 베이커리카페",
+"g": "운암정 베이커리카페",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-2gvdsfgnk",
+"name": "카페 아라미스",
+"g": "카페 아라미스",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gr-jeo-a9sctqj34",
+"name": "아우로라카페",
+"g": "아우로라카페",
+"st": "food",
+"food": 0.96,
+"k": 1
+},
+{
+"id": "gr-jeo-np9jzkjzc",
+"name": "홀딩커피",
+"g": "홀딩커피",
+"st": "food",
+"food": 0.81,
+"k": 1
+},
+{
+"id": "gr-jeo-a5pdjaa4",
+"name": "카페휴가",
+"g": "카페휴가",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gr-jeo-nba0iye0y",
+"name": "성호식당",
+"g": "성호식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-8vofq4be",
+"name": "사랑방식당",
+"g": "사랑방식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-mqx3sjo8",
+"name": "다슬기한마당",
+"g": "다슬기한마당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-zv8i3stwa",
+"name": "문화식당",
+"g": "문화식당",
+"st": "food",
+"food": 0.9,
+"k": 1
+},
+{
+"id": "gr-jeo-rnac6og5s",
+"name": "감자바우 옹심이",
+"g": "감자바우 옹심이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-sr8sgvxgq",
+"name": "고향칡칼국수",
+"g": "고향칡칼국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-3xizrty7i",
+"name": "산속의친구",
+"g": "산속의친구",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-x7zcwlue0",
+"name": "육정가",
+"g": "육정가",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-jeo-knxclmssi",
+"name": "상록수회집",
+"g": "상록수회집",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gr-jeo-bk25zkn4q",
+"name": "초원가든",
+"g": "초원가든",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gr-jeo-qdyyve",
+"name": "꽃피는산골",
+"g": "꽃피는산골",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gr-jeo-fworxivzq",
+"name": "카페메이트",
+"g": "카페메이트",
+"st": "food",
+"food": 0.97,
+"k": 1
+},
+{
+"id": "gr-jeo-ymzqviics",
+"name": "영월소금빵",
+"g": "영월소금빵",
+"st": "food",
+"food": 0.87,
+"k": 1
+},
+{
+"id": "gr-jeo-pr7vpjizc",
+"name": "세심다원",
+"g": "세심다원",
+"st": "food",
+"food": 0.88,
+"k": 1
+},
+{
+"id": "gr-jeo-z3iba6bi",
+"name": "Cafe Hola",
+"g": "Cafe Hola",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gr-chu-cuydbkp4u",
+"name": "1.5닭갈비 본점",
+"g": "1.5닭갈비 본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-qvkch30",
+"name": "명가막국수",
+"g": "명가막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-xcs5hotza",
+"name": "우성닭갈비 본점",
+"g": "우성닭갈비 본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-mltlcwzo",
+"name": "삼교리동치미막국수 춘천점",
+"g": "삼교리동치미막국수 춘천점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-e9tya9cj0",
+"name": "명동우미닭갈비",
+"g": "명동우미닭갈비",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-35jefligi",
+"name": "회영루",
+"g": "회영루",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-x1jhzmusg",
+"name": "강릉집",
+"g": "강릉집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-adpdh4ep8",
+"name": "남촌막국수",
+"g": "남촌막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-ziyrn73zc",
+"name": "시골막국수",
+"g": "시골막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-tfyjnz8u",
+"name": "심야화로 스무숲점",
+"g": "심야화로 스무숲점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-awtgti",
+"name": "생곡막국수 춘천점",
+"g": "생곡막국수 춘천점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-hb97nxqk",
+"name": "우미닭갈비 본점",
+"g": "우미닭갈비 본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-3jefdfey",
+"name": "소양강 다슬기 전문점",
+"g": "소양강 다슬기 전문점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-tm351zvu",
+"name": "진미닭갈비",
+"g": "진미닭갈비",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-jiwtdgvu",
+"name": "심야화로본점",
+"g": "심야화로본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-gp2fjhmj0",
+"name": "큰집한우",
+"g": "큰집한우",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-wa8nfvklm",
+"name": "실비막국수",
+"g": "실비막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-9jaqldnzk",
+"name": "중화요리 죽향",
+"g": "중화요리 죽향",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-0vetumyo",
+"name": "팔도해장국",
+"g": "팔도해장국",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-sxms5repy",
+"name": "태평소",
+"g": "태평소",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gr-chu-a9phktxcy",
+"name": "대원당",
+"g": "대원당",
+"st": "food",
+"food": 0.97,
+"k": 2
+},
+{
+"id": "gr-chu-lcjjfxjg",
+"name": "소울로스터리커피",
+"g": "소울로스터리커피",
+"st": "food",
+"food": 0.95,
+"k": 2
+},
+{
+"id": "gr-chu-hnmklasoc",
+"name": "어스17",
+"g": "어스17",
+"st": "food",
+"food": 0.97,
+"k": 1
+},
+{
+"id": "gr-chu-tdamu6mfq",
+"name": "38마일",
+"g": "38마일",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gr-chu-jelxxdxoy",
+"name": "댄싱카페인",
+"g": "댄싱카페인",
+"st": "food",
+"food": 0.92,
+"k": 1
+},
+{
+"id": "gr-chu-xzzlxgko4",
+"name": "리버레인",
+"g": "리버레인",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-zmoo2dsue",
+"name": "카르페",
+"g": "카르페",
+"st": "food",
+"food": 0.84,
+"k": 1
+},
+{
+"id": "gr-chu-eozbnqek",
+"name": "카페 레이크뷰",
+"g": "카페 레이크뷰",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gr-chu-ewhupiewm",
+"name": "지씨아뜰리에",
+"g": "지씨아뜰리에",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-chu-qz1v0ofne",
+"name": "라타르타 LATARTA",
+"g": "라타르타 LATARTA",
+"st": "food",
+"food": 0.6,
+"k": 1
+},
+{
+"id": "gr-won-sjy9ub9km",
+"name": "보릿고개 본점",
+"g": "보릿고개 본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-yytjkowfm",
+"name": "신촌막국수",
+"g": "신촌막국수",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-won-nn9reshfk",
+"name": "다래순대본점",
+"g": "다래순대본점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-sbdhrkicq",
+"name": "고향집",
+"g": "고향집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-2r2b9hlzs",
+"name": "원주복추어탕",
+"g": "원주복추어탕",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-rrt7dhvmu",
+"name": "아오야마식당",
+"g": "아오야마식당",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gr-won-ydfvebkm",
+"name": "천마산막국수",
+"g": "천마산막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-uhqtu20rk",
+"name": "고미담",
+"g": "고미담",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-oakpomjbc",
+"name": "진원소우원주단구점",
+"g": "진원소우원주단구점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-pxjnerqqk",
+"name": "화미당",
+"g": "화미당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-vayqkjieu",
+"name": "명랑막국수",
+"g": "명랑막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-uqaiyba44",
+"name": "춘천우미닭갈비",
+"g": "춘천우미닭갈비",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-wjnunyms",
+"name": "카츠예미",
+"g": "카츠예미",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-wuqmvpdeo",
+"name": "안432",
+"g": "안432",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-camaxcwg0",
+"name": "장군본가",
+"g": "장군본가",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-8hobbwawu",
+"name": "카츠당",
+"g": "카츠당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-dl49p0hia",
+"name": "영일만",
+"g": "영일만",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-wnzqz52bc",
+"name": "나우구이집",
+"g": "나우구이집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-88azqwgdq",
+"name": "자연을담은두부",
+"g": "자연을담은두부",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-qy3r1e2h4",
+"name": "어가본가",
+"g": "어가본가",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-6i0e1xek0",
+"name": "스톤크릭",
+"g": "스톤크릭",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-66rufa6aa",
+"name": "베이커리궁",
+"g": "베이커리궁",
+"st": "food",
+"food": 0.94,
+"k": 1
+},
+{
+"id": "gr-won-mchfk6go",
+"name": "허니포레스트",
+"g": "허니포레스트",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gr-won-pqsmdkucs",
+"name": "르 브레노",
+"g": "르 브레노",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-won-8gwsyvu8",
+"name": "로톤다",
+"g": "로톤다",
+"st": "other",
+"food": 0.22,
+"k": 1
+},
+{
+"id": "gr-won-nn9lhn6cc",
+"name": "사진정원",
+"g": "사진정원",
+"st": "food",
+"food": 0.98,
+"k": 1
+},
+{
+"id": "gr-won-vabc7pmtc",
+"name": "사운드 오브 사일런스",
+"g": "사운드 오브 사일런스",
+"st": "food",
+"food": 0.69,
+"k": 6
+},
+{
+"id": "gr-won-psjosaxuw",
+"name": "부엉이커피",
+"g": "부엉이커피",
+"st": "food",
+"food": 0.93,
+"k": 1
+},
+{
+"id": "gr-won-erzgchdui",
+"name": "체리테일러",
+"g": "체리테일러",
+"st": "food",
+"food": 0.92,
+"k": 6
+},
+{
+"id": "gr-won-ynd2fhz3i",
+"name": "파이(PIE)꽁뜨",
+"g": "파이(PIE)꽁뜨",
+"st": "food",
+"food": 1.0,
+"k": 2
+},
+{
+"id": "gr-inj-gaf0lmcmu",
+"name": "옛날원대막국수",
+"g": "옛날원대막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-0zx3yhieg",
+"name": "방동막국수",
+"g": "방동막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-wsf6f6ae0",
+"name": "고향집",
+"g": "고향집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-me0zq2ir0",
+"name": "송희식당",
+"g": "송희식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-s07wo408s",
+"name": "남북면옥",
+"g": "남북면옥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-fzknllg50",
+"name": "백담순두부",
+"g": "백담순두부",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-9lxcsopja",
+"name": "자작나무집",
+"g": "자작나무집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-ha6zhmf8i",
+"name": "백담폭포송어횟집",
+"g": "백담폭포송어횟집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-gpt8p1an4",
+"name": "심방터송어횟집",
+"g": "심방터송어횟집",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-ag7t89lms",
+"name": "산마을식당",
+"g": "산마을식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-lw4q3dc",
+"name": "매화촌 해장국",
+"g": "매화촌 해장국",
+"st": "food",
+"food": 0.93,
+"k": 2
+},
+{
+"id": "gr-inj-uv4mnwmzo",
+"name": "필례식당",
+"g": "필례식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-sd25alwya",
+"name": "당당한 수제 돈까스",
+"g": "당당한 수제 돈까스",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-a0mvnphm",
+"name": "이조은할머니손두부",
+"g": "이조은할머니손두부",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-inj-gzrpxchy",
+"name": "삼팔커피",
+"g": "삼팔커피",
+"st": "food",
+"food": 0.63,
+"k": 1
+},
+{
+"id": "gr-inj-6ljvhqpg",
+"name": "자작나무숲의 투데이",
+"g": "자작나무숲의 투데이",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gr-inj-dxjrfwcks",
+"name": "카페 하추리",
+"g": "카페 하추리",
+"st": "food",
+"food": 0.86,
+"k": 1
+},
+{
+"id": "gr-inj-h4cab0xno",
+"name": "뜨레돌체",
+"g": "뜨레돌체",
+"st": "food",
+"food": 0.96,
+"k": 9
+},
+{
+"id": "gr-inj-fje01ryc",
+"name": "카페 뒤란",
+"g": "카페 뒤란",
+"st": "food",
+"food": 0.98,
+"k": 5
+},
+{
+"id": "gr-inj-oif60exrc",
+"name": "카페클라체",
+"g": "카페클라체",
+"st": "food",
+"food": 0.95,
+"k": 1
+},
+{
+"id": "gr-hon-8p47zvq",
+"name": "홍천한우사랑말식당",
+"g": "홍천한우사랑말식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-kejhajes4",
+"name": "생곡막국수",
+"g": "생곡막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-rtultzgdg",
+"name": "원골",
+"g": "원골",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-uzpf6cg54",
+"name": "길매식당",
+"g": "길매식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-3tocbq11s",
+"name": "가보자 토종순대국밥 & 뼈다귀해장국",
+"g": "가보자 토종순대국밥 & 뼈다귀해장국",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-vxjsfsnfk",
+"name": "달구새끼",
+"g": "달구새끼",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-nj8g79hi",
+"name": "내고향손두부",
+"g": "내고향손두부",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-h5ilac9b8",
+"name": "칡사랑메밀사랑",
+"g": "칡사랑메밀사랑",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-vij8bsyyo",
+"name": "홍천강막국수",
+"g": "홍천강막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-4pldhziv8",
+"name": "970 홍천숯불고기",
+"g": "970 홍천숯불고기",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-hbhdpcohu",
+"name": "성산왕짜장",
+"g": "성산왕짜장",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-0jbu2mhhs",
+"name": "오대막국수",
+"g": "오대막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-ufqkq22vu",
+"name": "명가춘천닭갈비막국수",
+"g": "명가춘천닭갈비막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-xzrls4noa",
+"name": "태화닭갈비",
+"g": "태화닭갈비",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hon-snrrwxggy",
+"name": "길151 한옥카페 강원도 홍천본점 Gill151 Cafe",
+"g": "길151 한옥카페 강원도 홍천본점 Gill151 Cafe",
+"st": "food",
+"food": 0.96,
+"k": 2
+},
+{
+"id": "gr-hon-rrxe5fg0",
+"name": "쿠실",
+"g": "쿠실",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "gr-hon-jlyzgeyea",
+"name": "진심커피숍",
+"g": "진심커피숍",
+"st": "food",
+"food": 0.95,
+"k": 1
+},
+{
+"id": "gr-hon-0qpg0jzvu",
+"name": "카페이서 홍천점",
+"g": "카페이서 홍천점",
+"st": "food",
+"food": 0.97,
+"k": 1
+},
+{
+"id": "gr-hon-oqfojnnss",
+"name": "손탁커피 홍천",
+"g": "손탁커피 홍천",
+"st": "food",
+"food": 0.94,
+"k": 1
+},
+{
+"id": "gr-hon-9it9qnneo",
+"name": "섬섬이네",
+"g": "섬섬이네",
+"st": "food",
+"food": 0.77,
+"k": 1
+},
+{
+"id": "gr-hwa-mgxsezoxo",
+"name": "강원양어장횟집",
+"g": "강원양어장횟집",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gr-hwa-wmzrgdna",
+"name": "천일막국수",
+"g": "천일막국수",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hwa-glulrupfo",
+"name": "장터국밥",
+"g": "장터국밥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hwa-yvsa5dsm8",
+"name": "강원나물밥 채원",
+"g": "강원나물밥 채원",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hwa-uu4iyua9s",
+"name": "덕촌토속마을",
+"g": "덕촌토속마을",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hwa-uuoj8ugeg",
+"name": "성원",
+"g": "성원",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gr-hwa-6uvocjonq",
+"name": "데이",
+"g": "데이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hwa-pwx78comu",
+"name": "산채골",
+"g": "산채골",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hwa-hhisyovmm",
+"name": "무궁화반점 화천점",
+"g": "무궁화반점 화천점",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "gr-hwa-gibh1mtf0",
+"name": "천일해장국",
+"g": "천일해장국",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "gr-hwa-yrlczmbq",
+"name": "문릿",
+"g": "문릿",
+"st": "food",
+"food": 0.76,
+"k": 1
+},
+{
+"id": "gr-hwa-ahmd8wuqy",
+"name": "커피보리",
+"g": "커피보리",
+"st": "food",
+"food": 0.91,
+"k": 1
+},
+{
+"id": "gr-hwa-4wam4ut78",
+"name": "신농학당(잔 미술관,대안학교,잔카페)",
+"g": "신농학당(잔 미술관,대안학교,잔카페)",
+"st": "food",
+"food": 0.9,
+"k": 1
+},
+{
+"id": "gr-hwa-w0l6kui0c",
+"name": "에티오피아 13월",
+"g": "에티오피아 13월",
+"st": "food",
+"food": 0.95,
 "k": 1
 }
 ]
