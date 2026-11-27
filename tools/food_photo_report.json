@@ -191,7 +191,10 @@
 {
 "id": "ongsim",
 "name": "강릉감자옹심이",
-"st": "notfound"
+"g": "강릉감자옹심 강릉본점",
+"st": "food",
+"food": 1.0,
+"k": 1
 },
 {
 "id": "haemiga",
@@ -1332,7 +1335,10 @@
 {
 "id": "kto-3537137",
 "name": "원조가보리살 솥뚜껑생삼겹살",
-"st": "notfound"
+"g": "솥뚜껑생삼겹살",
+"st": "nophoto",
+"food": null,
+"k": null
 },
 {
 "id": "kto-3537135",
@@ -2012,7 +2018,10 @@
 {
 "id": "kto-3535836",
 "name": "맥시칸치킨 정동점",
-"st": "notfound"
+"g": "맥시칸치킨홍제교동점",
+"st": "food",
+"food": 0.99,
+"k": 0
 },
 {
 "id": "kto-3535825",
@@ -9946,7 +9955,10 @@
 {
 "id": "bon-voyage-bar",
 "name": "봉보야쥬 (Bon voyage)",
-"st": "notfound"
+"g": "Bon voyage",
+"st": "food",
+"food": 0.75,
+"k": 9
 },
 {
 "id": "neureupnamu",
@@ -12642,6 +12654,230 @@
 "g": "에티오피아 13월",
 "st": "food",
 "food": 0.95,
+"k": 1
+},
+{
+"id": "bn-gan-yompvcfo8",
+"name": "모모김밥",
+"g": "모모김밥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-gan-64nph4fcm",
+"name": "언니네떡볶이",
+"g": "언니네떡볶이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-gan-a0qpg5nsy",
+"name": "디델리",
+"g": "디델리",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "bn-gan-ea9hfjbte",
+"name": "달떡볶이",
+"g": "달떡볶이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-sok-txp7c84rq",
+"name": "만석닭강정 본점",
+"g": "만석닭강정 본점",
+"st": "food",
+"food": 0.96,
+"k": 1
+},
+{
+"id": "bn-sok-ggdbmfyqe",
+"name": "요기국수김밥",
+"g": "요기국수김밥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-sok-vml16yfry",
+"name": "이정숙 왕손만두 찐빵",
+"g": "이정숙 왕손만두 찐빵",
+"st": "food",
+"food": 0.97,
+"k": 1
+},
+{
+"id": "bn-sok-bswgyhn4u",
+"name": "남포동찹쌀씨앗호떡 외할머니뻥튀기",
+"g": "남포동찹쌀씨앗호떡 외할머니뻥튀기",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "bn-yan-a1reughq",
+"name": "북청닭강정",
+"g": "북청닭강정",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "bn-don-lqmkw8j0m",
+"name": "임계만두집",
+"g": "임계만두집",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "bn-don-jni25ire",
+"name": "친구끼리분식",
+"g": "친구끼리분식",
+"st": "other",
+"food": 0.05,
+"k": 0
+},
+{
+"id": "bn-don-ivinv4tf0",
+"name": "근덕이삼척꽈배기 본점",
+"g": "근덕이삼척꽈배기 본점",
+"st": "food",
+"food": 0.97,
+"k": 1
+},
+{
+"id": "bn-don-cgia8x2py",
+"name": "삼척명품찹쌀꽈배기",
+"g": "삼척명품찹쌀꽈배기",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-don-xvlsdkou",
+"name": "양분식",
+"g": "양분식",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "bn-pye-q8ss2qgi0",
+"name": "스테프 핫도그",
+"g": "스테프 핫도그",
+"st": "food",
+"food": 0.93,
+"k": 2
+},
+{
+"id": "bn-pye-gzgc70yao",
+"name": "만두나라김밥마을",
+"g": "만두나라김밥마을",
+"st": "food",
+"food": 1.0,
+"k": 0
+},
+{
+"id": "bn-jeo-w93stiyi",
+"name": "너라면나김밥",
+"g": "너라면나김밥",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-jeo-mebmlnwe0",
+"name": "김밥소풍",
+"g": "김밥소풍",
+"st": "other",
+"food": 0.07,
+"k": 1
+},
+{
+"id": "bn-chu-vzjaabr6a",
+"name": "아리랑떡볶이",
+"g": "아리랑떡볶이",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-chu-0vd3agmbc",
+"name": "곰취핫도그",
+"g": "곰취핫도그",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "bn-chu-ssce40psc",
+"name": "만천만두국",
+"g": "만천만두국",
+"st": "food",
+"food": 0.99,
+"k": 1
+},
+{
+"id": "bn-chu-m0drninvm",
+"name": "왕만두",
+"g": "왕만두",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-chu-hdqx7ekyg",
+"name": "육림닭강정",
+"g": "육림닭강정",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-won-rbnf0uhly",
+"name": "원조개성손만두",
+"g": "원조개성손만두",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-won-xpz01thvo",
+"name": "이모네만두",
+"g": "이모네만두",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-won-vhsi5nuka",
+"name": "이씨손만두전골 함흥냉면",
+"g": "이씨손만두전골 함흥냉면",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-hon-j5kvx3bkc",
+"name": "튀김식당",
+"g": "튀김식당",
+"st": "food",
+"food": 1.0,
+"k": 1
+},
+{
+"id": "bn-hon-ff70vlrk",
+"name": "한끼김밥",
+"g": "한끼김밥",
+"st": "food",
+"food": 1.0,
 "k": 1
 }
 ]
