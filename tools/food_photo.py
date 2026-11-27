@@ -30,6 +30,13 @@ OTHER = ["a photo of a store front with a sign", "a photo of a shop signboard", 
          "a logo", "a photo of a parking lot", "a photo of the sea and a landscape", "a screenshot of text", "a photo of a cafe interior"]
 
 
+# 먹다 남은 음식·빈 그릇·어두운 사진을 걸러내는 기준(갓 나온 음식처럼 보이는지)
+FRESH = ["an appetizing photo of freshly served food", "a beautifully plated dish ready to eat", "a delicious-looking full meal on a table before eating",
+         "a nicely presented dessert or drink", "a close-up of a fresh, untouched dish"]
+LEFT = ["half-eaten leftover food on a plate", "messy empty plates and bowls after a meal", "a table with food scraps and used dishes",
+        "a partially eaten dish with chopsticks or spoons in it", "a blurry dark photo of food", "a pot of soup half finished"]
+
+
 def nz(x): return re.sub(r"[\s()·&\-_.,'\[\]]", "", str(x)).lower()
 
 
@@ -120,6 +127,7 @@ class Judge:
         self.m = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").eval()
         self.p = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
         self.tk = self.p(text=FOOD + OTHER, return_tensors="pt", padding=True)
+        self.tf = self.p(text=FRESH + LEFT, return_tensors="pt", padding=True)
 
     def food(self, img):
         # 모델 전체를 한 번에 돌려 그림-글 짝 점수(logits_per_image)를 받는다(버전마다 바뀌는 중간 함수는 쓰지 않음)
@@ -128,6 +136,35 @@ class Judge:
                          pixel_values=self.p(images=img, return_tensors="pt")["pixel_values"])
             pr = out.logits_per_image.softmax(dim=-1)[0]
         return float(pr[:len(FOOD)].sum())
+
+    def fresh(self, img):
+        """갓 나온 먹음직한 음식일 확률(먹다 남은 음식·빈 그릇이면 낮다)."""
+        with self.torch.no_grad():
+            out = self.m(input_ids=self.tf["input_ids"], attention_mask=self.tf["attention_mask"],
+                         pixel_values=self.p(images=img, return_tensors="pt")["pixel_values"])
+            pr = out.logits_per_image.softmax(dim=-1)[0]
+        return float(pr[:len(FRESH)].sum())
+
+
+def pick_best(J, key, phs, disp, start, mx, mn):
+    """사진들 중 '음식이면서 먹음직한' 사진을 고른다. 가게 주인이 올린 사진(작성자 이름이 가게 이름)은 조금 더 쳐 준다.
+    먹다 남은 듯한 사진(fresh<0.4)만 있으면 None."""
+    best, calls = None, 0
+    for k, ph in list(enumerate(phs[:mx]))[start:]:
+        try: uri = photo_uri(key, ph); calls += 1
+        except Exception: continue
+        if not uri: continue
+        try:
+            img = fetch_img(uri); sc = J.food(img); fr = J.fresh(img) if sc >= 0.4 else 0.0
+        except Exception: sc, fr = 0.0, 0.0
+        by = ", ".join(x.get("displayName", "") for x in ph.get("authorAttributions", []) if x.get("displayName")) or "Google 지도 사용자"
+        owner = bool(disp) and same_name(disp, by)
+        val = sc * (0.3 + fr) + (0.15 if owner else 0)
+        cand = {"url": uri, "by": re.sub(r"[<>\"]", "", by)[:60], "food": round(sc, 2), "fr": round(fr, 2), "k": k, "_v": val}
+        if fr >= 0.4 and (best is None or val > best["_v"]): best = cand
+        if best and sc >= mn and fr >= 0.65: break
+    if best: best.pop("_v", None)
+    return best, calls
 
 
 def fetch_img(url):
@@ -144,18 +181,34 @@ def main():
     ap.add_argument("--limit", type=int, default=0); ap.add_argument("--sheet", default=""); ap.add_argument("--min", type=float, default=0.6)
     ap.add_argument("--all", action="store_true", help="이미 고른 곳도 다시")
     ap.add_argument("--low", action="store_true", help="음식 사진을 못 찾은 곳만 뒤쪽 사진(5~10번째)까지 더 본다")
+    ap.add_argument("--recheck", action="store_true", help="이미 고른 사진이 먹다 남은 음식 같으면 다시 고른다")
     a = ap.parse_args()
     tg, kto = targets(a)
     done = kto.get("fphoto", {})
     start = 0
-    if a.low:
+    J = None
+    if a.recheck:
+        J = Judge()
+        cand = [t for t in tg if t["id"] in done and done[t["id"]].get("url") and "fr" not in done[t["id"]]]
+        bad = []
+        def chk(t):
+            try: img = fetch_img(done[t["id"]]["url"]); return t, J.fresh(img)
+            except Exception: return t, None
+        for t in cand:
+            t_, fr = chk(t)
+            if fr is None: continue
+            if fr < 0.45: bad.append(t)
+            else: done[t["id"]]["fr"] = round(fr, 2)
+        print(f"다시 볼 사진 {len(cand)}곳 중 먹다 남은 음식 같은 사진 {len(bad)}곳")
+        tg, start, a.max = bad, 0, 8
+    elif a.low:
         tg = [t for t in tg if t["id"] in done and (done[t["id"]].get("food") or 0) < a.min and not done[t["id"]].get("deep")]
         start, a.max = a.max, 10
     elif not a.all: tg = [t for t in tg if t["id"] not in done]   # 이미 고른 곳은 다시 하지 않는다(요청 아끼기)
     if a.limit: tg = tg[:a.limit]
     print(f"대상 음식점·카페 {len(tg)}곳 (검색 필요 {sum(1 for t in tg if not t.get('gid'))}곳)")
 
-    J = Judge()   # 판별 도구를 먼저 준비한다(여기서 실패하면 구글 검색을 하지 않음)
+    J = J or Judge()   # 판별 도구를 먼저 준비한다(여기서 실패하면 구글 검색을 하지 않음)
     from PIL import Image
     J.food(Image.new("RGB", (64, 64), "white"))
     found = {}
@@ -171,17 +224,11 @@ def main():
             else: report.append({"id": t["id"], "name": t["name"], "st": "notfound"})
             continue
         pid, disp, phs = r
-        best = dict(done[t["id"]], deep=1) if a.low else None
-        for k, ph in list(enumerate(phs[:a.max]))[start:]:
-            try: uri = photo_uri(a.key, ph); calls += 1
-            except Exception: continue
-            if not uri: continue
-            try: sc = J.food(fetch_img(uri))
-            except Exception: sc = 0.0
-            by = ", ".join(x.get("displayName", "") for x in ph.get("authorAttributions", []) if x.get("displayName")) or "Google 지도 사용자"
-            cand = {"url": uri, "by": re.sub(r"[<>\"]", "", by)[:60], "food": round(sc, 2), "k": k}
-            if best is None or sc > (best.get("food") or 0): best = cand
-            if sc >= a.min: break
+        best, n = pick_best(J, a.key, phs, disp, start, a.max, a.min); calls += n
+        if a.low and done.get(t["id"]) and (not best or (best.get("food") or 0) <= (done[t["id"]].get("food") or 0)):
+            best = dict(done[t["id"]], deep=1)
+        if not best and a.recheck:
+            best = {"url": "", "by": "", "food": 0, "fr": 0, "k": -1}   # 먹음직한 사진이 없으면 사진을 쓰지 않는다
         if best:
             fph[t["id"]] = best
             old = kto.get("photos", {}).get(t["id"])
