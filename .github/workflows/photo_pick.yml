@@ -1,0 +1,16 @@
+name: 사진 후보 보기(일회성)
+on: { workflow_dispatch: { inputs: { ids: { required: true } } } }
+jobs:
+  pick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q 'transformers==4.46.3' pillow
+      - env: { K: "${{ secrets.GOOGLE_PLACES_KEY }}", IDS: "${{ github.event.inputs.ids }}" }
+        run: python3 tools/photo_pick.py "$K" "$IDS"
+      - uses: actions/upload-artifact@v4
+        with: { name: pick, path: pick/ }
