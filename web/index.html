@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>강원 여행 수첩</title>
-<script>window.APK_BUILD=true;window.NOTE_VER="20261127104158";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
+<script>window.APK_BUILD=true;window.NOTE_VER="20261127104657";window.KAKAO_KEY="0a386489f5dc157a8a5e8773ba2133b6";document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"&&!t.dataset.fb&&/\/assets\/photos\/|android_asset\/photos\//.test(t.src)){t.dataset.fb="1";t.src="https://raw.githubusercontent.com/flyaranaby-collab/gangwon-travel/main/web/photos/"+t.src.split("/").pop();}},true);</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3039,6 +3039,8 @@ function foodSub(p){
 }
 
 let FSUB = "전체";
+// 음식 종류(맛집 종류 탭용). 카페는 '카페·디저트'로 묶는다.
+const foodKind = p => p.cat==="카페" ? "카페·디저트" : foodSub(p);
 const CATS = ["전체","바다","산","계곡","호수·강","숲·꽃","고원","맛집","카페","소품샵","체험","역사"];
 // o/c: 여는·닫는 시각(시, null=상시), stay: 권장 체류(분), cost: 1인 예상 지출(원). 모두 대략값.
 const META = {
@@ -4531,9 +4533,9 @@ function renderPlaces(){
       const more = [tg("trendBtn", state.trend, "요즘 뜨는 곳", "🔥"), tg("reviewBtn", state.review, "리뷰 많은 곳", "⭐"), tg("kidsBtn", state.kids, "아이와 함께", "👶"), tg("dealBtn", state.dealOnly, "할인 있는 곳", "🏷️"), tg("summerBtn", state.summer, "여름 피서", "🏖️"), tg("rainBtn", state.rain, "비 오는 날", "☔")];
       return top.join("") + `<span class="sep"></span>` + rest.join("") + `<span class="sep"></span>` + more.join("");
     })()}</div>
-    ${state.cat==="맛집" ? (()=>{ const all = PLACES.filter(p=>p.cat==="맛집" && inRegion(p)), fp = all.filter(passToggles); const n = k => fp.filter(p=>foodSub(p)===k).length;
+    ${(state.cat==="맛집" || state.pick) ? (()=>{ const all = PLACES.filter(p=>(state.pick ? ["맛집","카페"].includes(p.cat) && passToggles(p) : p.cat==="맛집") && inRegion(p)), fp = all.filter(passToggles); const n = k => fp.filter(p=>foodKind(p)===k).length;
       // 종류 버튼은 그 지역에 있는 종류를 늘 보여 주고(현지인 맛집 등을 켜도 사라지지 않게), 숫자만 켜 둔 조건에 맞춘다. 0곳이면 흐리게.
-      const has = new Set(all.map(foodSub));
+      const has = new Set(all.map(foodKind));
       return `<div class="subfilters" role="group" aria-label="맛집 종류" data-pos="C7"><button class="chipbtn" data-fsub="전체" aria-pressed="${FSUB==="전체"}">전체<small>${fp.length}</small></button>${FOOD_SUBS.filter(k=>has.has(k)).map(k=>`<button class="chipbtn${n(k)?"":" zero"}" data-fsub="${k}" aria-pressed="${k===FSUB}">${k}<small>${n(k)}</small></button>`).join("")}${all.some(isBar) ? (()=>{ const nb = fp.filter(isBar).length; return `<button class="chipbtn${nb?"":" zero"}" data-fsub="술집" aria-pressed="${FSUB==="술집"}">🍶 술집<small>${nb}</small></button>`; })() : ""}</div>`; })() : ""}
     <input type="search" id="q" data-pos="C8" class="search" placeholder="장소·메뉴·태그 검색 (예: 물회, 일출, 아이와)" value="${esc(state.q)}" aria-label="검색">
     <div id="stayExtra"></div>
@@ -4564,7 +4566,7 @@ function renderGrid(){
   document.getElementById("stayExtra").innerHTML = document.getElementById("stayAfter").innerHTML = "";
   const ad = new Set(SPONSORED.map(x=>x.id));
   const list = PLACES.filter(p=>inRegion(p) && (state.cat==="전체"||p.cat===state.cat)
-      && (state.cat!=="맛집" || FSUB==="전체" || (FSUB==="술집" ? isBar(p) : foodSub(p)===FSUB))
+      && ((state.cat!=="맛집" && !state.pick) || FSUB==="전체" || (FSUB==="술집" ? isBar(p) : foodKind(p)===FSUB))
       && passToggles(p)
       && (!q || [p.name,p.sig,p.area,REG[p.region].name,p.cat,...p.tags].join(" ").toLowerCase().includes(q)))
     .sort((a,b)=>(state.pick ? (!!CURATED[b.id]-!!CURATED[a.id]) : 0) || (orderIdx(a.id)-orderIdx(b.id)) || (ad.has(b.id)-ad.has(a.id)) || (b.who[state.who]-a.who[state.who]) || ((a.source==="kto")-(b.source==="kto")));
@@ -5662,7 +5664,7 @@ document.addEventListener("click", e=>{
   if (t.id==="kidsBtn"){ state.kids=!state.kids; renderPlaces(); return; }
   if (t.id==="breadBtn"){ state.bread=!state.bread; if (state.bread){ if (!["전체","카페"].includes(state.cat)) { state.cat="전체"; FSUB="전체"; } state.local=false; } renderPlaces(); return; }
   if (t.dataset.clearfilters!==undefined){ state.trend=state.photo=state.summer=state.review=state.local=state.dealOnly=state.rain=state.kids=state.bread=state.pick=false; FSUB="전체"; renderPlaces(); return; }
-  if (t.id==="pickBtn"){ state.pick=!state.pick; if (state.pick){ state.cat="전체"; FSUB="전체"; state.local=false; state.bread=false; } renderPlaces(); return; }
+  if (t.id==="pickBtn"){ state.pick=!state.pick; FSUB="전체"; if (state.pick){ state.cat="전체"; FSUB="전체"; state.local=false; state.bread=false; } renderPlaces(); return; }
   if (t.dataset.tagq){ e.preventDefault(); e.stopPropagation(); try { closeSub(); closeSearch(); } catch(_) {}
     const prev = state.tab; state.tab="places"; state.cat="전체"; state.q=t.dataset.tagq; if (prev!=="places") navPush(true); render();
     document.getElementById("placeGrid")?.scrollIntoView({ block:"start" }); return; }
